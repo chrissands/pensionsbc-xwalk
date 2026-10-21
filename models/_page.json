@@ -21,6 +21,33 @@
           "name": "keywords",
           "multi": true,
           "label": "Keywords"
+        },
+        {
+          "component": "text",
+          "valueType": "string",
+          "name": "topic",
+          "label": "Topic / category",
+          "description": "Placeholder for future tagging and search. Leave empty until the taxonomy is defined."
+        },
+        {
+          "component": "multiselect",
+          "name": "audience",
+          "label": "Audience",
+          "description": "Who the page is for (for future tagging and search).",
+          "options": [
+            {
+              "name": "Member",
+              "value": "member"
+            },
+            {
+              "name": "Employer",
+              "value": "employer"
+            },
+            {
+              "name": "Retiree",
+              "value": "retiree"
+            }
+          ]
         }
       ]
     }

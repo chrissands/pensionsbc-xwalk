@@ -20,6 +20,33 @@
         "name": "keywords",
         "multi": true,
         "label": "Keywords"
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "topic",
+        "label": "Topic / category",
+        "description": "Placeholder for future tagging and search. Leave empty until the taxonomy is defined."
+      },
+      {
+        "component": "multiselect",
+        "name": "audience",
+        "label": "Audience",
+        "description": "Who the page is for (for future tagging and search).",
+        "options": [
+          {
+            "name": "Member",
+            "value": "member"
+          },
+          {
+            "name": "Employer",
+            "value": "employer"
+          },
+          {
+            "name": "Retiree",
+            "value": "retiree"
+          }
+        ]
       }
     ]
   },
@@ -161,6 +188,28 @@
     ]
   },
   {
+    "id": "cards",
+    "fields": [
+      {
+        "component": "select",
+        "name": "classes",
+        "label": "Style",
+        "valueType": "string",
+        "value": "",
+        "options": [
+          {
+            "name": "Default",
+            "value": ""
+          },
+          {
+            "name": "Logo links",
+            "value": "logos"
+          }
+        ]
+      }
+    ]
+  },
+  {
     "id": "card",
     "fields": [
       {
@@ -284,6 +333,23 @@
   {
     "id": "hero",
     "fields": [
+      {
+        "component": "select",
+        "name": "classes",
+        "label": "Style",
+        "valueType": "string",
+        "value": "",
+        "options": [
+          {
+            "name": "Default",
+            "value": ""
+          },
+          {
+            "name": "Split (text beside image)",
+            "value": "split"
+          }
+        ]
+      },
       {
         "component": "reference",
         "valueType": "string",

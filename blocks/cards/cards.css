@@ -25,3 +25,63 @@
   aspect-ratio: 4 / 3;
   object-fit: cover;
 }
+
+/* logos style: bordered logo cards with stacked text links (values from www.pensionsbc.ca) */
+.cards.logos > ul {
+  display: block;
+}
+
+.cards.logos > ul > li {
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  width: 95%;
+  margin: 0 auto var(--space-s);
+  padding: 0 0 var(--space-l);
+  border: var(--border-width) solid var(--border-color);
+  border-radius: var(--radius-s);
+  text-align: center;
+}
+
+/* logo area grows so the links line up across cards whatever the logo height */
+.cards.logos .cards-card-image {
+  flex: 1 0 auto;
+  line-height: normal;
+}
+
+.cards.logos .cards-card-image p {
+  margin: 0;
+}
+
+.cards.logos > ul > li img {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  margin: var(--space-s) auto var(--space-xl);
+  aspect-ratio: auto;
+  object-fit: initial;
+}
+
+.cards.logos .cards-card-body {
+  margin: 0;
+}
+
+.cards.logos .cards-card-body p {
+  margin: 0 0 var(--space-xs);
+  font-size: var(--body-font-size-l);
+  line-height: var(--line-height-body);
+}
+
+/* source switches to the 5-across row above 792px */
+@media (width >= 793px) {
+  .cards.logos > ul {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .cards.logos > ul > li {
+    width: 18%;
+    margin: 0;
+  }
+}
