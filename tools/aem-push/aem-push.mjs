@@ -9,15 +9,15 @@
  * <site> is a manifest in tools/aem-push/sites/<site>.json listing the pages to deliver.
  *
  * Pipeline per page: content/<path>.plain.html -> images downloaded and pointed at the DAM
- * (/content/dam/pensionsbc-base/<site>/) -> html2md -> md2jcr (with this repo's component
+ * (/content/dam/pensionsbc-base/<site>/<kebab-name>, or the manifest's "assets" override, e.g.
+ * shared/ for logos used on every site) -> html2md -> md2jcr (with this repo's component
  * models) -> .content.xml under /content/pensionsbc-base/<path>.
+ * Paths map 1:1: content/<site>/en/index is the homepage at <site>/en/index (Edge Delivery
+ * serves /en/ from the index page). Language roots (<site>/<lang>) are never written.
  *
  * Filters (META-INF/vault/filter.xml):
  *  - a page: its cq:Page node and jcr:content subtree are replaced (child pages untouched);
  *    replacing jcr:content removes the MSM live relationship, so the page becomes LOCAL
- *  - a language root (<site>/<lang>, the homepage): only jcr:content/root is replaced so the
- *    live copy configuration on the page stays intact; title and description are set with a
- *    Sling POST after install
  *  - each asset: replaced; DAM folders: merge (created if missing, never overwritten)
  *
  * Authentication for push (never commit these):
@@ -68,12 +68,13 @@ function loadManifest(site) {
   return readJson(path);
 }
 
-/** content/<site>/<lang>/index -> <site>/<lang>; everything else maps 1:1 */
+/** content/<path> is /content/pensionsbc-base/<path>; language roots hold the live copy config */
 function aemPathOf(contentPath) {
-  return contentPath.replace(/\/index$/, '');
+  if (contentPath.split('/').length <= 2) {
+    fail(`${contentPath} is a site or language root; the homepage is <site>/<lang>/index`);
+  }
+  return contentPath;
 }
-
-const isLanguageRoot = (aemPath) => aemPath.split('/').length === 2;
 
 function models() {
   execFileSync('npm', ['run', '-s', 'build:json'], { cwd: ROOT, stdio: 'pipe' });
@@ -89,7 +90,8 @@ function assetName(src) {
   const url = new URL(src);
   const segments = url.pathname.split('/').map((s) => decodeURIComponent(s.replace(/\+/g, ' ')));
   const named = [...segments].reverse().find((s) => /\.(png|jpe?g|gif|svg|webp)$/i.test(s)) || segments.pop() || 'image';
-  return named.toLowerCase().replace(/[^a-z0-9._-]+/g, '-').replace(/-{2,}/g, '-').replace(/^-|-$/g, '');
+  return named.toLowerCase().replace(/[^a-z0-9.-]+/g, '-').replace(/-{2,}/g, '-')
+    .replace(/^-|-$/g, '');
 }
 
 async function download(src, cacheDir) {
@@ -105,20 +107,20 @@ async function download(src, cacheDir) {
 }
 
 /** Points every absolute <img> at its DAM path; collects the assets to package. */
-async function localiseImages(html, damFolder, assets, cacheDir) {
+async function localiseImages(html, { damFolder, overrides }, assets, cacheDir) {
   const sources = [...html.matchAll(/<img\b[^>]*\bsrc="(https?:\/\/[^"]+)"/g)].map((m) => m[1]);
   let out = html.replace(/<source\b[^>]*>/g, '');
   for (const raw of sources) {
     const src = raw.replace(/&amp;/g, '&');
     if (!assets.has(src)) {
-      const taken = new Set([...assets.values()].map((a) => a.name));
-      let name = assetName(src);
-      for (let i = 2; taken.has(name); i += 1) name = name.replace(/(-\d+)?(\.[a-z0-9]+)?$/, `-${i}$2`);
-      // eslint-disable-next-line no-await-in-loop
+      const taken = new Set([...assets.values()].map((a) => a.path));
+      const derived = assetName(src);
+      let path = overrides[derived] || `${damFolder}/${derived}`;
+      for (let i = 2; taken.has(path); i += 1) path = path.replace(/(-\d+)?(\.[a-z0-9]+)?$/, `-${i}$2`);
       const { body, type } = await download(src, cacheDir);
-      const ext = name.split('.').pop();
+      const ext = path.split('.').pop();
       assets.set(src, {
-        name, body, mime: MIME[ext] || type || 'application/octet-stream', path: `${damFolder}/${name}`,
+        source: src, body, mime: MIME[ext] || type || 'application/octet-stream', path,
       });
     }
     out = out.split(`src="${raw}"`).join(`src="${assets.get(src).path}"`);
@@ -143,16 +145,6 @@ function withTitle(xml, title) {
   if (!title) return xml;
   const cleaned = xml.replace(/(<jcr:content\b[^>]*?)\s+jcr:title="[^"]*"/, '$1');
   return cleaned.replace('<jcr:content ', `<jcr:content jcr:title="${xmlEscape(title)}" `);
-}
-
-/** The jcr:content/root subtree of a page as its own docview file. */
-function rootSubtree(xml) {
-  const start = xml.indexOf('<root ');
-  const end = xml.lastIndexOf('</root>');
-  if (start < 0 || end < 0) fail('md2jcr output has no root node');
-  const header = xml.match(/<jcr:root\b[^>]*>/)[0].replace(/\s+jcr:primaryType="[^"]*"/, '');
-  const root = xml.slice(start, end + '</root>'.length).replace(/^<root /, `${header.slice(0, -1)} `).replace(/<\/root>$/, '</jcr:root>');
-  return `<?xml version="1.0" encoding="UTF-8"?>\n${root}\n`;
 }
 
 function folderXml(title) {
@@ -185,18 +177,24 @@ function renditionXml(mime) {
 
 const jcrDir = (path) => `jcr_root${path.split('/').map((s) => (s === 'jcr:content' ? '_jcr_content' : s)).join('/')}`;
 
-function filterXml({ pages, assets, damFolder }) {
+/** DAM_ROOT and every folder below it that holds a packaged asset */
+function damFolders(assets) {
+  const folders = new Set();
+  assets.forEach((a) => {
+    const parts = a.path.slice(DAM_ROOT.length + 1).split('/').slice(0, -1);
+    folders.add(DAM_ROOT);
+    parts.forEach((p, i) => folders.add(`${DAM_ROOT}/${parts.slice(0, i + 1).join('/')}`));
+  });
+  return [...folders];
+}
+
+function filterXml({ pages, assets }) {
   const lines = [];
-  const folders = assets.size ? [DAM_ROOT, damFolder] : [];
-  folders.forEach((f) => lines.push(`    <filter root="${f}" mode="merge"><include pattern="${f}"/></filter>`));
+  damFolders(assets).forEach((f) => lines.push(`    <filter root="${f}" mode="merge"><include pattern="${f}"/></filter>`));
   [...assets.values()].forEach((a) => lines.push(`    <filter root="${a.path}"/>`));
   pages.forEach(({ aem }) => {
     const path = `${SITE_ROOT}/${aem}`;
-    if (isLanguageRoot(aem)) {
-      lines.push(`    <filter root="${path}/jcr:content/root"/>`);
-    } else {
-      lines.push(`    <filter root="${path}">\n      <include pattern="${path}"/>\n      <include pattern="${path}/jcr:content(/.*)?"/>\n    </filter>`);
-    }
+    lines.push(`    <filter root="${path}">\n      <include pattern="${path}"/>\n      <include pattern="${path}/jcr:content(/.*)?"/>\n    </filter>`);
   });
   return `<?xml version="1.0" encoding="UTF-8"?>\n<workspaceFilter version="1.0">\n${lines.join('\n')}\n</workspaceFilter>\n`;
 }
@@ -216,7 +214,7 @@ function propertiesXml(name, site) {
 `;
 }
 
-function placementMd(manifest, pages, assets, damFolder) {
+function placementMd(manifest, pages, assets) {
   const rows = pages.map((p) => `| ${p.title || '(from page metadata)'} | \`${SITE_ROOT}/${p.aem}\` | ${p.scope} | ${p.note || ''} |`);
   const inherited = (manifest.inherited || []).map((p) => `| \`${SITE_ROOT}/${p.aem}\` | \`${SITE_ROOT}/${p.from}\` |`);
   return `# PLACEMENT: ${manifest.site}
@@ -230,12 +228,11 @@ Generated by \`npm run aem:build -- ${manifest.site}\`. Do not edit by hand.
 ${rows.join('\n')}
 
 Scope: **local** pages replace the live-copy page in AEM, which removes the MSM relationship.
-For a language root (homepage), only \`jcr:content/root\` is replaced and the title and description are set
-after install, so the live copy configuration stays intact. **shared** pages live in the blueprint.
+**shared** pages live in the blueprint and reach the sites by rollout.
 
-## Assets (${assets.size}) in \`${damFolder}\`
+## Assets (${assets.size})
 
-${[...assets.values()].map((a) => `- \`${a.path}\` (${a.mime})`).join('\n') || '- none'}
+${[...assets.values()].map((a) => `- \`${a.path}\` (${a.mime}) from ${a.source.split('?')[0]}`).join('\n') || '- none'}
 
 ${inherited.length ? `## Inherited, not in this package (roll out from the blueprint)
 
@@ -252,42 +249,29 @@ export async function build(site) {
   rmSync(out, { recursive: true, force: true });
   mkdirSync(cacheDir, { recursive: true });
   const componentModels = models();
-  const damFolder = `${DAM_ROOT}/${manifest.site}`;
+  const damTarget = { damFolder: `${DAM_ROOT}/${manifest.site}`, overrides: manifest.assets || {} };
   const assets = new Map();
   const zip = new JSZip();
   const pages = [];
 
   for (const page of manifest.pages) {
+    const aem = aemPathOf(page.content);
     const file = join(ROOT, 'content', `${page.content}.plain.html`);
     if (!existsSync(file)) fail(`Missing ${file}; run the import first`);
-    const aem = aemPathOf(page.content);
-    // eslint-disable-next-line no-await-in-loop
-    const html = await localiseImages(readFileSync(file, 'utf8'), damFolder, assets, cacheDir);
+    const html = await localiseImages(readFileSync(file, 'utf8'), damTarget, assets, cacheDir);
     let xml;
     try {
-      // eslint-disable-next-line no-await-in-loop
       xml = withTitle(await toJcr(html, componentModels), page.title);
     } catch (e) {
       fail(`${page.content}: md2jcr failed: ${e.message}`);
     }
-    const props = {
-      'jcr:title': page.title || attr(xml, 'jcr:title'),
-      'jcr:description': attr(xml, 'jcr:description'),
-    };
-    if (isLanguageRoot(aem)) {
-      zip.file(`${jcrDir(`${SITE_ROOT}/${aem}/jcr:content/root`)}/.content.xml`, rootSubtree(xml));
-    } else {
-      zip.file(`${jcrDir(`${SITE_ROOT}/${aem}`)}/.content.xml`, xml);
-    }
-    pages.push({
-      ...page, aem, title: props['jcr:title'], props,
-    });
+    zip.file(`${jcrDir(`${SITE_ROOT}/${aem}`)}/.content.xml`, xml);
+    pages.push({ ...page, aem, title: page.title || attr(xml, 'jcr:title') });
   }
 
-  if (assets.size) {
-    zip.file(`${jcrDir(DAM_ROOT)}/.content.xml`, folderXml('PensionsBC'));
-    zip.file(`${jcrDir(damFolder)}/.content.xml`, folderXml(manifest.site));
-  }
+  damFolders(assets).forEach((f) => {
+    zip.file(`${jcrDir(f)}/.content.xml`, folderXml(f === DAM_ROOT ? 'PensionsBC' : f.split('/').pop()));
+  });
   assets.forEach((a) => {
     const dir = jcrDir(a.path);
     zip.file(`${dir}/.content.xml`, assetXml(a.mime));
@@ -296,18 +280,18 @@ export async function build(site) {
   });
 
   const name = `pensionsbc-${manifest.site}-content`;
-  zip.file('META-INF/vault/filter.xml', filterXml({ pages, assets, damFolder }));
+  zip.file('META-INF/vault/filter.xml', filterXml({ pages, assets }));
   zip.file('META-INF/vault/properties.xml', propertiesXml(name, manifest.site));
 
   mkdirSync(out, { recursive: true });
   const zipFile = join(out, `${name}.zip`);
   writeFileSync(zipFile, await zip.generateAsync({ type: 'nodebuffer', compression: 'DEFLATE' }));
-  const placement = placementMd(manifest, pages, assets, damFolder);
+  const placement = placementMd(manifest, pages, assets);
   mkdirSync(join(TOOL, 'placement'), { recursive: true });
   writeFileSync(join(TOOL, 'placement', `${manifest.site}.md`), placement);
 
   console.log(`Built ${zipFile}`);
-  pages.forEach((p) => console.log(`  page   ${SITE_ROOT}/${p.aem}${isLanguageRoot(p.aem) ? '  (language root: jcr:content/root only)' : ''}`));
+  pages.forEach((p) => console.log(`  page   ${SITE_ROOT}/${p.aem}`));
   assets.forEach((a) => console.log(`  asset  ${a.path}`));
   return {
     manifest, pages, zipFile, name,
@@ -337,10 +321,9 @@ async function aemFetch(host, path, init = {}) {
 }
 
 export async function push(site) {
-  const { pages, zipFile, name } = await build(site);
+  const { zipFile, name } = await build(site);
   const host = authorHost();
   const { token } = JSON.parse(await aemFetch(host, '/libs/granite/csrf/token.json'));
-  const csrf = { 'CSRF-Token': token };
 
   const form = new FormData();
   form.append('file', new Blob([readFileSync(zipFile)], { type: 'application/zip' }), `${name}.zip`);
@@ -348,18 +331,11 @@ export async function push(site) {
   form.append('force', 'true');
   form.append('install', 'true');
   console.log(`Uploading and installing ${name} on ${host} ...`);
-  const result = await aemFetch(host, '/crx/packmgr/service.jsp', { method: 'POST', body: form, headers: csrf });
+  const result = await aemFetch(host, '/crx/packmgr/service.jsp', { method: 'POST', body: form, headers: { 'CSRF-Token': token } });
   const code = result.match(/<status code="(\d+)">([^<]*)<\/status>/);
   if (!code || code[1] !== '200') fail(`Package install failed: ${code ? `${code[1]} ${code[2]}` : result.slice(0, 500)}`);
   console.log('  installed');
 
-  for (const page of pages.filter((p) => isLanguageRoot(p.aem))) {
-    const body = new URLSearchParams({ _charset_: 'utf-8' });
-    Object.entries(page.props).forEach(([k, v]) => { if (v) body.append(k, v); });
-    // eslint-disable-next-line no-await-in-loop
-    await aemFetch(host, `${SITE_ROOT}/${page.aem}/jcr:content`, { method: 'POST', body, headers: csrf });
-    console.log(`  set title/description on ${SITE_ROOT}/${page.aem}`);
-  }
   console.log('Done. Nothing was previewed or published.');
 }
 
