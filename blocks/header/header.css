@@ -75,6 +75,10 @@ header nav .nav-hamburger {
   align-items: center;
 }
 
+header nav .nav-hamburger[hidden] {
+  display: none;
+}
+
 header nav .nav-hamburger button {
   height: 22px;
   margin: 0;

@@ -145,7 +145,7 @@ Each phase stops for approval.
 | Page | AEM path | Scope | Source |
 |---|---|---|---|
 | Homepage | `corporate/en/index` | local | https://www.pensionsbc.ca/ |
-| Nav | `corporate/en/nav` | local | www.pensionsbc.ca header (plan switcher, My Account) |
+| Nav | `corporate/en/nav` | local | Empty Brand / Sections / Tools: www.pensionsbc.ca shows no navigation |
 | Footer | `corporate/en/footer` | local | www.pensionsbc.ca footer (logos, legal links) |
 | Copyright, Disclaimer, Privacy | `corporate/en/{copyright,disclaimer,privacy}` | inherited | `language-masters/en/*` |
 
@@ -158,6 +158,7 @@ Legal pages and placeholders not yet rolled out to `corporate/en`.
 
 Known gaps:
 - Source hero subtitle is an `h2`; it is authored as a paragraph.
+- The header hides its menu button when the nav has no links (corporate), so small screens show an empty bar like the source.
 - Footer logos are an Image followed by a Link (Universal Editor has no linked image); `footer.js` joins them.
 
 History: the first corporate package (before `tools/aem-push`) is on the `content-package` branch
