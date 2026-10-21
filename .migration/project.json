@@ -1,0 +1,16 @@
+{
+  "type": "xwalk",
+  "botProtected": true,
+  "sites": {
+    "pensionsbc-xwalk": {
+      "libraryUrl": "https://main--sta-xwalk-boilerplate--aemysites.aem.page/tools/sidekick/library.json",
+      "previewOrg": "chrissands",
+      "previewSite": "pensionsbc-xwalk",
+      "contentHostUrl": "author-p129103-e1259800.adobeaemcloud.com",
+      "aemSitePath": "/content/pensionsbc-base",
+      "aemAssetsFolderPath": "/content/dam/pensionsbc-base",
+      "aemSiteName": "pensionsbc-base",
+      "aemSiteTitle": "PensionsBC Base"
+    }
+  }
+}
