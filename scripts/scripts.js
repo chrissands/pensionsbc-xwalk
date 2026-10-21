@@ -96,22 +96,23 @@ function a11yLinks(main) {
 }
 
 /*
- * Cross-site plan links are authored with the plans' production hostnames. Edge Delivery
+ * Cross-site links are authored with the sites' production hostnames. Edge Delivery
  * rewrites links to *.aem.page / *.aem.live hosts into relative paths, so they cannot be
- * authored directly; on those hosts the production hostnames are pointed at each plan's
- * Edge Delivery site instead (until the production domains are cut over).
+ * authored directly; on those hosts the production hostnames are pointed at each site's
+ * demo (preview) URL instead, until the production domains are cut over.
  */
 const PLAN_SITE_HOSTS = {
-  'college.pensionsbc.ca': 'main--pensionsbc-college--chrissands.aem.live',
-  'mpp.pensionsbc.ca': 'main--pensionsbc-mpp--chrissands.aem.live',
-  'pspp.pensionsbc.ca': 'main--pensionsbc-pspp--chrissands.aem.live',
-  'tpp.pensionsbc.ca': 'main--pensionsbc-tpp--chrissands.aem.live',
-  'worksafe.pensionsbc.ca': 'main--pensionsbc-worksafe--chrissands.aem.live',
+  'www.pensionsbc.ca': 'main--pensionsbc-xwalk--chrissands.aem.page',
+  'college.pensionsbc.ca': 'main--pensionsbc-college--chrissands.aem.page',
+  'mpp.pensionsbc.ca': 'main--pensionsbc-mpp--chrissands.aem.page',
+  'pspp.pensionsbc.ca': 'main--pensionsbc-pspp--chrissands.aem.page',
+  'tpp.pensionsbc.ca': 'main--pensionsbc-tpp--chrissands.aem.page',
+  'worksafe.pensionsbc.ca': 'main--pensionsbc-worksafe--chrissands.aem.page',
 };
 
 /**
- * Points production plan-site links at the plans' Edge Delivery sites when the page is
- * served from aem.page / aem.live.
+ * Points production site links (corporate + plans) at the demo Edge Delivery sites when
+ * the page is served from aem.page / aem.live.
  * @param {Element} element The container element
  */
 export function rewritePlanSiteLinks(element) {
