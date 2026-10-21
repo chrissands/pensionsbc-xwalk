@@ -1,7 +1,25 @@
 # PensionsBC corporate scope (en): content package placement
 
-Package: `pensionsbc-corporate-en-1.0.0.zip` (group `pensionsbc`). Rebuild it with
-`node migration-work/package/build-package.mjs`, then zip `migration-work/package/build/`.
+Packages (group `pensionsbc`):
+- `pensionsbc-corporate-en-1.1.0.zip`: the full corporate scope (6 pages and 8 DAM assets), current content.
+- `pensionsbc-corporate-en-links-1.0.1.zip`: **update for an existing 1.0.0 install**, with only the 2 pages whose plan links changed (see "Update 1.0.1" below).
+
+Rebuild with `node migration-work/package/build-package.mjs [--only <paths>] [--no-assets] [--name] [--version]`,
+then `python3 migration-work/package/zip-package.py <build dir> <zip>`.
+
+## Update 1.0.1: cross-site plan links (if 1.0.0 is already installed)
+Edge Delivery rewrites `*.aem.live` / `*.aem.page` links into relative paths, so the plan links now use the
+production hostnames (`https://<plan>.pensionsbc.ca/en/`). The site code (PR #2) points them at the plan
+Edge Delivery sites when the page is served from aem.page / aem.live.
+
+**Reinstall these 2 pages only** (`pensionsbc-corporate-en-links-1.0.1.zip`, no assets; it references the DAM assets from 1.0.0):
+| Page | AEM path | Change |
+|---|---|---|
+| Corporate homepage | `/content/pensionsbc-base/corporate/en/index` | 5 Member-site links: production hostnames |
+| Header (nav) | `/content/pensionsbc-base/language-masters/en/nav` | 5 plan-switcher links: production hostnames |
+
+Then roll out `language-masters/en` (nav) to all six live copies, merge PR #2, and preview.
+Nothing else changed: footer, legal pages and assets stay as installed.
 
 ## Pages
 
