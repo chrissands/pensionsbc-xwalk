@@ -1,7 +1,7 @@
 /* eslint-disable */
 /* global WebImporter */
 
-import { damSrc } from './dam-assets.js';
+import { damSrc, pushSafeAlt } from './dam-assets.js';
 
 /**
  * Corporate footer (corporate/en/footer, LOCAL to the corporate live copy) from the
@@ -21,7 +21,7 @@ const LEGAL_PATHS = {
 
 function logoLink(document, a, base) {
   const img = a.querySelector('img');
-  const alt = img.getAttribute('alt') || '';
+  const alt = pushSafeAlt(img.getAttribute('alt'));
   const imageP = document.createElement('p');
   const image = document.createElement('img');
   // existing DAM asset when there is one, otherwise the absolute source URL
