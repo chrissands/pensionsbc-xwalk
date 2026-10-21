@@ -2,7 +2,8 @@
 /* global WebImporter */
 
 /**
- * Shared footer (language-masters/en/footer) from the www.pensionsbc.ca footer:
+ * Corporate footer (corporate/en/footer, LOCAL to the corporate live copy) from the
+ * www.pensionsbc.ca footer:
  * BC Pension Corporation + BCI logo links (external) and the Copyright /
  * Disclaimer / Privacy links, which become relative /en/ links to the shared
  * legal pages (migrated into language-masters/en).
@@ -16,12 +17,13 @@ const LEGAL_PATHS = {
   'https://www.bcpensioncorp.ca/privacy': '/en/privacy',
 };
 
-function logoLink(document, a) {
+function logoLink(document, a, base) {
   const img = a.querySelector('img');
   const alt = img.getAttribute('alt') || '';
   const imageP = document.createElement('p');
   const image = document.createElement('img');
-  image.src = img.getAttribute('src');
+  // absolute, so the AEM push can fetch the logo into the DAM
+  image.src = new URL(img.getAttribute('src'), base).href;
   image.alt = alt;
   imageP.append(image);
   const linkP = document.createElement('p');
@@ -34,14 +36,15 @@ function logoLink(document, a) {
 }
 
 export default {
-  transform: ({ document }) => {
+  transform: ({ document, url, params }) => {
+    const base = params?.originalURL || url;
     const footers = [...document.querySelectorAll('footer.footer_links')];
     const logos = footers.find((f) => f.querySelector('img'));
     const legal = footers.find((f) => f.querySelector('ul a'));
     if (!logos || !legal) throw new Error('Footer logos or legal links not found in source');
 
     const main = document.createElement('div');
-    logos.querySelectorAll('a[href]').forEach((a) => main.append(...logoLink(document, a)));
+    logos.querySelectorAll('a[href]').forEach((a) => main.append(...logoLink(document, a, base)));
 
     const ul = document.createElement('ul');
     legal.querySelectorAll('li > a[href]').forEach((a) => {
@@ -58,7 +61,7 @@ export default {
 
     return [{
       element: main,
-      path: '/language-masters/en/footer',
+      path: '/corporate/en/footer',
       report: { title: 'footer', logos: logos.querySelectorAll('img').length, links: ul.children.length },
     }];
   },

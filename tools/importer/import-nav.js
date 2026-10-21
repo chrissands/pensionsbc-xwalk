@@ -1,27 +1,21 @@
 /* eslint-disable */
 /* global WebImporter */
 
+import { productionHref } from './plan-sites.js';
+
 /**
- * Shared nav (language-masters/en/nav) from the www.pensionsbc.ca plan switcher
- * (header nav.global-navigation). Boilerplate nav structure: brand | sections | tools.
- * - brand: home link (/en/) labelled with the source og:site_name; each live copy
- *   can override it with its own brand
+ * Corporate nav (corporate/en/nav, LOCAL to the corporate live copy) from the
+ * www.pensionsbc.ca plan switcher (header nav.global-navigation).
+ * Nav structure shared by all six sites: brand | sections | tools.
+ * - brand: home link (/en/) labelled with the source og:site_name
  * - sections: plan switcher links, link text = source link title (the source shows
- *   logo artwork only); plan links point at the new plan EDS sites
- * - tools: empty in the blueprint (corporate has no tools); kept as a named section so
- *   plan navs (authored locally per live copy) reuse the same brand | sections | tools layout
+ *   logo artwork only); plan links use the production plan hostnames (see plan-sites.js),
+ *   My Account uses the production member portal
+ * - tools: none on corporate; kept as a named, empty section so every site's nav has the
+ *   same brand | sections | tools layout
  * Each section carries a Section Metadata "name" so authors see Brand / Sections / Tools
  * in the Universal Editor content tree.
  */
-const PLAN_SITE_BY_HREF = {
-  '/web/college': 'college',
-  'https://mppmaint1.pensionsbc.ca': 'mpp',
-  '/web/public-service': 'pspp',
-  '/web/teachers': 'tpp',
-  'https://worksafemaint1.pensionsbc.ca': 'worksafe',
-};
-
-const planSiteUrl = (site) => `https://main--pensionsbc-${site}--chrissands.aem.live/en/`;
 
 function sectionName(document, name) {
   return WebImporter.Blocks.createBlock(document, { name: 'Section Metadata', cells: { name } });
@@ -39,7 +33,8 @@ function brandSection(document) {
 }
 
 export default {
-  transform: ({ document }) => {
+  transform: ({ document, url, params }) => {
+    const base = params?.originalURL || url;
     const source = document.querySelector('nav.global-navigation');
     if (!source) throw new Error('Plan switcher (nav.global-navigation) not found in source');
 
@@ -53,11 +48,9 @@ export default {
     // sections: plan switcher
     const ul = document.createElement('ul');
     source.querySelectorAll('li > a[href]').forEach((a) => {
-      const href = a.getAttribute('href').replace(/\/$/, '');
-      const site = PLAN_SITE_BY_HREF[href];
       const li = document.createElement('li');
       const link = document.createElement('a');
-      link.href = site ? planSiteUrl(site) : a.getAttribute('href');
+      link.href = productionHref(a.getAttribute('href'), base);
       link.textContent = (a.getAttribute('title') || a.textContent).trim();
       li.append(link);
       ul.append(li);
@@ -71,7 +64,7 @@ export default {
 
     return [{
       element: main,
-      path: '/language-masters/en/nav',
+      path: '/corporate/en/nav',
       report: { title: 'nav', links: ul.children.length },
     }];
   },

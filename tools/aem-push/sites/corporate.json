@@ -1,0 +1,16 @@
+{
+  "site": "corporate",
+  "edsSite": "pensionsbc-xwalk",
+  "sourceHost": "https://www.pensionsbc.ca/",
+  "pages": [
+    { "content": "corporate/en/index", "scope": "local", "note": "Homepage (language root of the corporate live copy)" },
+    { "content": "corporate/en/nav", "title": "Navigation", "scope": "local", "note": "Corporate header: brand, plan switcher, My Account" },
+    { "content": "corporate/en/footer", "title": "Footer", "scope": "local", "note": "Corporate footer: BC Pension Corporation and BCI logos, legal links" }
+  ],
+  "inherited": [
+    { "aem": "corporate/en/copyright", "from": "language-masters/en/copyright" },
+    { "aem": "corporate/en/disclaimer", "from": "language-masters/en/disclaimer" },
+    { "aem": "corporate/en/privacy", "from": "language-masters/en/privacy" },
+    { "aem": "corporate/en/placeholders", "from": "language-masters/en/placeholders" }
+  ]
+}

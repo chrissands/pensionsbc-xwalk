@@ -5,26 +5,11 @@
  * cards -> classes; item model: card -> image, imageAlt, text).
  * Source: .plans > .plan_card (img logo + .plan_names > p > a).
  * One row per card: [logo image (alt kept) | links, each in its own <p>]
- * Member-site links point at the plan's new Edge Delivery site (cross-site, absolute);
+ * Member-site links point at the plan's production hostname + /en/ (see plan-sites.js);
  * employer portal links stay as in the source.
  */
-const PLAN_SITE_BY_HOST = {
-  'college.pensionsbc.ca': 'college',
-  'mpp.pensionsbc.ca': 'mpp',
-  'pspp.pensionsbc.ca': 'pspp',
-  'tpp.pensionsbc.ca': 'tpp',
-  'worksafe.pensionsbc.ca': 'worksafe',
-};
+import { productionHref } from '../plan-sites.js';
 
-function targetHref(href) {
-  try {
-    const site = PLAN_SITE_BY_HOST[new URL(href).hostname.toLowerCase()];
-    if (site) return `https://main--pensionsbc-${site}--chrissands.aem.live/en/`;
-  } catch (e) {
-    // relative or malformed: keep as-is
-  }
-  return href;
-}
 export default function parse(element, { document }) {
   const cells = [];
 
@@ -50,7 +35,7 @@ export default function parse(element, { document }) {
       links.forEach((link) => {
         const p = document.createElement('p');
         const a = document.createElement('a');
-        a.href = targetHref(link.getAttribute('href'));
+        a.href = productionHref(link.getAttribute('href'));
         const title = link.getAttribute('title');
         if (title) a.setAttribute('title', title);
         a.textContent = link.textContent.trim();

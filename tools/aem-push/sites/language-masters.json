@@ -1,0 +1,10 @@
+{
+  "site": "language-masters",
+  "sourceHost": "https://www.bcpensioncorp.ca/",
+  "pages": [
+    { "content": "language-masters/en/copyright", "scope": "shared", "note": "Shared legal page, inherited by every site" },
+    { "content": "language-masters/en/disclaimer", "scope": "shared", "note": "Shared legal page, inherited by every site" },
+    { "content": "language-masters/en/privacy", "scope": "shared", "note": "Shared legal page, inherited by every site" }
+  ],
+  "inherited": []
+}
