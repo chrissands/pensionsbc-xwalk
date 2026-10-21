@@ -5,6 +5,7 @@ import heroSplitParser from "./parsers/hero-split.js";
 import cardsLogoLinksParser from "./parsers/cards-logo-links.js";
 import pensionsbcCleanupTransformer from "./transformers/pensionsbc-cleanup.js";
 import pensionsbcSectionsTransformer from "./transformers/pensionsbc-sections.js";
+import { useDamImages } from "./dam-assets.js";
 
 const PAGE_TEMPLATE = {
   "name": "home",
@@ -107,6 +108,8 @@ export default {
     WebImporter.rules.createMetadata(main, document);
     WebImporter.rules.transformBackgroundImages(main, document);
     WebImporter.rules.adjustImageUrls(main, url, params.originalURL);
+    // images already in AEM Assets are referenced by DAM path, so the push uploads nothing
+    useDamImages(main, params.originalURL);
 
     const rawPath = new URL(params.originalURL).pathname
       .replace(/\/$/, "")
