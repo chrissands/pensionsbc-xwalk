@@ -1,6 +1,8 @@
 /* eslint-disable */
 /* global WebImporter */
 
+import { damSrc } from './dam-assets.js';
+
 /**
  * Corporate footer (corporate/en/footer, LOCAL to the corporate live copy) from the
  * www.pensionsbc.ca footer:
@@ -22,8 +24,8 @@ function logoLink(document, a, base) {
   const alt = img.getAttribute('alt') || '';
   const imageP = document.createElement('p');
   const image = document.createElement('img');
-  // absolute, so the AEM push can fetch the logo into the DAM
-  image.src = new URL(img.getAttribute('src'), base).href;
+  // existing DAM asset when there is one, otherwise the absolute source URL
+  image.src = damSrc(new URL(img.getAttribute('src'), base).href, base);
   image.alt = alt;
   imageP.append(image);
   const linkP = document.createElement('p');

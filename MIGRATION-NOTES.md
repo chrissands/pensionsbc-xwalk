@@ -40,6 +40,13 @@ represent. These notes are written so a partner can repeat the work in their own
 - English only. French comes later through AEM translation.
 - DAM: `/content/dam/pensionsbc-base/<site>/` for a site's own images, `/content/dam/pensionsbc-base/shared/`
   for images used on every site (BC Pension Corporation and BCI logos). Names are readable kebab-case.
+- **Images are uploaded to AEM Assets first, then referenced by DAM path.** `tools/importer/dam-assets.js`
+  maps each source image (by its file name) to its DAM path, and the importers write that path into the
+  page. A push then only links to existing, processed assets. When the push button uploads images itself,
+  it names them after the source URL, previews before AEM has processed them, drops the alt text, and
+  once put the wrong logo in a footer slot. For a new site: upload its images to
+  `/content/dam/pensionsbc-base/<site>/` (drag and drop in AEM Assets), add them to `dam-assets.js`,
+  re-import.
 
 ## Links
 
@@ -151,10 +158,10 @@ Each phase stops for approval.
 
 Blueprint legal pages are imported from bcpensioncorp.ca (`tools/aem-push/sites/language-masters.json`).
 
-Status (2026-10-21): homepage, nav and footer pushed with the push button and previewed. The text and
-links are correct. Images were not rendering yet: the homepage images showed as links and the footer
-logos as `about:error`, likely because the assets had not been processed when the pages were previewed.
-Legal pages and placeholders not yet rolled out to `corporate/en`.
+Status (2026-10-21): homepage, nav and footer pushed with the push button. Images now reference the
+assets installed by the first corporate package (`corporate/*.jpg`, `shared/*`), with alt text. After
+the next push, preview `/en/`, `/en/nav` and `/en/footer`. Legal pages and placeholders not yet rolled
+out to `corporate/en`.
 
 Known gaps:
 - Source hero subtitle is an `h2`; it is authored as a paragraph.
