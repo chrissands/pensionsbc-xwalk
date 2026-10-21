@@ -83,6 +83,39 @@ function buildAutoBlocks() {
   }
 }
 
+// The demo sites are served from aem.page only. Content links to the pensionsbc.ca site each
+// demo site represents (Edge Delivery turns aem.page links in content into relative paths), and
+// those links are pointed at the matching demo site here.
+const PLAN_SITES = {
+  'www.pensionsbc.ca': 'pensionsbc-xwalk',
+  'pensionsbc.ca': 'pensionsbc-xwalk',
+  'college.pensionsbc.ca': 'pensionsbc-college',
+  'mpp.pensionsbc.ca': 'pensionsbc-mpp',
+  'pspp.pensionsbc.ca': 'pensionsbc-pspp',
+  'tpp.pensionsbc.ca': 'pensionsbc-tpp',
+  'worksafe.pensionsbc.ca': 'pensionsbc-worksafe',
+};
+const EDS_HOST = /^([a-z0-9-]+)--([a-z0-9-]+)--([a-z0-9-]+)\.(aem\.page|aem\.live)$/;
+
+function rewritePlanLinks(main) {
+  const current = window.location.hostname.match(EDS_HOST);
+  if (!current) return;
+  const [, ref, , owner] = current;
+  main.querySelectorAll('a[href]').forEach((link) => {
+    let url;
+    try {
+      url = new URL(link.href);
+    } catch (e) {
+      return;
+    }
+    const site = PLAN_SITES[url.hostname];
+    if (!site) return;
+    url.protocol = 'https:';
+    url.host = `${ref}--${site}--${owner}.aem.page`;
+    link.href = url.href;
+  });
+}
+
 function a11yLinks(main) {
   const links = main.querySelectorAll('a');
   links.forEach((link) => {
@@ -107,6 +140,7 @@ export function decorateMain(main) {
   buildAutoBlocks(main);
   decorateSections(main);
   decorateBlocks(main);
+  rewritePlanLinks(main);
   // add aria-label to links
   a11yLinks(main);
 }
