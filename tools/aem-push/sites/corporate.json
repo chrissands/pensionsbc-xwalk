@@ -4,7 +4,7 @@
   "sourceHost": "https://www.pensionsbc.ca/",
   "pages": [
     { "content": "corporate/en/index", "scope": "local", "note": "Homepage, served at /en/. Cancel inheritance on this page before the first install." },
-    { "content": "corporate/en/nav", "title": "Navigation", "scope": "local", "note": "Corporate header: brand, plan switcher, My Account" },
+    { "content": "corporate/en/nav", "title": "Navigation", "scope": "local", "note": "Corporate header: empty Brand / Sections / Tools (the source shows no navigation)" },
     { "content": "corporate/en/footer", "title": "Footer", "scope": "local", "note": "Corporate footer: BC Pension Corporation and BCI logos, legal links" }
   ],
   "assets": {
