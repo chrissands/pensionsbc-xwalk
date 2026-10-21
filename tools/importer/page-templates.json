@@ -1,0 +1,70 @@
+{
+  "templates": [
+    {
+      "name": "home",
+      "urls": [
+        "https://www.pensionsbc.ca/"
+      ],
+      "representativeUrl": "https://www.pensionsbc.ca/",
+      "description": "PensionsBC homepage: hero band with banner image, plan-site selector cards",
+      "blocks": [
+        {
+          "name": "hero-split",
+          "instances": [
+            ".lfr-layout-structure-item-60ee7d92-a4b1-4dec-6ffa-9af99f64b9ba"
+          ]
+        },
+        {
+          "name": "cards-logo-links",
+          "instances": [
+            ".plans"
+          ]
+        }
+      ],
+      "urlPattern": "/",
+      "sections": [
+        {
+          "id": "section-1",
+          "name": "Hero band",
+          "selector": [
+            ".lfr-layout-structure-item-60ee7d92-a4b1-4dec-6ffa-9af99f64b9ba"
+          ],
+          "style": null,
+          "blocks": [
+            "hero-split"
+          ],
+          "defaultContent": []
+        },
+        {
+          "id": "section-2",
+          "name": "Plan sites",
+          "selector": [
+            ".lfr-layout-structure-item-bf63d179-50ac-3208-da66-41d6860cec3d"
+          ],
+          "style": null,
+          "blocks": [
+            "cards-logo-links"
+          ],
+          "defaultContent": [
+            "#portlet_com_liferay_journal_content_web_portlet_JournalContentPortlet_INSTANCE_cPuve9sBjqKo h2"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "legal",
+      "urls": [
+        "https://www.bcpensioncorp.ca/copyright",
+        "https://www.bcpensioncorp.ca/disclaimer",
+        "https://www.bcpensioncorp.ca/privacy"
+      ],
+      "representativeUrl": "https://www.bcpensioncorp.ca/copyright",
+      "description": "Shared legal pages (copyright, disclaimer, privacy) from bcpensioncorp.ca; default content only, placed in language-masters/en",
+      "blocks": [],
+      "sections": []
+    }
+  ],
+  "metadata": {
+    "projectType": "xwalk"
+  }
+}

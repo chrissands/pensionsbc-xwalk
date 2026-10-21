@@ -35,3 +35,106 @@
     padding: 40px 32px;
   }
 }
+
+/* rich text converted to JCR can wrap the heading in a paragraph (<p><h1>), which
+   renders empty paragraphs around it */
+.hero p:empty {
+  display: none;
+}
+
+/* split style: text on a tinted band beside an inline image (values from www.pensionsbc.ca) */
+.hero-container .hero-wrapper:has(> .hero.split) {
+  box-sizing: border-box;
+  max-width: var(--content-max-width);
+  padding: 0 var(--content-padding);
+}
+
+.hero.split {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  position: static;
+  min-height: 0;
+  padding: 0;
+}
+
+.hero.split > div {
+  box-sizing: border-box;
+  width: 100%;
+}
+
+/* text row: light band, 18rem tall, content vertically centred */
+.hero.split > div:not(:has(picture)) {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  order: -1;
+  min-height: 18rem;
+  background-color: var(--light-color);
+
+  /* paint the band full-bleed without horizontal scroll */
+  box-shadow: 0 0 0 100vmax var(--light-color);
+  clip-path: inset(0 -100vmax);
+}
+
+.hero.split h1 {
+  max-width: none;
+  margin: 0 0 var(--heading-xxl-margin-bottom);
+  color: var(--heading-accent-color);
+}
+
+.hero.split > div:not(:has(picture)) p {
+  margin: 0 0 var(--heading-margin-bottom);
+  color: var(--heading-color);
+  font-family: var(--heading-font-family);
+  font-size: var(--heading-font-size-xl);
+  font-weight: var(--font-weight-light);
+  line-height: var(--line-height-heading);
+}
+
+/* image row: hidden on small screens (as on the source), above the band otherwise */
+.hero.split > div:has(picture) {
+  display: none;
+  position: relative;
+}
+
+.hero.split picture {
+  display: block;
+  position: static;
+  z-index: auto;
+}
+
+.hero.split img {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin-top: var(--space-xl);
+  border-radius: var(--radius-m);
+  object-fit: initial;
+}
+
+@media (width > 780px) {
+  .hero.split {
+    flex-direction: row;
+  }
+
+  .hero.split > div {
+    flex: 0 0 50%;
+    max-width: 50%;
+    min-width: 0;
+  }
+
+  .hero.split > div:not(:has(picture)) {
+    height: 18rem;
+  }
+
+  .hero.split > div:has(picture) {
+    display: block;
+    padding-left: 2.5635%;
+  }
+
+  .hero.split:not(:has(picture)) > div {
+    flex-basis: 100%;
+    max-width: 100%;
+  }
+}

@@ -5,6 +5,15 @@ import { loadFragment } from '../fragment/fragment.js';
 // media query match that indicates mobile/tablet width
 const isDesktop = window.matchMedia('(min-width: 900px)');
 
+// UI labels come from the language's placeholders sheet (<lang root>/placeholders.json)
+// so they are translated with the content; no language strings in code
+let labels = {};
+
+function setLabel(el, attr, text) {
+  if (text) el.setAttribute(attr, text);
+  else el.removeAttribute(attr);
+}
+
 function closeOnEscape(e) {
   if (e.code === 'Escape') {
     const nav = document.getElementById('nav');
@@ -75,7 +84,7 @@ function toggleMenu(nav, navSections, forceExpanded = null) {
   document.body.style.overflowY = (expanded || isDesktop.matches) ? '' : 'hidden';
   nav.setAttribute('aria-expanded', expanded ? 'false' : 'true');
   toggleAllNavSections(navSections, expanded || isDesktop.matches ? 'false' : 'true');
-  button.setAttribute('aria-label', expanded ? 'Open navigation' : 'Close navigation');
+  setLabel(button, 'aria-label', expanded ? labels.navOpen : labels.navClose);
   // enable nav dropdown keyboard accessibility
   const navDrops = navSections.querySelectorAll('.nav-drop');
   if (isDesktop.matches) {
@@ -131,10 +140,7 @@ async function buildBreadcrumbsFromNavTree(nav, currentUrl) {
     crumbs.unshift({ title: getMetadata('og:title'), url: currentUrl });
   }
 
-  const placeholders = await fetchPlaceholders();
-  const homePlaceholder = placeholders.breadcrumbsHomeLabel || 'Home';
-
-  crumbs.unshift({ title: homePlaceholder, url: homeUrl });
+  crumbs.unshift({ title: labels.breadcrumbsHomeLabel || '', url: homeUrl });
 
   // last link is current page and should not be linked
   if (crumbs.length > 1) {
@@ -180,7 +186,11 @@ export default async function decorate(block) {
   const lang = window.location.pathname.split('/')[1];
   const root = /^[a-z]{2}$/.test(lang) ? `/${lang}` : '';
   const navPath = navMeta ? new URL(navMeta, window.location).pathname : `${root}/nav`;
-  const fragment = await loadFragment(navPath);
+  const [fragment, placeholders] = await Promise.all([
+    loadFragment(navPath),
+    fetchPlaceholders(root || 'default'),
+  ]);
+  labels = placeholders || {};
 
   // decorate nav DOM
   block.textContent = '';
@@ -223,16 +233,17 @@ export default async function decorate(block) {
   if (navTools) {
     const search = navTools.querySelector('a[href*="search"]');
     if (search && search.textContent === '') {
-      search.setAttribute('aria-label', 'Search');
+      setLabel(search, 'aria-label', labels.search);
     }
   }
 
   // hamburger for mobile
   const hamburger = document.createElement('div');
   hamburger.classList.add('nav-hamburger');
-  hamburger.innerHTML = `<button type="button" aria-controls="nav" aria-label="Open navigation">
+  hamburger.innerHTML = `<button type="button" aria-controls="nav">
       <span class="nav-hamburger-icon"></span>
     </button>`;
+  setLabel(hamburger.querySelector('button'), 'aria-label', labels.navOpen);
   hamburger.addEventListener('click', () => toggleMenu(nav, navSections));
   nav.prepend(hamburger);
   nav.setAttribute('aria-expanded', 'false');
@@ -244,6 +255,18 @@ export default async function decorate(block) {
   navWrapper.className = 'nav-wrapper';
   navWrapper.append(nav);
   block.append(navWrapper);
+
+  // skip link (WCAG 2.4.1): first focusable element, jumps to the main content
+  const main = document.querySelector('main');
+  if (main && labels.skipToContent) {
+    if (!main.id) main.id = 'main';
+    main.setAttribute('tabindex', '-1');
+    const skip = document.createElement('a');
+    skip.className = 'skip-link';
+    skip.href = `#${main.id}`;
+    skip.textContent = labels.skipToContent;
+    block.prepend(skip);
+  }
 
   if (getMetadata('breadcrumbs').toLowerCase() === 'true') {
     navWrapper.append(await buildBreadcrumbs());
