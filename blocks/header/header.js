@@ -176,7 +176,10 @@ async function buildBreadcrumbs() {
 export default async function decorate(block) {
   // load nav as fragment
   const navMeta = getMetadata('nav');
-  const navPath = navMeta ? new URL(navMeta, window.location).pathname : '/nav';
+  // const navPath = navMeta ? new URL(navMeta, window.location).pathname : '/nav';
+  const lang = window.location.pathname.split('/')[1];
+  const root = /^[a-z]{2}$/.test(lang) ? `/${lang}` : '';
+  const navPath = navMeta ? new URL(navMeta, window.location).pathname : `${root}/nav`;
   const fragment = await loadFragment(navPath);
 
   // decorate nav DOM
