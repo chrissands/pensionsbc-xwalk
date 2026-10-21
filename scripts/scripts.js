@@ -83,8 +83,9 @@ function buildAutoBlocks() {
   }
 }
 
-// Content links to the production plan hosts; on aem.page / aem.live they are pointed at
-// the matching Edge Delivery site so cross-site navigation stays within the same tier.
+// The demo sites are served from aem.page only. Content links to the pensionsbc.ca site each
+// demo site represents (Edge Delivery turns aem.page links in content into relative paths), and
+// those links are pointed at the matching demo site here.
 const PLAN_SITES = {
   'www.pensionsbc.ca': 'pensionsbc-xwalk',
   'pensionsbc.ca': 'pensionsbc-xwalk',
@@ -99,7 +100,7 @@ const EDS_HOST = /^([a-z0-9-]+)--([a-z0-9-]+)--([a-z0-9-]+)\.(aem\.page|aem\.liv
 function rewritePlanLinks(main) {
   const current = window.location.hostname.match(EDS_HOST);
   if (!current) return;
-  const [, ref, , owner, tier] = current;
+  const [, ref, , owner] = current;
   main.querySelectorAll('a[href]').forEach((link) => {
     let url;
     try {
@@ -110,7 +111,7 @@ function rewritePlanLinks(main) {
     const site = PLAN_SITES[url.hostname];
     if (!site) return;
     url.protocol = 'https:';
-    url.host = `${ref}--${site}--${owner}.${tier}`;
+    url.host = `${ref}--${site}--${owner}.aem.page`;
     link.href = url.href;
   });
 }
