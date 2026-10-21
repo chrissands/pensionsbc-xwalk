@@ -7,7 +7,8 @@
  * - brand: home link (/en/) labelled with the source og:site_name; each live copy
  *   can override it with its own brand
  * - sections: plan switcher links, link text = source link title (the source shows
- *   logo artwork only); plan links point at the new plan EDS sites
+ *   logo artwork only); plan links use the plans' production hostnames with /en/
+ *   (scripts.js points them at the plan Edge Delivery sites on aem.page / aem.live)
  * - tools: empty in the blueprint (corporate has no tools); kept as a named section so
  *   plan navs (authored locally per live copy) reuse the same brand | sections | tools layout
  * Each section carries a Section Metadata "name" so authors see Brand / Sections / Tools
@@ -21,7 +22,7 @@ const PLAN_SITE_BY_HREF = {
   'https://worksafemaint1.pensionsbc.ca': 'worksafe',
 };
 
-const planSiteUrl = (site) => `https://main--pensionsbc-${site}--chrissands.aem.live/en/`;
+const planSiteUrl = (site) => `https://${site}.pensionsbc.ca/en/`;
 
 function sectionName(document, name) {
   return WebImporter.Blocks.createBlock(document, { name: 'Section Metadata', cells: { name } });

@@ -95,12 +95,48 @@ function a11yLinks(main) {
   });
 }
 
+/*
+ * Cross-site plan links are authored with the plans' production hostnames. Edge Delivery
+ * rewrites links to *.aem.page / *.aem.live hosts into relative paths, so they cannot be
+ * authored directly; on those hosts the production hostnames are pointed at each plan's
+ * Edge Delivery site instead (until the production domains are cut over).
+ */
+const PLAN_SITE_HOSTS = {
+  'college.pensionsbc.ca': 'main--pensionsbc-college--chrissands.aem.live',
+  'mpp.pensionsbc.ca': 'main--pensionsbc-mpp--chrissands.aem.live',
+  'pspp.pensionsbc.ca': 'main--pensionsbc-pspp--chrissands.aem.live',
+  'tpp.pensionsbc.ca': 'main--pensionsbc-tpp--chrissands.aem.live',
+  'worksafe.pensionsbc.ca': 'main--pensionsbc-worksafe--chrissands.aem.live',
+};
+
+/**
+ * Points production plan-site links at the plans' Edge Delivery sites when the page is
+ * served from aem.page / aem.live.
+ * @param {Element} element The container element
+ */
+export function rewritePlanSiteLinks(element) {
+  if (!/\.aem\.(page|live)$/.test(window.location.hostname)) return;
+  element.querySelectorAll('a[href]').forEach((a) => {
+    let url;
+    try {
+      url = new URL(a.href);
+    } catch (e) {
+      return;
+    }
+    const target = PLAN_SITE_HOSTS[url.hostname.toLowerCase()];
+    if (target) {
+      url.hostname = target;
+      a.href = url.href;
+    }
+  });
+}
+
 /**
  * Decorates the main element.
  * @param {Element} main The main element
  */
-// eslint-disable-next-line import/prefer-default-export
 export function decorateMain(main) {
+  rewritePlanSiteLinks(main);
   // hopefully forward compatible button decoration
   decorateButtons(main);
   decorateIcons(main);

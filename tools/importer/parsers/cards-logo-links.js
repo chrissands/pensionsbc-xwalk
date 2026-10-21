@@ -5,8 +5,9 @@
  * cards -> classes; item model: card -> image, imageAlt, text).
  * Source: .plans > .plan_card (img logo + .plan_names > p > a).
  * One row per card: [logo image (alt kept) | links, each in its own <p>]
- * Member-site links point at the plan's new Edge Delivery site (cross-site, absolute);
- * employer portal links stay as in the source.
+ * Member-site links use the plan's production hostname with the /en/ language root
+ * (cross-site, absolute; scripts.js points them at the plan's Edge Delivery site on
+ * aem.page / aem.live). Employer portal links stay as in the source.
  */
 const PLAN_SITE_BY_HOST = {
   'college.pensionsbc.ca': 'college',
@@ -19,7 +20,7 @@ const PLAN_SITE_BY_HOST = {
 function targetHref(href) {
   try {
     const site = PLAN_SITE_BY_HOST[new URL(href).hostname.toLowerCase()];
-    if (site) return `https://main--pensionsbc-${site}--chrissands.aem.live/en/`;
+    if (site) return `https://${site}.pensionsbc.ca/en/`;
   } catch (e) {
     // relative or malformed: keep as-is
   }
