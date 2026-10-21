@@ -4,8 +4,8 @@
 import { damSrc } from './dam-assets.js';
 
 /**
- * Corporate footer (corporate/en/footer, LOCAL to the corporate live copy) from the
- * www.pensionsbc.ca footer:
+ * Corporate footer (corporate/en/footer, LOCAL to the corporate live copy, and the blueprint
+ * default language-masters/en/footer, written by import-blueprint-footer.js) from the www.pensionsbc.ca footer:
  * BC Pension Corporation + BCI logo links (external) and the Copyright /
  * Disclaimer / Privacy links, which become relative /en/ links to the shared
  * legal pages (migrated into language-masters/en).

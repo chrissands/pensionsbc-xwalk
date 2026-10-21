@@ -2,7 +2,8 @@
 /* global WebImporter */
 
 /**
- * Corporate nav (corporate/en/nav, LOCAL to the corporate live copy).
+ * Corporate nav (corporate/en/nav, LOCAL to the corporate live copy), also the blueprint
+ * default nav (language-masters/en/nav, written by import-blueprint-nav.js).
  * www.pensionsbc.ca shows no navigation in its header (the plan switcher in its markup is
  * not displayed), so the corporate nav is the shared brand | sections | tools structure
  * with all three sections empty. Plan sites author their own links in the same structure.
