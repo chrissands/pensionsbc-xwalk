@@ -103,6 +103,35 @@ Install packages without the script: upload `tools/aem-push/build/<site>/*.zip` 
   Re-running `aem:push` restores it.
 - md2jcr wraps headings in rich text in a paragraph; the push unwraps `<p><hN>..</hN></p>`.
 
+## Runbook: migrating the next site
+
+Each plan site is migrated the same way, in its own session, after the previous site's PRs are merged.
+Each phase stops for approval.
+
+1. **Branch:** `migration/<site>` from an up-to-date `main`. Commit as the repo owner.
+2. **Plan:**
+   - 15 pages, homepage included, plus nav and footer; take them from the source nav and sitemap.
+   - Mark each page local or shared. Legal pages are always shared; never copy them into the site.
+   - List blocks to reuse or add. New blocks get generic names so all six sites can use them, with
+     an xwalk model in `blocks/<block>/_<block>.json`.
+   - List the site's own nav and footer links.
+3. **Nav and footer:**
+   - Write `tools/importer/import-<site>-nav.js` and `import-<site>-footer.js`, writing to `/<site>/en/nav`
+     and `/<site>/en/footer`.
+   - Use the same Brand | Sections | Tools structure as `import-nav.js`; footer is one section.
+   - Cross-site links go through `plan-sites.js` (`productionHref`).
+4. **Pages:**
+   - Homepage first, then batches of up to 5. Output paths are `/<site>/en/...`, homepage
+     `/<site>/en/index`.
+   - Report fidelity gaps and anything not imported.
+5. **Deliver:**
+   - Add `tools/aem-push/sites/<site>.json`, run `npm run aem:build -- <site>` and check
+     `placement/<site>.md`.
+   - The site owner runs `npm run aem:push -- <site>`, rolls out the shared pages to `<site>/en`,
+     then previews.
+6. **PR:** summarise the changes and call out anything touching shared blocks, scripts or styles. Update
+   the site's section below.
+
 ## Per-site status
 
 ### Corporate (`pensionsbc-xwalk`)
