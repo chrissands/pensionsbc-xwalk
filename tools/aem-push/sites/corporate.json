@@ -3,10 +3,14 @@
   "edsSite": "pensionsbc-xwalk",
   "sourceHost": "https://www.pensionsbc.ca/",
   "pages": [
-    { "content": "corporate/en/index", "scope": "local", "note": "Homepage (language root of the corporate live copy)" },
+    { "content": "corporate/en/index", "scope": "local", "note": "Homepage, served at /en/. Cancel inheritance on this page before the first install." },
     { "content": "corporate/en/nav", "title": "Navigation", "scope": "local", "note": "Corporate header: brand, plan switcher, My Account" },
     { "content": "corporate/en/footer", "title": "Footer", "scope": "local", "note": "Corporate footer: BC Pension Corporation and BCI logos, legal links" }
   ],
+  "assets": {
+    "logo-pensions-corp250x40.jpg": "/content/dam/pensionsbc-base/shared/bc-pension-corporation-logo.jpg",
+    "img-bci-logo.png": "/content/dam/pensionsbc-base/shared/bci-logo.png"
+  },
   "inherited": [
     { "aem": "corporate/en/copyright", "from": "language-masters/en/copyright" },
     { "aem": "corporate/en/disclaimer", "from": "language-masters/en/disclaimer" },
