@@ -11,7 +11,9 @@
     "build:json:models": "merge-json-cli -i \"models/_component-models.json\" -o \"component-models.json\"",
     "build:json:definitions": "merge-json-cli -i \"models/_component-definition.json\" -o \"component-definition.json\"",
     "build:json:filters": "merge-json-cli -i \"models/_component-filters.json\" -o \"component-filters.json\"",
-    "prepare": "husky"
+    "prepare": "husky",
+    "aem:build": "node tools/aem-push/aem-push.mjs build",
+    "aem:push": "node tools/aem-push/aem-push.mjs push"
   },
   "repository": {
     "type": "git",
@@ -24,6 +26,8 @@
   },
   "homepage": "https://github.com/adobe/aem-block-collection#readme",
   "devDependencies": {
+    "@adobe/helix-html2md": "1.1.1",
+    "@adobe/helix-md2jcr": "1.5.10",
     "@babel/core": "7.23.7",
     "@babel/eslint-parser": "7.28.0",
     "chai": "5.0.0",
@@ -33,6 +37,7 @@
     "eslint-plugin-json": "^3.1.0",
     "eslint-plugin-xwalk": "github:adobe-rnd/eslint-plugin-xwalk#v0.1.0",
     "husky": "9.1.1",
+    "jszip": "3.10.2",
     "merge-json-cli": "^1.0.4",
     "npm-run-all": "^4.1.5",
     "stylelint": "16.23.1",

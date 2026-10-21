@@ -21,4 +21,15 @@ module.exports = {
     // page-metadata is page properties, not a block table: allow the topic/audience fields
     'xwalk/max-cells': ['error', { 'page-metadata': 5 }],
   },
+  overrides: [{
+    // Node command-line tooling, not site code
+    files: ['tools/aem-push/**/*.mjs'],
+    env: { browser: false, node: true },
+    rules: {
+      'no-console': 'off',
+      'no-restricted-syntax': 'off',
+      'no-await-in-loop': 'off',
+      'import/no-extraneous-dependencies': ['error', { devDependencies: true }],
+    },
+  }],
 };

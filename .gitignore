@@ -9,3 +9,10 @@ helix-importer-ui
 .idea
 localhost.pem
 localhost-key.pem
+
+# generated AEM packages and image cache
+tools/aem-push/build/
+
+# generated import bundles and reports
+tools/importer/*.bundle.js
+tools/importer/reports/
