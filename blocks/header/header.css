@@ -503,8 +503,23 @@ header .breadcrumbs ol li[aria-current] {
   header .breadcrumbs {
     display: block;
     max-width: 1264px;
+    min-height: 0;
     padding: 0 32px;
   }
+}
+
+/* plan sites: a slim bar under the nav, aligned with the content (values from the source) */
+body.theme-plan header .breadcrumbs {
+  box-sizing: border-box;
+  max-width: var(--content-max-width);
+  height: auto;
+  padding: var(--space-xs) var(--content-padding);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+body.theme-plan header .breadcrumbs ol li:not(:last-child)::after {
+  content: '\203A';
 }
 
 

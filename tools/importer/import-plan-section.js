@@ -169,7 +169,8 @@ export default {
     // metadata: the source title repeats the site name ("About us - College - College")
     const planName = planNameOf(document, site);
     const pageName = document.title.split(' - ')[0].trim();
-    const meta = { Title: planName ? `${pageName} - ${planName}` : pageName, Breadcrumbs: 'true' };
+    // metadata keys must match the page model field names (lower case) to reach AEM
+    const meta = { Title: planName ? `${pageName} - ${planName}` : pageName, breadcrumbs: 'true' };
     const description = document.querySelector('meta[name="description"]')?.getAttribute('content');
     if (description) meta.Description = description;
     main.append(document.createElement('hr'));

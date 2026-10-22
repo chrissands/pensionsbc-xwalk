@@ -86,8 +86,12 @@ represent. These notes are written so a partner can repeat the work in their own
     course / video / article cards; the call-to-action link covers the card).
   - Section styles: `sidebar` (main column + 1/3 sidebar), `quick-links` (heading + links in a row),
     `accent-heading` (heading in the site accent with a rule above).
-  - Section pages get breadcrumbs (page metadata `breadcrumbs: true`), and the nav marks the current
-    section with an underline.
+  - Section pages get breadcrumbs: page property **Show breadcrumbs** (`breadcrumbs`, in the page model),
+    set by the section importer; the trail comes from the nav, its home label from the placeholders
+    sheet (`breadcrumbs-home-label`) or else the site's logo text. The nav marks the current section
+    with an underline.
+  - Importer metadata keys must match page model field names exactly (lower case, e.g. `breadcrumbs`);
+    md2jcr drops any other key, so it never reaches AEM.
   - Cards: `logos` (corporate), `tiles` (plan homepages: bordered tiles in two masonry columns, filled
     down the left column then the right). Each card has an optional **Card style** field; `highlight`
     is the yellow notice tile. In tiles, a paragraph holding only a YouTube link becomes an embedded
