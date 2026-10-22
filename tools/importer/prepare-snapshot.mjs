@@ -15,7 +15,7 @@
  *   written to tools/aem-assets/<site>-new/<folder>/ for upload (tools/aem-assets/UPLOAD.md).
  * - --name maps sha1 prefixes (10 chars) to a DAM path, for images whose alt text gives no name
  *   or that are other renditions of an asset already in AEM.
- * Images inside the header and footer are left alone (the nav and footer importers handle them).
+ * SVG images (logos, icons) are left as they are; the nav and footer importers map those by name.
  */
 import {
   existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync,
@@ -59,9 +59,9 @@ const EXT = {
   'image/jpeg': 'jpg', 'image/png': 'png', 'image/gif': 'gif', 'image/webp': 'webp',
 };
 
-// content area: between the main landmark and the footer
-const start = html.indexOf('main-content', html.indexOf('</header>'));
-const end = html.indexOf('<footer', start);
+// the whole page body: content, header logo, footer images
+const start = html.indexOf('<body');
+const end = html.length;
 const outDir = join(ROOT, 'tools/aem-assets', `${site}-new`, folder);
 const report = [];
 const content = html.slice(start, end).replace(/<img\b([^>]*?)\bsrc=(?:"(data:[^"]+)"|(data:[^\s>]+))([^>]*)>/g, (tag, pre, q, uq, post) => {
@@ -87,9 +87,25 @@ const content = html.slice(start, end).replace(/<img\b([^>]*?)\bsrc=(?:"(data:[^
   return `<img${pre}src="${path}"${post}>`;
 });
 
+// CSS background images in style attributes (e.g. the hero) the same way, by bytes
+const styled = content.replace(/url\((["']?)(data:image\/(?:jpeg|png|gif|webp)[^)"']+)\1\)/g, (all, q, data) => {
+  const [head, body] = data.split(',', 2);
+  const buf = Buffer.from(head.includes(';base64') ? body : decodeURIComponent(body), head.includes(';base64') ? 'base64' : 'utf8');
+  const hash = sha(buf);
+  let path = names[hash.slice(0, 10)] || known.get(hash);
+  if (!path) {
+    const ext = EXT[head.slice(5).split(';')[0]];
+    path = `${DAM}/${folder}/background-${hash.slice(0, 10)}.${ext}`;
+    mkdirSync(outDir, { recursive: true });
+    writeFileSync(join(outDir, `background-${hash.slice(0, 10)}.${ext}`), buf);
+    report.push(`NEW      ${path}  (CSS background)`);
+  } else report.push(`existing ${path}  (CSS background)`);
+  return `url(${path})`;
+});
+
 const pathPart = url.pathname.replace(/\/$/, '') || '/index';
 const snapshot = join(ROOT, 'tools/importer/bd-snapshots', url.hostname, `${pathPart}.html`);
 mkdirSync(dirname(snapshot), { recursive: true });
-writeFileSync(snapshot, html.slice(0, start) + content + html.slice(end));
+writeFileSync(snapshot, html.slice(0, start) + styled + html.slice(end));
 console.log(`${url.href} -> ${relative(ROOT, snapshot)}`);
 report.forEach((r) => console.log(`  ${r}`));

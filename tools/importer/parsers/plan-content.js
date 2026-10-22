@@ -52,7 +52,9 @@ export function articleContent(document, article, base) {
     [...node.children].forEach((el) => {
       if (SKIP.includes(el.tagName)) return;
       if (el.tagName === 'IFRAME') {
-        const id = (el.getAttribute('src') || '').match(/youtube(?:-nocookie)?\.com\/embed\/([\w-]{11})/)?.[1];
+        // the video id from src, or from srcdoc in browser-saved pages (SingleFile)
+        const id = `${el.getAttribute('src') || ''} ${el.getAttribute('srcdoc') || ''}`
+          .match(/youtube(?:-nocookie)?\.com\/(?:embed\/|watch\?v=)([\w-]{11})/)?.[1];
         if (!id) return;
         const p = document.createElement('p');
         const a = document.createElement('a');

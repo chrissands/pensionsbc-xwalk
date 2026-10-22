@@ -34,6 +34,11 @@
       "content": "college/en/learning-resources",
       "scope": "local",
       "note": "Section page: libraries, webinars, course / video / article cards"
+    },
+    {
+      "content": "college/en/search",
+      "scope": "local",
+      "note": "Search page: Search block shell; Content AI search plugs in later"
     }
   ],
   "inherited": [

@@ -1,7 +1,7 @@
 /* eslint-disable */
 /* global WebImporter */
 
-import { PLAN_HOSTS, siteHref, productionHref } from './plan-sites.js';
+import { PLAN_HOSTS, siteHref, productionHref, planNameOf } from './plan-sites.js';
 import { damSrc, pushSafeAlt } from './dam-assets.js';
 
 /**
@@ -77,8 +77,7 @@ export default {
     [...hours.childNodes].filter((n) => n.nodeType === 3 && n.textContent.trim())
       .forEach((n) => hoursP.append(document.createElement('br'), n.textContent.trim()));
     const youtube = connect.querySelector('a[href*="youtube"]');
-    const planName = (document.querySelector('.global-navigation li.active img')?.getAttribute('alt') || '')
-      .replace(/\s*Home Page$/i, '').trim() || logo.alt.replace(/\s*logo$/i, '');
+    const planName = planNameOf(document, site);
     section(document, main, 'Connect with us', 'footer-connect', [
       el(document, 'h2', {}, text(connectHeading)),
       hoursP,

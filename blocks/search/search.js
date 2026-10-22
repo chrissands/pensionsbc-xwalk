@@ -153,6 +153,8 @@ function compareFound(hit1, hit2) {
 }
 
 function filterData(searchTerms, data) {
+  // no index yet (e.g. before Content AI search is connected): no results, no error
+  if (!data) return [];
   const foundInHeader = [];
   const foundInMeta = [];
 
@@ -250,6 +252,11 @@ function searchBox(block, config) {
   return box;
 }
 
+/*
+ * The PensionsBC search pages use this block as the shell (search box + results area) until
+ * Content AI search is connected: that replaces fetchData()/filterData() above with a call to
+ * the search service and keeps renderResults() for the results list.
+ */
 export default async function decorate(block) {
   const placeholders = await fetchPlaceholders();
   const source = block.querySelector('a[href]')?.href || `${window.hlx.codeBasePath}/query-index.json`;
