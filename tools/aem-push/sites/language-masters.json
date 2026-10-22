@@ -2,9 +2,33 @@
   "site": "language-masters",
   "sourceHost": "https://www.bcpensioncorp.ca/",
   "pages": [
-    { "content": "language-masters/en/copyright", "scope": "shared", "note": "Shared legal page, inherited by every site" },
-    { "content": "language-masters/en/disclaimer", "scope": "shared", "note": "Shared legal page, inherited by every site" },
-    { "content": "language-masters/en/privacy", "scope": "shared", "note": "Shared legal page, inherited by every site" }
+    {
+      "content": "language-masters/en/copyright",
+      "scope": "shared",
+      "note": "Shared legal page, inherited by every site"
+    },
+    {
+      "content": "language-masters/en/disclaimer",
+      "scope": "shared",
+      "note": "Shared legal page, inherited by every site"
+    },
+    {
+      "content": "language-masters/en/privacy",
+      "scope": "shared",
+      "note": "Shared legal page, inherited by every site"
+    },
+    {
+      "content": "language-masters/en/nav",
+      "title": "Navigation",
+      "scope": "shared",
+      "note": "Blueprint default nav: same as corporate (empty Brand / Sections / Tools)"
+    },
+    {
+      "content": "language-masters/en/footer",
+      "title": "Footer",
+      "scope": "shared",
+      "note": "Blueprint default footer: same as corporate"
+    }
   ],
   "inherited": []
 }

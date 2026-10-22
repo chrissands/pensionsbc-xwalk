@@ -157,6 +157,9 @@ Each phase stops for approval.
 | Copyright, Disclaimer, Privacy | `corporate/en/{copyright,disclaimer,privacy}` | inherited | `language-masters/en/*` |
 
 Blueprint legal pages are imported from bcpensioncorp.ca (`tools/aem-push/sites/language-masters.json`).
+The blueprint default nav and footer (`language-masters/en/nav`, `language-masters/en/footer`) are the
+corporate ones, written by `import-blueprint-nav.js` / `import-blueprint-footer.js` from the same importers.
+A live copy that hasn't authored its own nav or footer gets them by rollout.
 
 Status (2026-10-21): homepage, nav and footer pushed with the push button. Images now reference the
 assets installed by the first corporate package (`corporate/*.jpg`, `shared/*`), with alt text. After
