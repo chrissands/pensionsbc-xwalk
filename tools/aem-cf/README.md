@@ -91,6 +91,12 @@ the events folder > select > **Quick Publish**). Then publish the page and previ
 
 Published fragment changes can take a few minutes to show on the site: the query response is cached.
 
+**Testing the query outside a browser:** always send an `Origin` header, e.g.
+`curl -H "Origin: https://main--pensionsbc-college--chrissands.aem.page" "<url>"`. The AEM CDN caches a
+response to a request without `Origin` with no CORS headers and no `Vary: Origin`, and serves that copy to
+browsers too, so the event is missing on the sites until the cache expires (`s-maxage`, 2 hours).
+Variables go in the URL as one encoded segment: `event-by-path%3Bpath%3D%2Fcontent%2Fdam%2F...`.
+
 ## Authoring
 
 - **New event:** Assets > `/content/dam/pensionsbc-base/<site>/events` > **Create > Content Fragment**,

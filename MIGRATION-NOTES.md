@@ -259,6 +259,11 @@ Demo: https://main--pensionsbc-college--chrissands.aem.page/en/
   data to the report; `tools/aem-cf/build-events-package.mjs college` builds
   `tools/aem-assets/college-events-package.zip` (tag, folder, fragments). The Event model, GraphQL
   configuration and persisted query are set up in AEM first: `tools/aem-cf/README.md`.
+  Set up and published on 2026-10-22. The query variables must be encoded as one segment
+  (`%3Bpath%3D...`); AEM does not decode a value encoded on its own. Known risk: a request without an
+  `Origin` header (curl, a crawler) is cached by the AEM CDN without CORS headers for 2 hours and blocks
+  that event in browsers until it expires; always test with an `Origin` header. A permanent fix is a
+  CDN rule adding `Vary: Origin` to `/graphql/execute.json` (Cloud Manager config pipeline).
 
 Known gaps:
 - Nav: the source's sign-in button shows a "My Account" logo; it is text here.
