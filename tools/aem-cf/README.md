@@ -56,12 +56,15 @@ Save. Make sure the model is **Enabled** (Content Fragment Models list: select i
 - the folder `/content/dam/pensionsbc-base/<site>/events`, set to use the pensionsbc-base configuration
   so authors can create Event fragments there;
 - one Event fragment per event in `tools/aem-cf/events/<site>.json` and the source page's webinar
-  listing, tagged with its type. Reinstalling replaces these fragments (edits made to them in AEM are
-  lost); other fragments in the folder are untouched.
+  listing, tagged with its type. Other fragments in the folder are untouched.
 
 Install it after step 2: the fragments refer to the Event model. Each version is a separate entry in
-Package Manager: install the newest one. After reinstalling, publish the fragments again (the install
-replaces them on author only).
+Package Manager: install the newest one, then publish the fragments.
+
+**Updating fragments that already exist:** on this AEM, installing a newer package did not change
+fragments already in the folder (it only added new ones; seen with 1.1 and 1.2 on 2026-10-22). To update
+them, delete the package's fragments in Assets first, then install and publish again. The page refers
+to fragments by path, so it is unaffected. Edits made to those fragments in AEM are lost.
 
 The fragments are created referenceable (`mix:referenceable`, so AEM gives each a `jcr:uuid`), as AEM
 creates them. Package 1.1 and earlier did not do this, so those fragments showed in Assets but not in the
