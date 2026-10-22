@@ -1,18 +1,33 @@
 import { aemHost, AEM_PUBLISH, persistedQuery } from '../../scripts/aem-config.js';
+import getAudience from '../../scripts/audience.js';
 import { moveInstrumentation } from '../../scripts/scripts.js';
 
 /*
  * Event list: each item references an Event content fragment (model "Event": title, startDate,
- * duration, description, registrationUrl, linkText). The fragment is loaded with the persisted
- * query "event-by-path" (see tools/aem-cf/README.md) and rendered as a dated event card.
+ * duration, location, description, registrationUrl, linkText). An item can also name an audience
+ * and a second fragment that visitors in that audience see instead (scripts/audience.js), e.g. the
+ * in-person session for local visitors. Fragments are loaded with the persisted query
+ * "event-by-path" (see tools/aem-cf/README.md) and rendered as dated event cards.
  * All text comes from the fragment; dates are formatted for the page language.
  */
 const QUERY = 'event-by-path';
 
-function fragmentPath(row) {
-  const link = row.querySelector('a[href]');
-  const raw = link ? new URL(link.href, window.location.href).pathname : row.textContent.trim();
+/** A fragment reference cell: its link's path, or its text. */
+function cellPath(cell) {
+  if (!cell) return '';
+  const link = cell.querySelector('a[href]');
+  const raw = link ? new URL(link.href, window.location.href).pathname : cell.textContent.trim();
   return decodeURIComponent(raw).replace(/\.html$/, '');
+}
+
+/** Item fields, in model order: fragment | audience | audienceFragment. */
+function readItem(row) {
+  const [fragment, audience, alternative] = [...row.children];
+  return {
+    fragment: cellPath(fragment),
+    audience: (audience?.textContent || '').trim().toLowerCase(),
+    alternative: cellPath(alternative),
+  };
 }
 
 function el(tag, props = {}, ...children) {
@@ -44,6 +59,7 @@ function eventCard(item) {
       { className: 'event-list-body' },
       el('h3', {}, item.title || ''),
       item.duration ? el('p', {}, el('em', {}, item.duration)) : null,
+      item.location ? el('p', { className: 'event-list-location' }, item.location) : null,
       description ? el('p', {}, description) : null,
       item.registrationUrl ? el('p', {}, el('a', { href: item.registrationUrl }, item.linkText || item.registrationUrl)) : null,
     ),
@@ -51,28 +67,44 @@ function eventCard(item) {
 }
 
 export default async function decorate(block) {
+  const authoring = aemHost() !== AEM_PUBLISH;
+  const visitor = getAudience();
   const ul = document.createElement('ul');
   const rows = [...block.children].map((row) => {
     const li = document.createElement('li');
     moveInstrumentation(row, li);
-    return { li, path: fragmentPath(row) };
+    const item = readItem(row);
+    if (!item.audience) item.alternative = '';
+    return { li, item };
   });
   block.textContent = '';
   block.append(ul);
 
-  const results = await Promise.all(rows.map(({ path }) => (path
-    ? persistedQuery(QUERY, { path }) : Promise.resolve(null))));
+  const paths = [...new Set(rows.flatMap(({ item }) => [item.fragment, item.alternative]))]
+    .filter(Boolean);
+  const results = await Promise.all(paths.map((path) => persistedQuery(QUERY, { path })));
+  const loaded = Object.fromEntries(paths.map((path, i) => [path, results[i]?.eventByPath?.item]));
 
-  rows.forEach(({ li, path }, i) => {
-    const item = results[i]?.eventByPath?.item;
-    if (item) {
-      li.append(...eventCard(item));
+  rows.forEach(({ li, item }) => {
+    // the audience's fragment replaces the default one; the default stays if it can't be loaded
+    const swap = item.alternative && item.audience === visitor && loaded[item.alternative];
+    const path = swap ? item.alternative : item.fragment;
+    if (loaded[path]) {
+      li.append(...eventCard(loaded[path]));
       ul.append(li);
-    } else if (aemHost() !== AEM_PUBLISH) {
-      // in Universal Editor, show which fragment could not be loaded so the author can fix it
+    } else if (authoring) {
+      // show which fragment could not be loaded so the author can fix it
       li.className = 'event-list-missing';
       li.append(el('p', {}, path || '—'));
       ul.append(li);
+    }
+    // in Universal Editor the audience's fragment is shown too, after the one it replaces
+    if (authoring && item.alternative && item.alternative !== path) {
+      const alt = el('li', { className: 'event-list-alternative' });
+      alt.dataset.audience = item.audience;
+      alt.append(...(loaded[item.alternative] ? eventCard(loaded[item.alternative])
+        : [el('p', {}, item.alternative)]));
+      ul.append(alt);
     }
   });
 }

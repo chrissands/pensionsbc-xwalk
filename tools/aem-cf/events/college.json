@@ -1,0 +1,137 @@
+{
+  "note": "College Pension Plan events for the demo. The two webinars dated 2026-10-29 and 2026-11-02 are from the source listing; the others are demo content written for the Event List audience swap (only the two webinar registration pages exist on Arlo, so the others link to the plan's Arlo event listing). type: webinar | in-person (sets the tag).",
+  "events": [
+    {
+      "slug": "approaching-retirement",
+      "type": "webinar",
+      "title": "Approaching retirement",
+      "startDate": "2026-10-29",
+      "duration": "75 minutes",
+      "location": "Online, live",
+      "description": "An overview of the retirement process. Explore the decisions ahead, maximize your health coverage and manage your pension application.",
+      "registrationUrl": "https://pensionsbc.arlo.co/w/cp/events/110-cpp-approaching-retirement-webinar",
+      "linkText": "View available dates"
+    },
+    {
+      "slug": "making-the-most-of-your-pension",
+      "type": "webinar",
+      "title": "Making the most of your pension",
+      "startDate": "2026-11-02",
+      "duration": "75 minutes",
+      "location": "Online, live",
+      "description": "An overview of how your pension works. See how you build retirement income, make informed decisions and use our planning tools to map your future.",
+      "registrationUrl": "https://pensionsbc.arlo.co/w/cp/events/109-cpp-making-the-most-of-your-pension-webinar",
+      "linkText": "View available dates"
+    },
+    {
+      "slug": "understanding-your-pension-options",
+      "type": "webinar",
+      "title": "Understanding your pension options",
+      "startDate": "2026-11-12",
+      "duration": "60 minutes",
+      "location": "Online, live",
+      "description": "Single life, joint life, guarantee periods and bridge benefits explained. See how each option affects your monthly income and the people you care about.",
+      "registrationUrl": "https://pensionsbc.arlo.co/w/cp/events/",
+      "linkText": "View available dates"
+    },
+    {
+      "slug": "your-members-benefit-statement",
+      "type": "webinar",
+      "title": "Your Member’s Benefit Statement",
+      "startDate": "2026-11-18",
+      "duration": "45 minutes",
+      "location": "Online, live",
+      "description": "Walk through your annual statement line by line. Check your service, salary and beneficiaries, and learn what to do if something looks wrong.",
+      "registrationUrl": "https://pensionsbc.arlo.co/w/cp/events/",
+      "linkText": "View available dates"
+    },
+    {
+      "slug": "leaving-your-job",
+      "type": "webinar",
+      "title": "Leaving your job",
+      "startDate": "2026-12-02",
+      "duration": "45 minutes",
+      "location": "Online, live",
+      "description": "Changing employers or leaving the plan? Learn your options for your pension, the deadlines that apply and how to keep your service working for you.",
+      "registrationUrl": "https://pensionsbc.arlo.co/w/cp/events/",
+      "linkText": "View available dates"
+    },
+    {
+      "slug": "health-and-dental-coverage-in-retirement",
+      "type": "webinar",
+      "title": "Health and dental coverage in retirement",
+      "startDate": "2027-01-14",
+      "duration": "60 minutes",
+      "location": "Online, live",
+      "description": "Find out who is eligible for retirement health and dental coverage, what it costs and when you need to sign up so you don't miss your window.",
+      "registrationUrl": "https://pensionsbc.arlo.co/w/cp/events/",
+      "linkText": "View available dates"
+    },
+    {
+      "slug": "approaching-retirement-in-person",
+      "type": "in-person",
+      "title": "Approaching retirement: in-person workshop",
+      "startDate": "2026-11-05",
+      "duration": "2 hours",
+      "location": "In person, Victoria. Venue details are sent when you register.",
+      "description": "Plan your last years of work face to face with our pension educators. Bring your questions about timing, health coverage and your pension application.",
+      "registrationUrl": "https://pensionsbc.arlo.co/w/cp/events/110-cpp-approaching-retirement-webinar",
+      "linkText": "View available dates"
+    },
+    {
+      "slug": "making-the-most-of-your-pension-in-person",
+      "type": "in-person",
+      "title": "Making the most of your pension: in-person workshop",
+      "startDate": "2026-11-10",
+      "duration": "2 hours",
+      "location": "In person, Vancouver. Venue details are sent when you register.",
+      "description": "Learn how your service and salary build your pension, then try our planning tools with a pension educator at your side.",
+      "registrationUrl": "https://pensionsbc.arlo.co/w/cp/events/109-cpp-making-the-most-of-your-pension-webinar",
+      "linkText": "View available dates"
+    },
+    {
+      "slug": "understanding-your-pension-options-in-person",
+      "type": "in-person",
+      "title": "Understanding your pension options: in-person workshop",
+      "startDate": "2026-11-19",
+      "duration": "2 hours",
+      "location": "In person, Kelowna. Venue details are sent when you register.",
+      "description": "Compare pension options with worked examples, and talk through what each choice means for you and your loved ones in a small-group setting.",
+      "registrationUrl": "https://pensionsbc.arlo.co/w/cp/events/",
+      "linkText": "View available dates"
+    },
+    {
+      "slug": "your-members-benefit-statement-in-person",
+      "type": "in-person",
+      "title": "Your Member’s Benefit Statement: in-person workshop",
+      "startDate": "2026-11-25",
+      "duration": "90 minutes",
+      "location": "In person, Prince George. Venue details are sent when you register.",
+      "description": "Bring your latest statement and go through it with a pension educator. Leave knowing what every section means and what to check each year.",
+      "registrationUrl": "https://pensionsbc.arlo.co/w/cp/events/",
+      "linkText": "View available dates"
+    },
+    {
+      "slug": "leaving-your-job-in-person",
+      "type": "in-person",
+      "title": "Leaving your job: in-person workshop",
+      "startDate": "2026-12-08",
+      "duration": "90 minutes",
+      "location": "In person, Vancouver. Venue details are sent when you register.",
+      "description": "Thinking about a move? Get your options, deadlines and next steps explained in person, with time for one-on-one questions at the end.",
+      "registrationUrl": "https://pensionsbc.arlo.co/w/cp/events/",
+      "linkText": "View available dates"
+    },
+    {
+      "slug": "health-and-dental-coverage-in-retirement-in-person",
+      "type": "in-person",
+      "title": "Health and dental coverage in retirement: in-person workshop",
+      "startDate": "2027-01-20",
+      "duration": "2 hours",
+      "location": "In person, Victoria. Venue details are sent when you register.",
+      "description": "Go through retirement health and dental options with our team, including eligibility, costs and sign-up deadlines, and get answers to your questions.",
+      "registrationUrl": "https://pensionsbc.arlo.co/w/cp/events/",
+      "linkText": "View available dates"
+    }
+  ]
+}

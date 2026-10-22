@@ -34,6 +34,9 @@ const UNIT = [
   '.eventsListing', '.featureCards', '.journal-content-article', '.search-bar',
 ].join(', ');
 
+// sites whose events have in-person versions (tools/aem-cf/events/<site>.json): local visitors see those
+const EVENT_SWAPS = { college: { audience: 'local', suffix: '-in-person' } };
+
 const text = (el) => (el?.textContent || '').replace(/\s+/g, ' ').trim();
 // blocks are still tables while the importer builds the page; section metadata is not a block
 const isBlock = (el) => el?.tagName === 'TABLE' && !/section metadata/i.test(text(el.querySelector('th, td')));
@@ -91,7 +94,7 @@ export default {
         // referenced by an Event list block
         const data = eventData(document, unit, base);
         events.push(...data);
-        return eventListBlock(document, data, `/content/dam/pensionsbc-base/${site}/events`);
+        return eventListBlock(document, data, `/content/dam/pensionsbc-base/${site}/events`, EVENT_SWAPS[site]);
       }
       if (unit.matches('.featureCards')) return resourceCards(document, unit, base);
       // Liferay search bar -> Search block (no index yet: Content AI search plugs in later)

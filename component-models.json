@@ -392,7 +392,35 @@
         "name": "fragment",
         "label": "Event content fragment",
         "valueType": "string",
-        "description": "An Event content fragment (model: Event), e.g. from /content/dam/pensionsbc-base/<site>/events."
+        "description": "An Event content fragment (model: Event), e.g. from /content/dam/pensionsbc-base/<site>/events. Shown to everyone unless an audience below gets another fragment."
+      },
+      {
+        "component": "select",
+        "name": "audience",
+        "label": "Swap for audience",
+        "valueType": "string",
+        "description": "Visitors in this audience see the fragment below instead. A visitor's audience comes from the link they arrived on (?audience=local) and lasts for the visit.",
+        "options": [
+          {
+            "name": "No swap",
+            "value": ""
+          },
+          {
+            "name": "Local (in person)",
+            "value": "local"
+          },
+          {
+            "name": "Online",
+            "value": "online"
+          }
+        ]
+      },
+      {
+        "component": "aem-content-fragment",
+        "name": "audienceFragment",
+        "label": "Fragment for that audience",
+        "valueType": "string",
+        "description": "The Event content fragment the audience above sees instead, e.g. the in-person session of the same topic."
       }
     ]
   },
