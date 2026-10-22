@@ -40,8 +40,8 @@ export default function decorate(block) {
     cells.forEach((div) => {
       const value = div.textContent.trim();
       const hasImage = div.querySelector('picture, img');
-      if (!hasImage && (VARIANTS.includes(value) || (!value && cells.length > 2))) {
-        // card style cell, or an empty image / style cell: a class, not content
+      if (!hasImage && (VARIANTS.includes(value) || (!value && cells.length > 1))) {
+        // card style cell, or an empty cell (no image, no style): a class or nothing, not content
         if (value) li.classList.add(`cards-card-${value}`);
         div.remove();
       } else if (div.children.length === 1 && div.querySelector('picture')) div.className = 'cards-card-image';

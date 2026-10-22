@@ -1,0 +1,66 @@
+/* Event list: dated event cards in two columns where there is room (values from the source's webinar listing) */
+.event-list > ul {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 440px), 1fr));
+  gap: var(--space-l) var(--space-xl);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.event-list > ul > li {
+  display: grid;
+  grid-template-columns: 64px 1fr;
+  align-items: start;
+  gap: 0 var(--space-s);
+}
+
+.event-list .event-list-date {
+  margin: 0;
+  border-radius: 4px;
+  padding: var(--space-xs) 4px;
+  background-color: var(--site-accent-dark-color);
+  color: var(--color-white);
+  font-size: 14px;
+  line-height: 1.3;
+  text-align: center;
+}
+
+.event-list .event-list-date time > * {
+  display: block;
+}
+
+.event-list .event-list-date strong {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.event-list .event-list-body {
+  grid-column: 2;
+}
+
+.event-list .event-list-body h3 {
+  margin: 0 0 var(--space-xs);
+  color: var(--heading-color);
+  font-size: 22px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.event-list .event-list-body p {
+  margin: 0 0 var(--space-xs);
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.event-list .event-list-body a:any-link {
+  color: var(--site-accent-dark-color);
+  font-weight: 600;
+}
+
+.event-list .event-list-missing {
+  grid-column: 1 / -1;
+  border: 1px dashed var(--border-color);
+  padding: var(--space-xs);
+  color: var(--color-neutral-700);
+}

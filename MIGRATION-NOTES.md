@@ -84,10 +84,17 @@ represent. These notes are written so a partner can repeat the work in their own
   - Cards on plan section pages: `featured` (grey boxes, accent titles), `links` (grey boxes),
     `link-list` (separated by rules), `events` (webinars with a date badge), `resources` (three-column
     course / video / article cards; the call-to-action link covers the card).
+  - Event List: one item per Event content fragment (picked in Universal Editor), loaded with the
+    persisted query `event-by-path` from AEM publish (author in Universal Editor) and shown as dated
+    cards. Setup, model and authoring: `tools/aem-cf/README.md`.
   - Section styles: `sidebar` (main column + 1/3 sidebar), `quick-links` (heading + links in a row),
     `accent-heading` (heading in the site accent with a rule above).
-  - Section pages get breadcrumbs (page metadata `breadcrumbs: true`), and the nav marks the current
-    section with an underline.
+  - Section pages get breadcrumbs: page property **Show breadcrumbs** (`breadcrumbs`, in the page model),
+    set by the section importer; the trail comes from the nav, its home label from the placeholders
+    sheet (`breadcrumbs-home-label`) or else the site's logo text. The nav marks the current section
+    with an underline.
+  - Importer metadata keys must match page model field names exactly (lower case, e.g. `breadcrumbs`);
+    md2jcr drops any other key, so it never reaches AEM.
   - Cards: `logos` (corporate), `tiles` (plan homepages: bordered tiles in two masonry columns, filled
     down the left column then the right). Each card has an optional **Card style** field; `highlight`
     is the yellow notice tile. In tiles, a paragraph holding only a YouTube link becomes an embedded
@@ -251,6 +258,12 @@ Demo: https://main--pensionsbc-college--chrissands.aem.page/en/
   browser-saved pages drop the hidden plan switcher the name was read from. The homepage and nav were
   re-imported from the SingleFile homepage save (identical output); `prepare-snapshot.mjs` also maps
   CSS background images (the hero) and header images.
+- **Webinars as content fragments** (2026-10-22): the Learning resources webinars are Event content
+  fragments in `/content/dam/pensionsbc-base/college/events/`, tagged `pensionsbc:event-type/webinar`,
+  shown by an Event List block. The section importer writes the block (fragment paths) and the event
+  data to the report; `tools/aem-cf/build-events-package.mjs college` builds
+  `tools/aem-assets/college-events-package.zip` (tag, folder, fragments). The Event model, GraphQL
+  configuration and persisted query are set up in AEM first: `tools/aem-cf/README.md`.
 
 Known gaps:
 - Nav: the source's sign-in button shows a "My Account" logo; it is text here.
@@ -259,7 +272,8 @@ Known gaps:
   (h4 on the source) so the heading order is valid.
 - The nav and footer links point at pages that are not migrated yet (404 until they are).
 - Section pages: the library and card-type icons (course / video / article) are not migrated; webinar
-  dates are a static copy of the 2026-10-21 listing; the breadcrumb home label is the shared placeholder
+  fragments are a copy of the 2026-10-21 listing (the source's registration system, Arlo, is not
+  connected), and past events are not hidden automatically; the breadcrumb home label is the shared placeholder
   "Home" (the source shows "College").
 - Homepage: the source's white bordered tiles (video, Pension Life) are grey like the others; the
   courses promo image contains text ("Learn about my pension!") but has no alt text on the source, and
@@ -278,3 +292,4 @@ Not started. Scope: 15 pages per site (homepage included) plus nav and footer.
 | 2026-10-21 | Each site's nav and footer are local pages at `<site>/en/nav` and `<site>/en/footer`; the blueprint nav and footer are defaults only. |
 | 2026-10-21 | Cross-site links are authored with pensionsbc.ca hostnames and pointed at the aem.page demo sites at runtime (PR #4; PR #2 closed as a duplicate). |
 | 2026-10-21 | Pilot scope: 15 pages per site, homepage included, plus nav and footer. |
+| 2026-10-22 | Events are content fragments (model Event) per site in `<site>/events`, tagged by type; authors pick them in an Event List block; delivered by a persisted GraphQL query from publish. |

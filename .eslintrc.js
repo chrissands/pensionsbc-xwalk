@@ -19,11 +19,11 @@ module.exports = {
     'linebreak-style': ['error', 'unix'], // enforce unix linebreaks
     'no-param-reassign': [2, { props: false }], // allow modifying properties of param
     // page-metadata is page properties, not a block table: allow the topic/audience fields
-    'xwalk/max-cells': ['error', { 'page-metadata': 5, search: 10 }],
+    'xwalk/max-cells': ['error', { 'page-metadata': 6, search: 10 }],
   },
   overrides: [{
     // Node command-line tooling, not site code
-    files: ['tools/aem-push/**/*.mjs'],
+    files: ['tools/aem-push/**/*.mjs', 'tools/aem-cf/**/*.mjs'],
     env: { browser: false, node: true },
     rules: {
       'no-console': 'off',
