@@ -18,8 +18,8 @@ module.exports = {
     'import/extensions': ['error', { js: 'always' }], // require js file extensions in imports
     'linebreak-style': ['error', 'unix'], // enforce unix linebreaks
     'no-param-reassign': [2, { props: false }], // allow modifying properties of param
-    // page-metadata is page properties, not a block table: allow breadcrumbs, topic and audience
-    'xwalk/max-cells': ['error', { 'page-metadata': 6 }],
+    // page-metadata is page properties, not a block table: allow the topic/audience fields
+    'xwalk/max-cells': ['error', { 'page-metadata': 6, search: 10 }],
   },
   overrides: [{
     // Node command-line tooling, not site code
@@ -29,6 +29,14 @@ module.exports = {
       'no-console': 'off',
       'no-restricted-syntax': 'off',
       'no-await-in-loop': 'off',
+      'import/no-extraneous-dependencies': ['error', { devDependencies: true }],
+    },
+  }, {
+    // Node test runner files and the local mock server, not site code
+    files: ['test/**/*.js', 'test/**/*.mjs'],
+    env: { browser: false, node: true },
+    rules: {
+      'no-console': 'off',
       'import/no-extraneous-dependencies': ['error', { devDependencies: true }],
     },
   }],

@@ -235,10 +235,15 @@ Demo: https://main--pensionsbc-college--chrissands.aem.page/en/
 - **Search** (decided 2026-10-22): the search page will become a Content AI search page. Until then
   `college/en/search` has the title and the Search block as a shell (search box, results area; with
   no index it shows its "no results" message). The nav's last section link goes to `/en/search`
-  (shown at the right end of the nav row with a magnifier). To connect Content AI search, replace
-  `fetchData()`/`filterData()` in `blocks/search/search.js` with the search service call and keep
-  `renderResults()`; no content changes are needed. Labels come from the placeholders sheet
-  (`search-placeholder`, `search-no-results`); add those keys to `language-masters/en/placeholders`.
+  (shown at the right end of the nav row with a magnifier). Content AI mode is switched on by the Search
+  block properties (`base-url`, `content-source`, `content-source-type`, `ai-search-mode-enabled`,
+  `gen-search-error-retry-visible`, `disclaimer-text`, `results-size`, `results-layout`), authored in
+  Universal Editor; with `base-url` empty the shell above stays, so the other sites are unaffected.
+  Do not re-push `college/en/search` with `aem:push` after the properties are authored: the push
+  replaces the page's `jcr:content` and would erase them. Labels come from the placeholders sheet
+  (`search-placeholder`, `search-no-results`, plus `search-error`, `search-answer-title`,
+  `search-answer-loading`, `search-answer-sources`, `search-answer-retry`, `search-results-found`);
+  add those keys to `language-masters/en/placeholders`.
   The search block's xwalk definition referenced a `search` filter that doesn't exist; it was removed
   so pages with the block convert to AEM content.
 - Section pages: `tools/importer/import-plan-section.js` (every plan site), with `urls-college-sections.txt`.
