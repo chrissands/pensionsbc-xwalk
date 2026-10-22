@@ -216,6 +216,13 @@ export default async function decorate(block) {
 
   const navSections = nav.querySelector('.nav-sections');
   if (navSections) {
+    // current section: the link to this page, or to the section this page is under
+    navSections.querySelectorAll('a[href]').forEach((a) => {
+      const path = new URL(a.href).pathname.replace(/\/$/, '');
+      const here = window.location.pathname.replace(/\/$/, '');
+      if (here === path) a.setAttribute('aria-current', 'page');
+      else if (path && here.startsWith(`${path}/`)) a.setAttribute('aria-current', 'true');
+    });
     navSections.querySelectorAll(':scope .default-content-wrapper > ul > li').forEach((navSection) => {
       if (navSection.querySelector('ul')) navSection.classList.add('nav-drop');
       navSection.addEventListener('click', () => {

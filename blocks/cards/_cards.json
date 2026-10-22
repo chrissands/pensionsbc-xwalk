@@ -54,6 +54,26 @@
             {
               "name": "Tiles (two-column)",
               "value": "tiles"
+            },
+            {
+              "name": "Featured topics (boxes, accent titles)",
+              "value": "featured"
+            },
+            {
+              "name": "Topic links (boxes)",
+              "value": "links"
+            },
+            {
+              "name": "Topic list (rules)",
+              "value": "link-list"
+            },
+            {
+              "name": "Events (date badge)",
+              "value": "events"
+            },
+            {
+              "name": "Resources (three-column, linked)",
+              "value": "resources"
             }
           ]
         }

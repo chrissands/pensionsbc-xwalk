@@ -81,6 +81,13 @@ represent. These notes are written so a partner can repeat the work in their own
   one unstyled section and is laid out as before.
 - Blocks and styles so far:
   - Hero: `split` (corporate), `panel` (plan homepages: box of topic links over the image).
+  - Cards on plan section pages: `featured` (grey boxes, accent titles), `links` (grey boxes),
+    `link-list` (separated by rules), `events` (webinars with a date badge), `resources` (three-column
+    course / video / article cards; the call-to-action link covers the card).
+  - Section styles: `sidebar` (main column + 1/3 sidebar), `quick-links` (heading + links in a row),
+    `accent-heading` (heading in the site accent with a rule above).
+  - Section pages get breadcrumbs (page metadata `breadcrumbs: true`), and the nav marks the current
+    section with an underline.
   - Cards: `logos` (corporate), `tiles` (plan homepages: bordered tiles in two masonry columns, filled
     down the left column then the right). Each card has an optional **Card style** field; `highlight`
     is the yellow notice tile. In tiles, a paragraph holding only a YouTube link becomes an embedded
@@ -203,6 +210,9 @@ Demo: https://main--pensionsbc-college--chrissands.aem.page/en/
 | Nav | `college/en/nav` | local | college.pensionsbc.ca header |
 | Footer | `college/en/footer` | local | college.pensionsbc.ca footer |
 | Homepage | `college/en/index` | local | https://college.pensionsbc.ca/ |
+| Your pension | `college/en/your-pension` | local | https://college.pensionsbc.ca/your-pension |
+| About us | `college/en/about-us` | local | https://college.pensionsbc.ca/about-us |
+| Learning resources | `college/en/learning-resources` | local | https://college.pensionsbc.ca/learning-resources |
 | Copyright, Privacy, Disclaimer | `college/en/{copyright,privacy,disclaimer}` | inherited | `language-masters/en/*` |
 
 - Importers `tools/importer/import-plan-nav.js` and `import-plan-footer.js` work for every plan site (the
@@ -214,6 +224,14 @@ Demo: https://main--pensionsbc-college--chrissands.aem.page/en/
 - On 2026-10-22 pensionsbc.ca started timing out for this environment (bot protection). The homepage
   was imported from the saved page at `tools/importer/bd-snapshots/college.pensionsbc.ca/index.html`
   (captured the same day); the import runner uses a saved page automatically when one exists.
+- Section pages: `tools/importer/import-plan-section.js` (every plan site), with `urls-college-sections.txt`.
+  Batch 1 (Your pension, About us, Learning resources) was imported from pages saved in a browser with
+  SingleFile (2026-10-21) because the source was still blocking this environment.
+  `tools/importer/prepare-snapshot.mjs <saved.html> <site> [--folder <dam folder>]` turns such a save into
+  an import snapshot: embedded images already in AEM keep their DAM path, new ones are named from their
+  alt text and staged for upload (zipped as `tools/aem-assets/college-batch1-images.zip`).
+- Liferay duplicate addresses of the same page (`welcome-to-the-plan1`, `f-taking-time-off-...`) are
+  normalised to the page's address.
 
 Known gaps:
 - Nav: Search (a Liferay search page) is not migrated. The source's sign-in button shows a "My Account"
@@ -222,6 +240,9 @@ Known gaps:
   myaccount.pensionsbc.ca (the source's registration form is a Liferay page). Footer headings are h2
   (h4 on the source) so the heading order is valid.
 - The nav and footer links point at pages that are not migrated yet (404 until they are).
+- Section pages: the library and card-type icons (course / video / article) are not migrated; webinar
+  dates are a static copy of the 2026-10-21 listing; the breadcrumb home label is the shared placeholder
+  "Home" (the source shows "College").
 - Homepage: the source's white bordered tiles (video, Pension Life) are grey like the others; the
   courses promo image contains text ("Learn about my pension!") but has no alt text on the source, and
   none here; the annual report image's alt was "Image" on the source and is empty here (decorative).

@@ -3,6 +3,8 @@ import { moveInstrumentation } from '../../scripts/scripts.js';
 
 // card style values (the card model's "variant" field), added to the card as cards-card-<value>
 const VARIANTS = ['highlight'];
+// styles whose links are text links, not buttons (in resources the last link covers the card)
+const PLAIN_LINKS = ['featured', 'links', 'link-list', 'events', 'resources'];
 const YOUTUBE = /^https?:\/\/(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]{11})/;
 
 /**
@@ -54,6 +56,10 @@ export default function decorate(block) {
     moveInstrumentation(img, optimizedPic.querySelector('img'));
     img.closest('picture').replaceWith(optimizedPic);
   });
+  if (PLAIN_LINKS.some((c) => block.classList.contains(c))) {
+    ul.querySelectorAll('.button-container').forEach((p) => p.classList.remove('button-container'));
+    ul.querySelectorAll('a.button').forEach((a) => a.classList.remove('button', 'primary', 'secondary'));
+  }
   if (block.classList.contains('tiles')) {
     embedVideos(ul);
     // icon-sized images (2x assets up to 120px wide) sit beside the heading at half size

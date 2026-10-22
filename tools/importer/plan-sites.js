@@ -65,7 +65,9 @@ export function siteHref(href, base) {
   const path = url.pathname.replace(/\/$/, '');
   if (MY_ACCOUNT_PATHS.includes(path)) return MY_ACCOUNT_URL;
   if (url.hostname !== new URL(base).hostname) return productionHref(url.href, base);
-  return `/en${path || '/'}${url.hash}`;
+  // Liferay duplicate friendly URLs of the same page (welcome-to-the-plan1, f-taking-time-off-...)
+  const page = path.replace(/\/f-([a-z])/g, '/$1').replace(/([a-z])1$/, '$1');
+  return `/en${page || '/'}${url.hash}`;
 }
 
 /** Rewrites a source link to its production target: plan home, My Account, or unchanged. */

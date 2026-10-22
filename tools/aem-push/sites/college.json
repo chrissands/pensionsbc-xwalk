@@ -19,6 +19,21 @@
       "title": "Footer",
       "scope": "local",
       "note": "College footer: link columns, about, connect with us, other plans, legal"
+    },
+    {
+      "content": "college/en/your-pension",
+      "scope": "local",
+      "note": "Section page: featured topics and topic list"
+    },
+    {
+      "content": "college/en/about-us",
+      "scope": "local",
+      "note": "Section page: topic boxes beside promo tiles"
+    },
+    {
+      "content": "college/en/learning-resources",
+      "scope": "local",
+      "note": "Section page: libraries, webinars, course / video / article cards"
     }
   ],
   "inherited": [

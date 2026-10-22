@@ -434,6 +434,10 @@ body.theme-plan header nav .nav-brand img {
   header nav:has(.nav-sections a) .nav-sections a:focus {
     color: var(--site-accent-dark-color);
   }
+
+  header nav:has(.nav-sections a) .nav-sections a[aria-current] {
+    box-shadow: inset 0 -4px 0 var(--site-accent-color);
+  }
 }
 
 /* breadcrumbs */

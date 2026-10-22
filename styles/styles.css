@@ -386,14 +386,88 @@ body.theme-plan main a.button:focus {
   color: var(--color-white);
 }
 
-body.theme-plan main > .section > .default-content-wrapper > h2 {
+body.theme-plan main > .section > .default-content-wrapper > h1 {
   margin: 0 0 var(--space-l);
+  color: var(--heading-color);
+  font-size: 36px;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+body.theme-plan main > .section > .default-content-wrapper > p {
+  font-size: 16px;
+}
+
+/* lead: the paragraph right after the page title */
+body.theme-plan main > .section > .default-content-wrapper > h1 + p {
+  max-width: 860px;
+  margin: 0 0 var(--space-xl);
+  color: var(--heading-color);
+  font-size: 26px;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+body.theme-plan main > .section > .default-content-wrapper > h2 {
+  margin: 0 0 var(--space-s);
+  color: var(--heading-color);
+  font-size: 28px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+/* section style: quick links bar (heading, then links in a row) */
+body main > .section.quick-links > .default-content-wrapper > h2 {
+  margin: 0 0 var(--space-xs);
+  font-size: 22px;
+}
+
+main > .section.quick-links ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs) var(--space-xxl);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+main > .section.quick-links a:any-link {
+  color: var(--site-accent-dark-color);
+  font-weight: 600;
+}
+
+/* section style: accent heading with a rule above (e.g. "In case you missed it...") */
+body.theme-plan main > .section.accent-heading > .default-content-wrapper > h2 {
+  margin-bottom: var(--space-l);
   border-top: 1px solid var(--color-plan-rule);
   padding-top: var(--space-xxl);
   color: var(--site-accent-color);
   font-size: 32px;
-  font-weight: 600;
-  line-height: 1.3;
+}
+
+/* section style: main column and sidebar (2/3 + 1/3) on wide screens */
+@media (width >= 900px) {
+  main > .section.sidebar {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+    align-items: start;
+    gap: var(--space-xl);
+    box-sizing: border-box;
+    max-width: var(--content-max-width);
+    margin-left: auto;
+    margin-right: auto;
+    padding: 0 var(--content-padding);
+  }
+
+  main > .section.sidebar > div {
+    max-width: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  main > .section.sidebar .cards.tiles > ul {
+    columns: 1;
+  }
 }
 
 /* section metadata */

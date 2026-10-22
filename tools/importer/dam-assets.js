@@ -48,6 +48,8 @@ export function damSrc(src, base) {
   } catch (e) {
     return src;
   }
+  // already a DAM path (e.g. a snapshot prepared by prepare-snapshot.mjs)
+  if (url.pathname.startsWith('/content/dam/')) return decodeURIComponent(url.pathname);
   const decode = (s) => decodeURIComponent(s.replace(/\+/g, ' '));
   const segments = url.pathname.split('/').map(decode);
   const pathAndQuery = decode(`${url.pathname}${url.search}`);

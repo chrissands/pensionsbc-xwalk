@@ -16,3 +16,6 @@ tools/aem-push/build/
 # generated import bundles and reports
 tools/importer/*.bundle.js
 tools/importer/reports/
+
+# prepare-snapshot.mjs staging of new images (zipped into tools/aem-assets/<site>-*.zip)
+tools/aem-assets/*-new/

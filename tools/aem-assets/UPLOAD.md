@@ -25,6 +25,17 @@ Everything below `pensionsbc-base/` maps 1:1 to `/content/dam/pensionsbc-base/` 
 `shared/` already exists: the first corporate package put `bc-pension-corporation-logo.jpg` and
 `bci-logo.png` there. Leave those two as they are.
 
+## College batch 1: `college-batch1-images.zip`
+
+For Learning resources (Your pension and About us use images that are already uploaded).
+
+| AEM folder | Files |
+|---|---|
+| `/content/dam/pensionsbc-base/shared/learning/` | 12 course, video and article card images (`approaching-retirement.jpg` ... `what-is-my-account.jpg`) |
+
+`learning` is a new folder inside `shared`: open `shared`, then **Create → Folder** with Title and Name
+`learning`, and upload the 12 files into it.
+
 ## Steps
 
 1. **Download** the zip from GitHub: open the file on the site's branch, click **Download raw file**,

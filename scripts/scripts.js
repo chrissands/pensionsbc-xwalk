@@ -155,7 +155,8 @@ function rewritePlanLinks(main) {
       return;
     }
     const site = PLAN_SITES[url.hostname];
-    if (!site) return;
+    // only site homes and migrated (/en/...) pages; other paths (e.g. e-learning files) stay real
+    if (!site || !/^\/(en(\/.*)?)?$/.test(url.pathname)) return;
     url.protocol = 'https:';
     url.host = `${ref}--${site}--${owner}.aem.page`;
     link.href = url.href;
