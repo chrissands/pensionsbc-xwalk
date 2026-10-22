@@ -385,6 +385,18 @@
     ]
   },
   {
+    "id": "event",
+    "fields": [
+      {
+        "component": "aem-content-fragment",
+        "name": "fragment",
+        "label": "Event content fragment",
+        "valueType": "string",
+        "description": "An Event content fragment (model: Event), e.g. from /content/dam/pensionsbc-base/<site>/events."
+      }
+    ]
+  },
+  {
     "id": "form",
     "fields": [
       {
