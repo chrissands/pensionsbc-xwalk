@@ -15,7 +15,7 @@ The publish host and GraphQL configuration name are in `scripts/aem-config.js`.
 | Configuration | `/conf/pensionsbc-base` |
 | Model | Event: `/conf/pensionsbc-base/settings/dam/cfm/models/event` |
 | Fragments | `/content/dam/pensionsbc-base/<site>/events/<event>` |
-| Tag | `pensionsbc:event-type/webinar` (PensionsBC > Event type > Webinar) |
+| Tags | `pensionsbc:event-type/webinar`, `pensionsbc:event-type/in-person` (PensionsBC > Event type) |
 | Persisted query | `pensionsbc-base/event-by-path` |
 
 ## One-time AEM setup (all sites)
@@ -40,6 +40,7 @@ fields. The **Property Name** of each must be exactly as shown (the page code an
 | Single line text | Title | `title` | Required |
 | Date and time | Start date | `startDate` | Type: **Date** (no time) |
 | Single line text | Duration | `duration` | e.g. "75 minutes" |
+| Single line text | Location | `location` | e.g. "Online, live" or "In person, Victoria. …" (added 2026-10-22) |
 | Multi line text | Description | `description` | Default type: **Plain text** |
 | Single line text | Registration link | `registrationUrl` | |
 | Single line text | Link text | `linkText` | e.g. "View available dates" |
@@ -51,11 +52,12 @@ Save. Make sure the model is **Enabled** (Content Fragment Models list: select i
 **Tools > Deployment > Packages > Upload Package**, choose `tools/aem-assets/<site>-events-package.zip`
 (e.g. `college-events-package.zip`), then **Install**. It creates:
 
-- the tag `pensionsbc:event-type/webinar` (existing tags are kept);
+- the tags Webinar and In person under PensionsBC > Event type (existing tags are kept);
 - the folder `/content/dam/pensionsbc-base/<site>/events`, set to use the pensionsbc-base configuration
   so authors can create Event fragments there;
-- one Event fragment per webinar from the source page, tagged Webinar. Reinstalling replaces these
-  fragments (edits made to them in AEM are lost); other fragments in the folder are untouched.
+- one Event fragment per event in `tools/aem-cf/events/<site>.json` and the source page's webinar
+  listing, tagged with its type. Reinstalling replaces these fragments (edits made to them in AEM are
+  lost); other fragments in the folder are untouched.
 
 Install it after step 2: the fragments refer to the Event model.
 
@@ -73,6 +75,7 @@ Install it after step 2: the fragments refer to the Event model.
          title
          startDate
          duration
+         location
          description { plaintext }
          registrationUrl
          linkText
@@ -104,11 +107,28 @@ Variables go in the URL as one encoded segment: `event-by-path%3Bpath%3D%2Fconte
 - **On a page:** in Universal Editor add an **Event List** block to a section, add an **Event** item per
   event and pick its fragment. The block shows the fragments in the order of the items. A fragment that
   can't be loaded shows its path in Universal Editor and is left out on the site.
+- **Swap per audience:** on an Event item, set **Swap for audience** (Local or Online) and pick
+  **Fragment for that audience**. Visitors in that audience see that fragment in the item's place;
+  everyone else sees the first one. If the audience's fragment can't be loaded, the first one shows.
+  In Universal Editor both are shown, the audience's one outlined and labelled with the audience.
+
+## Audiences
+
+A visitor's audience comes from the link they arrive on and lasts for the visit (`scripts/audience.js`):
+
+- `…/en/learning-resources?audience=local`: local visitors, e.g. from a regional email campaign;
+- `…?audience=online`: online visitors;
+- `…?audience=` (empty): clears it.
+
+To demo, open the page with and without `?audience=local`. Audiences are a value list in the Event item
+model (`blocks/event-list/_event-list.json`); add an option there for a new audience.
 
 ## Rebuilding the package
 
-The events come from the section import report (`tools/importer/reports/<site>/en/*.report.json`,
-field `events`). After a re-import:
+The events come from `tools/aem-cf/events/<site>.json` (the demo events, including in-person versions;
+`type` is `webinar` or `in-person`) and the section import report
+(`tools/importer/reports/<site>/en/*.report.json`, field `events`); the events file wins for the same
+slug. After editing the events file or a re-import:
 
 ```bash
 node tools/aem-cf/build-events-package.mjs <site>   # -> tools/aem-assets/<site>-events-package.zip

@@ -53,9 +53,37 @@
   line-height: 1.5;
 }
 
+.event-list .event-list-body .event-list-location {
+  color: var(--color-neutral-700);
+  font-size: 14px;
+}
+
 .event-list .event-list-body a:any-link {
   color: var(--site-accent-dark-color);
   font-weight: 600;
+}
+
+/* Universal Editor only: the fragment an audience sees instead of the item before it */
+.event-list .event-list-alternative {
+  position: relative;
+  border: 1px dashed var(--border-color);
+  padding: var(--space-l) var(--space-xs) var(--space-xs);
+}
+
+.event-list .event-list-alternative::before {
+  content: attr(data-audience);
+  position: absolute;
+  top: 4px;
+  left: var(--space-xs);
+  color: var(--color-neutral-700);
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.event-list .event-list-alternative > :not(.event-list-date, .event-list-body) {
+  grid-column: 1 / -1;
+  margin: 0;
 }
 
 .event-list .event-list-missing {

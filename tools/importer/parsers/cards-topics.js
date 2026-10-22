@@ -141,14 +141,26 @@ export function eventData(document, container, base) {
     });
 }
 
-/** Event list block: one item per event, referencing its fragment in folder (a DAM path). */
-export function eventListBlock(document, events, folder) {
-  const cells = events.map((e) => {
+/**
+ * Event list block: one item per event, referencing its fragment in folder (a DAM path).
+ * swap ({ audience, suffix }, optional): visitors in that audience see the fragment <slug><suffix>
+ * instead (fields audience, audienceFragment).
+ */
+export function eventListBlock(document, events, folder, swap) {
+  const field = (name, nodes) => {
     const cell = document.createDocumentFragment();
-    cell.appendChild(document.createComment(' field:fragment '));
-    const a = el(document, 'a', [`${folder}/${e.slug}`], { href: `${folder}/${e.slug}` });
-    cell.appendChild(a);
-    return [cell];
+    cell.appendChild(document.createComment(` field:${name} `));
+    nodes.forEach((n) => cell.appendChild(n));
+    return cell;
+  };
+  const ref = (path) => el(document, 'a', [path], { href: path });
+  const cells = events.map((e) => {
+    const row = [field('fragment', [ref(`${folder}/${e.slug}`)])];
+    if (swap) {
+      row.push(field('audience', [document.createTextNode(swap.audience)]));
+      row.push(field('audienceFragment', [ref(`${folder}/${e.slug}${swap.suffix}`)]));
+    }
+    return row;
   });
   return WebImporter.Blocks.createBlock(document, { name: 'Event List', cells });
 }

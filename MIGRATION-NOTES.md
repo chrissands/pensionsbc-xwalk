@@ -86,7 +86,9 @@ represent. These notes are written so a partner can repeat the work in their own
     course / video / article cards; the call-to-action link covers the card).
   - Event List: one item per Event content fragment (picked in Universal Editor), loaded with the
     persisted query `event-by-path` from AEM publish (author in Universal Editor) and shown as dated
-    cards. Setup, model and authoring: `tools/aem-cf/README.md`.
+    cards. An item can swap in another fragment for an audience (Local / Online), from the visitor's
+    `?audience=` link, kept for the visit (`scripts/audience.js`). Setup, model and authoring:
+    `tools/aem-cf/README.md`.
   - Section styles: `sidebar` (main column + 1/3 sidebar), `quick-links` (heading + links in a row),
     `accent-heading` (heading in the site accent with a rule above).
   - Section pages get breadcrumbs: page property **Show breadcrumbs** (`breadcrumbs`, in the page model),
@@ -269,6 +271,13 @@ Demo: https://main--pensionsbc-college--chrissands.aem.page/en/
   `Origin` header (curl, a crawler) is cached by the AEM CDN without CORS headers for 2 hours and blocks
   that event in browsers until it expires; always test with an `Origin` header. A permanent fix is a
   CDN rule adding `Vary: Origin` to `/graphql/execute.json` (Cloud Manager config pipeline).
+- **Demo events and audience swap** (2026-10-22): `tools/aem-cf/events/college.json` adds 10 demo
+  events (4 new webinar topics, and an in-person workshop in a BC city for each of the 6 topics,
+  tagged `pensionsbc:event-type/in-person`), on top of the 2 real webinars. Only the 2 real webinars
+  have Arlo pages; the others link to the plan's Arlo listing. The Event model gained a `location` field
+  and the query returns it. On Learning resources each webinar swaps to its in-person workshop for
+  `?audience=local` (the importer writes this for the college site: `EVENT_SWAPS` in
+  `import-plan-section.js`).
 
 Known gaps:
 - Nav: the source's sign-in button shows a "My Account" logo; it is text here.
@@ -298,3 +307,4 @@ Not started. Scope: 15 pages per site (homepage included) plus nav and footer.
 | 2026-10-21 | Cross-site links are authored with pensionsbc.ca hostnames and pointed at the aem.page demo sites at runtime (PR #4; PR #2 closed as a duplicate). |
 | 2026-10-21 | Pilot scope: 15 pages per site, homepage included, plus nav and footer. |
 | 2026-10-22 | Events are content fragments (model Event) per site in `<site>/events`, tagged by type; authors pick them in an Event List block; delivered by a persisted GraphQL query from publish. |
+| 2026-10-22 | Audience swaps are per Event List item (default fragment + audience + fragment for that audience); the visitor's audience comes from `?audience=` on the arrival link and lasts for the visit. No experimentation plugin or Target. |
