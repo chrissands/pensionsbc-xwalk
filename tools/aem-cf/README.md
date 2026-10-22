@@ -59,7 +59,13 @@ Save. Make sure the model is **Enabled** (Content Fragment Models list: select i
   listing, tagged with its type. Reinstalling replaces these fragments (edits made to them in AEM are
   lost); other fragments in the folder are untouched.
 
-Install it after step 2: the fragments refer to the Event model.
+Install it after step 2: the fragments refer to the Event model. Each version is a separate entry in
+Package Manager: install the newest one. After reinstalling, publish the fragments again (the install
+replaces them on author only).
+
+The fragments are created referenceable (`mix:referenceable`, so AEM gives each a `jcr:uuid`), as AEM
+creates them. Package 1.1 and earlier did not do this, so those fragments showed in Assets but not in the
+Content Fragments console.
 
 ### 4. Save the persisted query
 

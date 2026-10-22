@@ -31,7 +31,8 @@ const MODEL = `${CONF}/settings/dam/cfm/models/event`;
 const TAG_PARENTS = [['pensionsbc', 'PensionsBC'], ['event-type', 'Event type']];
 const TYPES = { webinar: 'Webinar', 'in-person': 'In person' };
 const tagId = (type) => `pensionsbc:event-type/${type}`;
-const NS = 'xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:dam="http://www.day.com/dam/1.0"';
+const NS = 'xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:dam="http://www.day.com/dam/1.0" xmlns:mix="http://www.jcp.org/jcr/mix/1.0"';
+const BUILT = new Date().toISOString();
 
 const site = process.argv[2];
 if (!site) {
@@ -88,13 +89,15 @@ zip.file(`jcr_root${folder}/.content.xml`, `<?xml version="1.0" encoding="UTF-8"
 `);
 filters.push(`    <filter root="${folder}" mode="merge">\n      <include pattern="${folder}"/>\n      <include pattern="${folder}/jcr:content"/>\n    </filter>`);
 
-// fragments
+// fragments: referenceable, as AEM creates them (the Content Fragments console and the fragment
+// picker find fragments by jcr:uuid; without it they only show in Assets)
 events.forEach((e) => {
   const path = `${folder}/${e.slug}`;
   zip.file(`jcr_root${path}/.content.xml`, `<?xml version="1.0" encoding="UTF-8"?>
 <jcr:root ${NS}
-    jcr:primaryType="dam:Asset">
-    <jcr:content jcr:primaryType="dam:AssetContent" contentFragment="{Boolean}true" jcr:title="${xml(e.title)}">
+    jcr:primaryType="dam:Asset" jcr:mixinTypes="[mix:referenceable]">
+    <jcr:content jcr:primaryType="dam:AssetContent" contentFragment="{Boolean}true" jcr:title="${xml(e.title)}"
+        jcr:lastModified="{Date}${BUILT}" jcr:lastModifiedBy="pensionsbc-events-package">
         <data jcr:primaryType="nt:unstructured" cq:model="${MODEL}">
             <master jcr:primaryType="nt:unstructured"
                 title="${value(e.title)}"
@@ -121,7 +124,7 @@ zip.file('META-INF/vault/properties.xml', `<?xml version="1.0" encoding="UTF-8" 
 <properties>
 <entry key="group">pensionsbc</entry>
 <entry key="name">${name}</entry>
-<entry key="version">1.1</entry>
+<entry key="version">1.2</entry>
 <entry key="description">PensionsBC ${site}: event type tags, events folder and Event content fragments (tools/aem-cf)</entry>
 <entry key="packageType">content</entry>
 <entry key="requiresRoot">false</entry>
