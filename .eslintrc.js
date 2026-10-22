@@ -31,5 +31,13 @@ module.exports = {
       'no-await-in-loop': 'off',
       'import/no-extraneous-dependencies': ['error', { devDependencies: true }],
     },
+  }, {
+    // Node test runner files and the local mock server, not site code
+    files: ['test/**/*.js', 'test/**/*.mjs'],
+    env: { browser: false, node: true },
+    rules: {
+      'no-console': 'off',
+      'import/no-extraneous-dependencies': ['error', { devDependencies: true }],
+    },
   }],
 };
