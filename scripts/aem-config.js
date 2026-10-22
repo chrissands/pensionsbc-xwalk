@@ -14,7 +14,8 @@ export function aemHost() {
 
 /** Runs a persisted GraphQL query (GET, cacheable) and returns its data, or null on failure. */
 export async function persistedQuery(name, variables = {}) {
-  const params = Object.entries(variables).map(([k, v]) => `;${k}=${encodeURIComponent(v)}`).join('');
+  // AEM reads ";name=value" from the decoded path: encode the whole segment, not only the value
+  const params = Object.entries(variables).map(([k, v]) => encodeURIComponent(`;${k}=${v}`)).join('');
   const url = `${aemHost()}/graphql/execute.json/${GRAPHQL_CONFIG}/${name}${params}`;
   try {
     const res = await fetch(url, { credentials: aemHost() === AEM_PUBLISH ? 'omit' : 'include' });
