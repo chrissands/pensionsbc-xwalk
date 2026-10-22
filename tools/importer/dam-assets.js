@@ -30,9 +30,16 @@ export function damSrc(src, base) {
   return name ? DAM_ASSETS[name] : src;
 }
 
-/** Points every <img> in element at its DAM path. */
+/**
+ * Alt text with typographic apostrophes: a straight ' in imageAlt is escaped twice on the way
+ * through AEM and renders as "Teacher&#39;s" on Edge Delivery.
+ */
+export const pushSafeAlt = (alt) => (alt || '').replace(/'/g, '\u2019');
+
+/** Points every <img> in element at its DAM path, with push-safe alt text. */
 export function useDamImages(element, base) {
   element.querySelectorAll('img[src]').forEach((img) => {
     img.setAttribute('src', damSrc(img.getAttribute('src'), base));
+    if (img.hasAttribute('alt')) img.setAttribute('alt', pushSafeAlt(img.getAttribute('alt')));
   });
 }
