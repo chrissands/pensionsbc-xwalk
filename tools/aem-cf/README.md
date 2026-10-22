@@ -99,6 +99,9 @@ Published fragment changes can take a few minutes to show on the site: the query
 response to a request without `Origin` with no CORS headers and no `Vary: Origin`, and serves that copy to
 browsers too, so the event is missing on the sites until the cache expires (`s-maxage`, 2 hours).
 Variables go in the URL as one encoded segment: `event-by-path%3Bpath%3D%2Fcontent%2Fdam%2F...`.
+"Not found" responses (a fragment requested before it was published) are cached for 2 hours too.
+To make the sites skip every cached response at once, change `QUERY_CACHE_VERSION` in
+`scripts/aem-config.js` (it is sent as `?v=`) and merge.
 
 ## Authoring
 

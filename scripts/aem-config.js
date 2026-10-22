@@ -6,6 +6,11 @@
  */
 export const AEM_PUBLISH = 'https://publish-p129103-e1259800.adobeaemcloud.com';
 export const GRAPHQL_CONFIG = 'pensionsbc-base';
+/*
+ * The AEM CDN keeps query responses for 2 hours, including "not found" ones (e.g. a fragment
+ * requested before it was published). Changing this makes the sites skip every cached response.
+ */
+export const QUERY_CACHE_VERSION = '2';
 
 /** The AEM host to read from on this page. */
 export function aemHost() {
@@ -16,7 +21,7 @@ export function aemHost() {
 export async function persistedQuery(name, variables = {}) {
   // AEM reads ";name=value" from the decoded path: encode the whole segment, not only the value
   const params = Object.entries(variables).map(([k, v]) => encodeURIComponent(`;${k}=${v}`)).join('');
-  const url = `${aemHost()}/graphql/execute.json/${GRAPHQL_CONFIG}/${name}${params}`;
+  const url = `${aemHost()}/graphql/execute.json/${GRAPHQL_CONFIG}/${name}${params}?v=${QUERY_CACHE_VERSION}`;
   try {
     const res = await fetch(url, { credentials: aemHost() === AEM_PUBLISH ? 'omit' : 'include' });
     if (!res.ok) return null;
