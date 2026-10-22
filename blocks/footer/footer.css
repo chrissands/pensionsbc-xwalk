@@ -60,3 +60,180 @@ footer .footer li {
     padding-top: 0;
   }
 }
+
+/*
+ * Plan site footer (values from college.pensionsbc.ca): sections styled with Section Metadata
+ * footer-links | footer-about | footer-connect | footer-plans | footer-legal.
+ */
+body.theme-plan footer {
+  background-color: var(--color-plan-grey);
+  font-size: var(--body-font-size-m);
+}
+
+footer .footer > div:has(.footer-links) {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-l);
+  padding-top: var(--space-xxl);
+  padding-bottom: var(--space-l);
+}
+
+footer .footer .section:is(.footer-links, .footer-about, .footer-connect, .footer-plans, .footer-legal) .default-content-wrapper {
+  display: block;
+  text-align: start;
+}
+
+footer .footer .section:is(.footer-links, .footer-connect, .footer-plans) h2 {
+  margin: 0 0 var(--space-s);
+  color: var(--site-accent-dark-color);
+  font-size: 16px;
+  font-weight: var(--font-weight-bold);
+  line-height: 1.6;
+  text-transform: uppercase;
+}
+
+footer .footer .section:is(.footer-links, .footer-connect, .footer-legal) ul {
+  display: block;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+footer .footer .section:is(.footer-links, .footer-connect) li {
+  padding: 0 0 var(--space-xs);
+}
+
+/* link columns: heading + list pairs side by side */
+footer .footer .section.footer-links .default-content-wrapper {
+  display: grid;
+  grid-template-rows: repeat(4, auto);
+  grid-auto-columns: 1fr;
+  grid-auto-flow: column;
+  gap: 0 var(--space-m);
+}
+
+footer .footer .section.footer-links ul {
+  margin-bottom: var(--space-l);
+}
+
+/* about: logo + description */
+footer .footer .section.footer-about img {
+  width: auto;
+  height: 51px;
+}
+
+footer .footer .section.footer-about p {
+  margin: 0 0 var(--space-l);
+}
+
+/* other plans: bordered row, heading then logos */
+footer .footer .section.footer-plans .default-content-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-s) var(--space-xl);
+  border: 1px solid var(--color-plan-rule);
+  padding: 18px;
+}
+
+footer .footer .section.footer-plans h2 {
+  flex: 1 1 100%;
+  margin: 0;
+}
+
+footer .footer .section.footer-plans p {
+  margin: 0;
+}
+
+footer .footer .section.footer-plans img {
+  display: block;
+  width: auto;
+  height: 30px;
+}
+
+/* legal: rule, legal links left, copyright right */
+footer .footer .section.footer-legal .default-content-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--space-xs) var(--space-l);
+  border-top: 1px solid var(--color-plan-rule);
+  padding-top: var(--space-s);
+}
+
+footer .footer .section.footer-legal ul {
+  display: flex;
+  flex: 0 1 auto;
+  flex-wrap: wrap;
+  gap: var(--space-xs) var(--space-l);
+}
+
+footer .footer .section.footer-legal p {
+  margin: 0;
+}
+
+/* connect: bordered box, hours beside links and YouTube */
+footer .footer .section.footer-connect .default-content-wrapper {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-content: start;
+  gap: 0 var(--space-l);
+  border: 1px solid var(--color-plan-rule);
+  padding: var(--space-l);
+}
+
+footer .footer .section.footer-connect h2 {
+  grid-column: 1 / -1;
+}
+
+footer .footer .section.footer-connect .default-content-wrapper > p:first-of-type {
+  grid-row: span 2;
+  margin: 0;
+}
+
+footer .footer .section.footer-connect :is(ul, .default-content-wrapper > p:last-child) {
+  grid-column: 2;
+  border-left: 1px solid var(--color-plan-rule);
+  padding-left: var(--space-l);
+}
+
+footer .footer .section.footer-connect .default-content-wrapper > p:last-child a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  width: 34px;
+  height: 34px;
+  background-color: var(--site-accent-dark-color);
+}
+
+footer .footer .section.footer-connect .default-content-wrapper > p:last-child img {
+  width: 20px;
+  height: auto;
+}
+
+@media (width >= 900px) {
+  footer .footer > div:has(.footer-links) {
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas:
+      'links links'
+      'about connect'
+      'plans plans'
+      'legal legal';
+    gap: var(--space-l) var(--space-xl);
+  }
+
+  footer .footer .section.footer-links { grid-area: links; }
+  footer .footer .section.footer-about { grid-area: about; }
+  footer .footer .section.footer-connect { grid-area: connect; }
+  footer .footer .section.footer-plans { grid-area: plans; }
+  footer .footer .section.footer-legal { grid-area: legal; }
+
+  footer .footer .section.footer-links .default-content-wrapper {
+    grid-template-rows: auto auto;
+  }
+
+  footer .footer .section.footer-plans h2 {
+    flex: 0 0 calc(33% - var(--space-xl));
+  }
+}

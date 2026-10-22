@@ -163,6 +163,26 @@
           {
             "name": "Highlight",
             "value": "highlight"
+          },
+          {
+            "name": "Footer: link columns",
+            "value": "footer-links"
+          },
+          {
+            "name": "Footer: about",
+            "value": "footer-about"
+          },
+          {
+            "name": "Footer: connect with us",
+            "value": "footer-connect"
+          },
+          {
+            "name": "Footer: other plans",
+            "value": "footer-plans"
+          },
+          {
+            "name": "Footer: legal",
+            "value": "footer-legal"
           }
         ]
       }

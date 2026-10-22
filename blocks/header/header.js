@@ -1,6 +1,7 @@
 import { getMetadata } from '../../scripts/aem.js';
 import { fetchPlaceholders } from '../../scripts/placeholders.js';
 import { loadFragment } from '../fragment/fragment.js';
+import { joinLinkedImages } from '../../scripts/scripts.js';
 
 // media query match that indicates mobile/tablet width
 const isDesktop = window.matchMedia('(min-width: 900px)');
@@ -205,6 +206,8 @@ export default async function decorate(block) {
   });
 
   const navBrand = nav.querySelector('.nav-brand');
+  // brand logo: an Image followed by a Link, joined into a linked logo
+  joinLinkedImages(navBrand);
   const brandLink = navBrand.querySelector('.button');
   if (brandLink) {
     brandLink.className = '';

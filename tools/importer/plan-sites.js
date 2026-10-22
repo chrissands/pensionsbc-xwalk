@@ -48,6 +48,26 @@ export function planSiteOf(href, base = 'https://www.pensionsbc.ca/') {
   return Object.keys(PLAN_HOSTS).find((site) => PLAN_HOSTS[site] === host && site !== 'corporate') || null;
 }
 
+// Liferay pages on a plan host that are part of My Account, not of the plan site
+const MY_ACCOUNT_PATHS = ['/web/my-account/registration'];
+
+/**
+ * A link as it should appear on the migrated site. Links to the page's own site become
+ * relative /en/<path> (the root becomes /en/); everything else goes through productionHref.
+ */
+export function siteHref(href, base) {
+  let url;
+  try {
+    url = new URL(href, base);
+  } catch (e) {
+    return href;
+  }
+  const path = url.pathname.replace(/\/$/, '');
+  if (MY_ACCOUNT_PATHS.includes(path)) return MY_ACCOUNT_URL;
+  if (url.hostname !== new URL(base).hostname) return productionHref(url.href, base);
+  return `/en${path || '/'}${url.hash}`;
+}
+
 /** Rewrites a source link to its production target: plan home, My Account, or unchanged. */
 export function productionHref(href, base) {
   const site = planSiteOf(href, base);

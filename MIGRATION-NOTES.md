@@ -67,6 +67,18 @@ represent. These notes are written so a partner can repeat the work in their own
   language prefix; header labels come from `/<lang>/placeholders.json`. No English strings in code.
 - Nav page structure (every site): three sections named with Section Metadata **Brand** | **Sections** |
   **Tools**. Tools may be empty. Footer: one section.
+- **Site themes:** `scripts.js` sets `body.site-<site>` from the aem.page host or the AEM path (Universal
+  Editor), and `body.theme-plan` on the five plan sites, which share one source theme (1280px layout, 18px
+  text, teal links, grey footer). Each plan only sets its accent colours (`--site-accent-color`,
+  `--site-accent-dark-color`) in `styles/styles.css`. Authors set nothing.
+- **Linked images** (logos) are authored as an Image followed by a Link; `joinLinkedImages()` in
+  `scripts.js` joins them (header brand, footer).
+- **Header:** a nav with section links (plan sites) gets two rows on desktop: logo + tools, then links.
+  Tools are text links plus one primary button (bold link), e.g. Sign in to My Account; on small screens
+  the button shows once the menu is open. A nav without links (corporate) has no menu button.
+- **Footer:** plan footers are five sections with Section Metadata styles `footer-links`, `footer-about`,
+  `footer-connect`, `footer-plans`, `footer-legal` (options in the section model). The corporate footer is
+  one unstyled section and is laid out as before.
 - Blocks reused so far: Hero (`split` style), Cards (`logos` style). Block models are in
   `blocks/<block>/_<block>.json`; run `npm run build:json` after changing them.
 - Design tokens are CSS custom properties at the top of `styles/styles.css`. A rebrand is one edit there.
@@ -175,7 +187,30 @@ History: the first corporate package (before `tools/aem-push`) is on the `conten
 (`PLACEMENT.md`, zips 1.0.0 to 1.1.0). It put nav and footer in `language-masters/en`; they are now
 local per site.
 
-### College, MPP, PSPP, TPP, WorkSafeBC
+### College (`pensionsbc-college`)
+
+Demo: https://main--pensionsbc-college--chrissands.aem.page/en/
+
+| Page | AEM path | Scope | Source |
+|---|---|---|---|
+| Nav | `college/en/nav` | local | college.pensionsbc.ca header |
+| Footer | `college/en/footer` | local | college.pensionsbc.ca footer |
+| Homepage | `college/en/index` | local | https://college.pensionsbc.ca/ (next) |
+| Copyright, Privacy, Disclaimer | `college/en/{copyright,privacy,disclaimer}` | inherited | `language-masters/en/*` |
+
+- Importers `tools/importer/import-plan-nav.js` and `import-plan-footer.js` work for every plan site (the
+  site comes from the source host); run with `tools/importer/urls-college-global.txt`.
+- Images: `tools/aem-assets/college-images.zip` (12 images, uploaded 2026-10-22), mapped in `dam-assets.js`.
+
+Known gaps:
+- Nav: Search (a Liferay search page) is not migrated. The source's sign-in button shows a "My Account"
+  logo; it is text here.
+- Footer: Co-browse (third-party script) is not migrated. "Register for My Account" goes to
+  myaccount.pensionsbc.ca (the source's registration form is a Liferay page). Footer headings are h2
+  (h4 on the source) so the heading order is valid.
+- The nav and footer links point at pages that are not migrated yet (404 until they are).
+
+### MPP, PSPP, TPP, WorkSafeBC
 
 Not started. Scope: 15 pages per site (homepage included) plus nav and footer.
 

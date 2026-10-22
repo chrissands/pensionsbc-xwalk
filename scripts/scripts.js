@@ -48,6 +48,30 @@ export function moveInstrumentation(from, to) {
 }
 
 /**
+ * Linked images are authored as an Image followed by a Link (Universal Editor has no
+ * linked-image component). Joins each such pair so the picture becomes the link content;
+ * the link text becomes the image's alt text when the image has none.
+ * @param {Element} container The element to look in
+ */
+export function joinLinkedImages(container) {
+  container?.querySelectorAll('p').forEach((imageP) => {
+    const picture = imageP.querySelector(':scope > picture');
+    const linkP = imageP.nextElementSibling;
+    if (!picture || imageP.textContent.trim() || linkP?.tagName !== 'P') return;
+    const link = linkP.querySelector(':scope > a[href]');
+    const linkOnly = link && linkP.children.length === 1
+      && linkP.textContent.trim() === link.textContent.trim();
+    if (!linkOnly) return;
+    const img = picture.querySelector('img');
+    if (img && !img.alt) img.alt = link.textContent.trim();
+    link.className = '';
+    link.replaceChildren(picture);
+    linkP.className = '';
+    imageP.remove();
+  });
+}
+
+/**
  * load fonts.css and set a session storage flag
  */
 async function loadFonts() {
@@ -96,6 +120,28 @@ const PLAN_SITES = {
   'worksafe.pensionsbc.ca': 'pensionsbc-worksafe',
 };
 const EDS_HOST = /^([a-z0-9-]+)--([a-z0-9-]+)--([a-z0-9-]+)\.(aem\.page|aem\.live)$/;
+
+const SITES = Object.fromEntries(Object.values(PLAN_SITES)
+  .map((eds) => [eds, eds === 'pensionsbc-xwalk' ? 'corporate' : eds.replace(/^pensionsbc-/, '')]));
+
+/**
+ * The site a page belongs to: from the aem.page / aem.live host, or from the AEM path
+ * (/content/pensionsbc-base/<site>/... in Universal Editor, /content/<site>/... locally).
+ */
+function siteOf({ hostname, pathname }) {
+  const host = hostname.match(EDS_HOST);
+  if (host) return SITES[host[2]] || '';
+  const path = pathname.match(/^\/content\/(?:pensionsbc-base\/)?([a-z]+)\//);
+  return path && Object.values(SITES).includes(path[1]) ? path[1] : '';
+}
+
+/** body.site-<site>, plus body.theme-plan on the plan sites (see the site themes in styles.css) */
+function decorateSiteTheme() {
+  const site = siteOf(window.location);
+  if (!site) return;
+  document.body.classList.add(`site-${site}`);
+  if (site !== 'corporate') document.body.classList.add('theme-plan');
+}
 
 function rewritePlanLinks(main) {
   const current = window.location.hostname.match(EDS_HOST);
@@ -152,6 +198,7 @@ export function decorateMain(main) {
 async function loadEager(doc) {
   document.documentElement.lang = 'en';
   decorateTemplateAndTheme();
+  decorateSiteTheme();
   if (getMetadata('breadcrumbs').toLowerCase() === 'true') {
     doc.body.dataset.breadcrumbs = true;
   }
