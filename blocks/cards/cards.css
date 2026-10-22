@@ -182,3 +182,187 @@
     columns: 2;
   }
 }
+
+/* the styles below are mutually exclusive classes on the block, so their selectors never compete */
+/* stylelint-disable no-descending-specificity */
+
+/*
+ * topic link styles (values from college.pensionsbc.ca section pages): a title link and a
+ * description per card. featured and links are grey boxes (featured titles in the site accent),
+ * link-list is separated by rules. Two columns where there is room.
+ */
+.cards:is(.featured, .links, .link-list) > ul {
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 460px), 1fr));
+  gap: var(--space-m);
+}
+
+.cards:is(.featured, .links) > ul > li {
+  border: 1px solid #ccc;
+  background-color: #efefef;
+}
+
+.cards.link-list > ul {
+  gap: 0 var(--space-m);
+}
+
+.cards.link-list > ul > li {
+  border: 0;
+  border-bottom: 1px solid #ccc;
+  background: none;
+}
+
+.cards:is(.featured, .links, .link-list) .cards-card-body {
+  margin: 0;
+  padding: var(--space-m);
+}
+
+.cards:is(.featured, .links, .link-list) .cards-card-body p {
+  margin: 0 0 var(--space-s);
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.cards:is(.featured, .links, .link-list) .cards-card-body p:first-child {
+  margin-bottom: var(--space-m);
+  font-weight: 600;
+}
+
+.cards.featured .cards-card-body p:first-child a:any-link {
+  color: var(--site-accent-color);
+}
+
+/* events: date badge beside the details (values from the source's webinar listing) */
+.cards.events > ul {
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 440px), 1fr));
+  gap: var(--space-l) var(--space-xl);
+}
+
+.cards.events > ul > li {
+  border: 0;
+  background: none;
+}
+
+.cards.events .cards-card-body {
+  display: grid;
+  grid-template-columns: 64px 1fr;
+  gap: 0 var(--space-s);
+  margin: 0;
+}
+
+.cards.events .cards-card-body > * {
+  grid-column: 2;
+  margin: 0 0 var(--space-xs);
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.cards.events .cards-card-body > p:first-child {
+  grid-row: 1 / span 6;
+  grid-column: 1;
+  align-self: start;
+  border-radius: 4px;
+  padding: var(--space-xs) 4px;
+  background-color: var(--site-accent-dark-color);
+  color: var(--color-white);
+  font-size: 14px;
+  line-height: 1.3;
+  text-align: center;
+}
+
+.cards.events .cards-card-body > p:first-child strong {
+  display: block;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.cards.events .cards-card-body h3 {
+  margin: 0 0 var(--space-xs);
+  color: var(--heading-color);
+  font-size: 22px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.cards.events .cards-card-body a:any-link {
+  color: var(--site-accent-dark-color);
+  font-weight: 600;
+}
+
+/* resources: three-column linked cards; the last link (the call to action) covers the card */
+.cards.resources > ul {
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+  gap: var(--space-l);
+}
+
+.cards.resources > ul > li {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  border: 0;
+  background-color: #f6f6f6;
+  box-shadow: 0 1px 4px rgb(0 0 0 / 25%);
+}
+
+.cards.resources > ul > li:focus-within {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.cards.resources > ul > li img {
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+}
+
+.cards.resources .cards-card-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  margin: 0;
+  padding: var(--space-m);
+}
+
+.cards.resources .cards-card-body h3 {
+  margin: 0 0 4px;
+  color: var(--heading-color);
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.cards.resources .cards-card-body p {
+  margin: 0 0 var(--space-s);
+  font-size: 15px;
+  line-height: 1.4;
+}
+
+.cards.resources .cards-card-body h3 + p {
+  color: var(--color-neutral-700);
+}
+
+.cards.resources .cards-card-body p:last-child {
+  margin: auto 0 0;
+  padding-top: var(--space-s);
+  text-align: end;
+}
+
+.cards.resources .cards-card-body p:last-child a:any-link {
+  color: var(--heading-color);
+  font-weight: 600;
+}
+
+.cards.resources .cards-card-body p:last-child a::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+}
+
+.cards.resources .cards-card-body p:last-child a::after {
+  content: ' \2192';
+  color: var(--color-plan-teal, var(--link-color));
+}
+
+.cards.resources .cards-card-body p:last-child a:focus {
+  outline: none;
+}
+
+/* stylelint-enable no-descending-specificity */

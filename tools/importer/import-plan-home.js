@@ -12,14 +12,16 @@ import { PLAN_HOSTS } from './plan-sites.js';
  * - .hero                         -> Hero (panel)
  * - a layout row of two columns   -> Cards (tiles): the left column's articles, then the right's
  * - an article that is only <hr>  -> section break
- * - any other article             -> default content (e.g. the "In case you missed it..." h2)
+ * - any other article             -> default content; a heading coloured on the source (the
+ *   "In case you missed it..." h2) gives its section the accent-heading style
  * Empty layout fragments are skipped. Images are referenced by DAM path (dam-assets.js), so the
  * site's images must be in AEM Assets first (tools/aem-assets/UPLOAD.md).
  * Run with tools/importer/urls-<site>-home.txt.
  */
 
 // blocks are still tables while the importer builds the page
-const isBlock = (el) => el?.tagName === 'TABLE';
+const isBlock = (el) => el?.tagName === 'TABLE'
+  && !/section metadata/i.test((el.querySelector('th, td')?.textContent || ''));
 
 function articlesIn(el) {
   return [...el.querySelectorAll('.journal-content-article')]
@@ -65,6 +67,10 @@ export default {
       } else {
         if (isBlock(last())) main.append(document.createElement('hr'));
         articleContent(document, unit, base).forEach((el) => main.append(el));
+        // a heading coloured on the source (e.g. "In case you missed it...") -> accent heading section
+        if (unit.querySelector('h2[style*="color"], h3[style*="color"]')) {
+          main.append(WebImporter.Blocks.createBlock(document, { name: 'Section Metadata', cells: { style: 'accent-heading' } }));
+        }
       }
     });
 

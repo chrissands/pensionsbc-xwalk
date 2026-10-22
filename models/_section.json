@@ -53,6 +53,18 @@
             {
               "name": "Footer: legal",
               "value": "footer-legal"
+            },
+            {
+              "name": "Main and sidebar (2/3 + 1/3)",
+              "value": "sidebar"
+            },
+            {
+              "name": "Quick links bar",
+              "value": "quick-links"
+            },
+            {
+              "name": "Accent heading with rule",
+              "value": "accent-heading"
             }
           ]
         }
