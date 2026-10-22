@@ -224,6 +224,10 @@
           {
             "name": "Logo links",
             "value": "logos"
+          },
+          {
+            "name": "Tiles (two-column)",
+            "value": "tiles"
           }
         ]
       }
@@ -251,6 +255,23 @@
         "value": "",
         "label": "Text",
         "valueType": "string"
+      },
+      {
+        "component": "select",
+        "name": "variant",
+        "label": "Card style",
+        "valueType": "string",
+        "value": "",
+        "options": [
+          {
+            "name": "Default",
+            "value": ""
+          },
+          {
+            "name": "Highlight",
+            "value": "highlight"
+          }
+        ]
       }
     ]
   },
@@ -367,6 +388,10 @@
           {
             "name": "Split (text beside image)",
             "value": "split"
+          },
+          {
+            "name": "Panel (box over image)",
+            "value": "panel"
           }
         ]
       },

@@ -138,3 +138,87 @@
     max-width: 100%;
   }
 }
+
+/*
+ * panel style: image within the content width, with a box of links over it on the right
+ * (values from college.pensionsbc.ca). Box: heading, then a link + description per topic,
+ * separated by rules. On small screens the box sits below the image.
+ */
+.hero-container .hero-wrapper:has(> .hero.panel) {
+  max-width: var(--content-max-width);
+  margin: 0 auto;
+  padding: 0 var(--content-padding);
+}
+
+.hero.panel {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  padding: 0;
+}
+
+.hero.panel picture {
+  position: static;
+  display: block;
+  z-index: auto;
+}
+
+.hero.panel img {
+  display: block;
+  height: 200px;
+}
+
+.hero.panel > div:last-child > div {
+  border: 1px solid var(--color-plan-rule, var(--border-color));
+  padding: var(--space-m);
+  background-color: #f2f2f2;
+}
+
+.hero.panel h2 {
+  margin: 0 0 var(--space-s);
+  border-bottom: 1px solid var(--color-plan-rule, var(--border-color));
+  padding-bottom: var(--space-s);
+  color: var(--heading-color);
+  font-size: 32px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.hero.panel > div:last-child p {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.hero.panel > div:last-child p:has(> a) {
+  font-weight: 600;
+}
+
+.hero.panel > div:last-child p:not(:has(> a)) {
+  margin-bottom: var(--space-s);
+  border-bottom: 1px solid var(--color-plan-rule, var(--border-color));
+  padding-bottom: var(--space-s);
+}
+
+@media (width >= 768px) {
+  .hero.panel {
+    position: relative;
+    align-items: flex-end;
+    min-height: 385px;
+  }
+
+  .hero.panel > div:first-child {
+    position: absolute;
+    inset: 0;
+  }
+
+  .hero.panel img {
+    height: 100%;
+  }
+
+  .hero.panel > div:last-child {
+    position: relative;
+    width: min(430px, 45%);
+    margin: var(--space-m) var(--space-m) var(--space-m) 0;
+  }
+}

@@ -3,13 +3,40 @@
   "edsSite": "pensionsbc-college",
   "sourceHost": "https://college.pensionsbc.ca/",
   "pages": [
-    { "content": "college/en/nav", "title": "Navigation", "scope": "local", "note": "College header: logo, Your pension / Learning resources / About us, Employer, Sign in to My Account" },
-    { "content": "college/en/footer", "title": "Footer", "scope": "local", "note": "College footer: link columns, about, connect with us, other plans, legal" }
+    {
+      "content": "college/en/index",
+      "scope": "local",
+      "note": "Homepage, served at /en/. Cancel inheritance on this page before the first install."
+    },
+    {
+      "content": "college/en/nav",
+      "title": "Navigation",
+      "scope": "local",
+      "note": "College header: logo, Your pension / Learning resources / About us, Employer, Sign in to My Account"
+    },
+    {
+      "content": "college/en/footer",
+      "title": "Footer",
+      "scope": "local",
+      "note": "College footer: link columns, about, connect with us, other plans, legal"
+    }
   ],
   "inherited": [
-    { "aem": "college/en/copyright", "from": "language-masters/en/copyright" },
-    { "aem": "college/en/disclaimer", "from": "language-masters/en/disclaimer" },
-    { "aem": "college/en/privacy", "from": "language-masters/en/privacy" },
-    { "aem": "college/en/placeholders", "from": "language-masters/en/placeholders" }
+    {
+      "aem": "college/en/copyright",
+      "from": "language-masters/en/copyright"
+    },
+    {
+      "aem": "college/en/disclaimer",
+      "from": "language-masters/en/disclaimer"
+    },
+    {
+      "aem": "college/en/privacy",
+      "from": "language-masters/en/privacy"
+    },
+    {
+      "aem": "college/en/placeholders",
+      "from": "language-masters/en/placeholders"
+    }
   ]
 }

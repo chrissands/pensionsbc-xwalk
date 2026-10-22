@@ -35,6 +35,11 @@ export const DAM_ASSETS = {
   'all-plans-education-promo-light-mist.jpg': `${DAM}/shared/learn-about-my-pension.jpg`,
 };
 
+// inline SVG icons in source content (keyed by an element id inside the svg), as DAM PNGs
+export const SVG_ICONS = {
+  msgctrIcon: `${DAM}/shared/message-centre-icon.png`,
+};
+
 /** The DAM path for a source image URL, or the URL unchanged when the image isn't in AEM yet. */
 export function damSrc(src, base) {
   let url;
