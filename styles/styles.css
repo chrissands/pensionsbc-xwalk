@@ -91,6 +91,11 @@
   --focus-ring-width: 2px;
   --focus-ring-offset: 2px;
 
+  /* site theme defaults (corporate); plan sites override them, see the site themes below */
+  --site-accent-color: var(--color-brand-primary);
+  --site-accent-dark-color: var(--color-brand-primary-dark);
+  --site-top-border-width: 0;
+
   /* nav heights */
   --nav-height: 64px;
   --breadcrumbs-height: 34px;
@@ -102,6 +107,31 @@
     /* desktop nav: brand + two rows of plan-switcher links (reserved to avoid layout shift) */
     --nav-height: 88px;
   }
+}
+
+/*
+ * Site themes. scripts.js sets body.site-<site> from the aem.page host or the AEM path, and
+ * body.theme-plan on the five plan sites, which share one source theme (values from
+ * college.pensionsbc.ca computed styles). A plan only sets its accent colours.
+ */
+body.theme-plan {
+  --color-plan-teal: #167183;
+  --color-plan-grey: #e8e8e8;
+  --color-plan-rule: #bbb;
+  --text-color: #1a1a1a;
+  --heading-color: #333;
+  --link-color: var(--color-plan-teal);
+  --link-hover-color: var(--site-accent-dark-color);
+  --focus-ring-color: var(--color-plan-teal);
+  --body-font-size-m: 18px;
+  --content-max-width: 1280px;
+  --content-padding: 20px;
+  --site-top-border-width: 6px;
+}
+
+body.site-college {
+  --site-accent-color: #7845c1;
+  --site-accent-dark-color: #513f77;
 }
 
 /* fallback font, metrics approximated to Source Sans Pro */

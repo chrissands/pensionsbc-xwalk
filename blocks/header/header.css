@@ -1,5 +1,6 @@
 /* header and nav layout */
 header .nav-wrapper {
+  border-top: var(--site-top-border-width) solid var(--site-accent-color);
   background-color: var(--background-color);
   box-shadow: 0 1px 0 var(--border-color);
   width: 100%;
@@ -304,17 +305,135 @@ header nav .nav-sections ul > li > ul > li {
   }
 }
 
-/* tools */
+/* tools: text links, and a primary button (e.g. Sign in to My Account) */
 header nav .nav-tools {
   grid-area: tools;
 }
 
-header nav .nav-tools .button {
+header nav .nav-tools .default-content-wrapper {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs) var(--space-m);
+}
+
+header nav .nav-tools .button-container {
+  margin: 0;
+}
+
+header nav .nav-tools a.button {
   margin: 0;
   border: none;
-  padding: 0.5em;
+  border-radius: 2px;
+  padding: 0;
   background: none;
-  line-height: 0;
+  color: var(--link-color);
+  font-size: var(--body-font-size-m);
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+header nav .nav-tools a.button:hover,
+header nav .nav-tools a.button:focus {
+  color: var(--link-hover-color);
+  text-decoration: underline;
+}
+
+header nav .nav-tools a.button.primary {
+  padding: 15px 20px;
+  background-color: var(--link-color);
+  color: var(--color-white);
+  font-size: 16px;
+  font-weight: var(--font-weight-regular);
+}
+
+header nav .nav-tools a.button.primary:hover,
+header nav .nav-tools a.button.primary:focus {
+  background-color: var(--site-accent-dark-color);
+  color: var(--color-white);
+}
+
+/*
+ * Navs with section links (the plan sites): logo + tools on the first row, links below on
+ * desktop; on small screens the menu button is on the right and the primary tool (Sign in)
+ * shows once the menu is open, as on the source.
+ */
+header nav:has(.nav-sections a) {
+  grid-template:
+    'brand tools hamburger' var(--nav-height)
+    'sections sections sections' 1fr / 1fr auto auto;
+}
+
+@media (width < 900px) {
+  header nav[aria-expanded='true']:has(.nav-sections a) {
+    grid-template:
+      'brand hamburger' var(--nav-height)
+      'sections sections' auto
+      'tools tools' auto / 1fr auto;
+  }
+
+  header nav[aria-expanded='false']:has(.nav-sections a) .nav-tools a.button.primary {
+    display: none;
+  }
+
+  header nav[aria-expanded='true']:has(.nav-sections a) .nav-tools {
+    align-self: start;
+    padding: var(--space-m) 0;
+  }
+}
+
+body.theme-plan header nav .nav-brand {
+  flex-basis: auto;
+}
+
+body.theme-plan header nav .nav-brand img {
+  width: auto;
+  height: 40px;
+}
+
+@media (width < 900px) {
+  header nav:has(.nav-sections a) .nav-sections a:any-link {
+    display: block;
+    padding: var(--space-xs) 0;
+    font-size: 20px;
+    font-weight: 600;
+  }
+}
+
+@media (width >= 900px) {
+  header nav:has(.nav-sections a) {
+    display: grid;
+    grid-template:
+      'brand tools' auto
+      'sections sections' 56px / 1fr auto;
+    gap: 0 var(--space-xl);
+    padding: 0 var(--content-padding);
+  }
+
+  header nav:has(.nav-sections a) .nav-brand {
+    padding: 20px 0 14px;
+  }
+
+  body.theme-plan header nav .nav-brand img {
+    height: 51px;
+  }
+
+  header nav:has(.nav-sections a) .nav-sections ul {
+    justify-content: flex-start;
+    gap: 0 var(--space-xl);
+  }
+
+  header nav:has(.nav-sections a) .nav-sections a:any-link {
+    display: block;
+    color: #3a3938;
+    font-size: 22px;
+    font-weight: 600;
+    line-height: 56px;
+  }
+
+  header nav:has(.nav-sections a) .nav-sections a:hover,
+  header nav:has(.nav-sections a) .nav-sections a:focus {
+    color: var(--site-accent-dark-color);
+  }
 }
 
 /* breadcrumbs */

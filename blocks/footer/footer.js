@@ -1,5 +1,6 @@
 import { getMetadata } from '../../scripts/aem.js';
 import { loadFragment } from '../fragment/fragment.js';
+import { joinLinkedImages } from '../../scripts/scripts.js';
 
 /**
  * loads and decorates the footer
@@ -19,23 +20,10 @@ export default async function decorate(block) {
   const footer = document.createElement('div');
   while (fragment.firstElementChild) footer.append(fragment.firstElementChild);
 
-  // linked logos: authored as an Image followed by a Link (no linked-image component in
-  // Universal Editor); join them so the picture becomes the link content
-  footer.querySelectorAll('p').forEach((imageP) => {
-    const picture = imageP.querySelector(':scope > picture');
-    const linkP = imageP.nextElementSibling;
-    if (!picture || imageP.textContent.trim() || linkP?.tagName !== 'P') return;
-    const link = linkP.querySelector(':scope > a[href]');
-    const linkOnly = link && linkP.children.length === 1
-      && linkP.textContent.trim() === link.textContent.trim();
-    if (!linkOnly) return;
-    const img = picture.querySelector('img');
-    if (img && !img.alt) img.alt = link.textContent.trim();
-    link.className = '';
-    link.replaceChildren(picture);
-    linkP.className = '';
-    imageP.remove();
-  });
+  joinLinkedImages(footer);
+  // footers have no buttons: a link alone in a paragraph stays a plain link
+  footer.querySelectorAll('.button-container').forEach((p) => p.classList.remove('button-container'));
+  footer.querySelectorAll('a.button').forEach((a) => a.classList.remove('button', 'primary', 'secondary'));
 
   block.append(footer);
 }
