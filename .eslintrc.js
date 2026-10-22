@@ -23,7 +23,7 @@ module.exports = {
   },
   overrides: [{
     // Node command-line tooling, not site code
-    files: ['tools/aem-push/**/*.mjs'],
+    files: ['tools/aem-push/**/*.mjs', 'tools/aem-cf/**/*.mjs'],
     env: { browser: false, node: true },
     rules: {
       'no-console': 'off',

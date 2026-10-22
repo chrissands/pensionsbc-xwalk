@@ -2,7 +2,9 @@
 /* global WebImporter */
 
 import { buildTiles } from './parsers/cards-tiles.js';
-import { topicCards, eventCards, resourceCards } from './parsers/cards-topics.js';
+import {
+  topicCards, resourceCards, eventData, eventListBlock,
+} from './parsers/cards-topics.js';
 import { articleContent } from './parsers/plan-content.js';
 import { PLAN_HOSTS, siteHref, planNameOf } from './plan-sites.js';
 
@@ -16,7 +18,8 @@ import { PLAN_HOSTS, siteHref, planNameOf } from './plan-sites.js';
  * - .row.topics                      -> Cards (link-list)
  * - other site-map portlets          -> Cards (links)
  * - .subnavQuickLinks                -> section styled quick-links: h2 + list of links
- * - .eventsListing                   -> Cards (events)
+ * - .eventsListing                   -> Event list (items reference Event content fragments; the
+ *                                      event data goes to the import report for tools/aem-cf)
  * - .featureCards                    -> Cards (resources)
  * - .search-bar                      -> Search block (the site's search page)
  * - a row with a 2/3 and a filled 1/3 column -> section styled sidebar: the main column's
@@ -64,6 +67,7 @@ export default {
     if (!root) throw new Error('#main-content not found');
 
     const main = document.createElement('div');
+    const events = [];
     let newSection = false;
     const startSection = () => {
       if (main.children.length && (newSection || isBlock(main.lastElementChild))) main.append(document.createElement('hr'));
@@ -82,7 +86,13 @@ export default {
         if (unit.querySelector('.row.topics')) return topicCards(document, unit.querySelector('.row.topics'), 'link-list', base);
         return topicCards(document, unit, 'links', base);
       }
-      if (unit.matches('.eventsListing')) return eventCards(document, unit, base);
+      if (unit.matches('.eventsListing')) {
+        // webinars become Event content fragments (built by tools/aem-cf from the import report),
+        // referenced by an Event list block
+        const data = eventData(document, unit, base);
+        events.push(...data);
+        return eventListBlock(document, data, `/content/dam/pensionsbc-base/${site}/events`);
+      }
       if (unit.matches('.featureCards')) return resourceCards(document, unit, base);
       // Liferay search bar -> Search block (no index yet: Content AI search plugs in later)
       if (unit.matches('.search-bar')) return WebImporter.Blocks.createBlock(document, { name: 'Search', cells: [['']] });
@@ -180,7 +190,9 @@ export default {
     return [{
       element: main,
       path,
-      report: { title: meta.Title, site, blocks: main.querySelectorAll('table').length },
+      report: {
+        title: meta.Title, site, blocks: main.querySelectorAll('table').length, ...(events.length ? { events: JSON.stringify(events) } : {}),
+      },
     }];
   },
 };
