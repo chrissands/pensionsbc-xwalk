@@ -2,3 +2,4 @@ helix-importer-ui
 dompurify.min.js
 tools/aem-push/build
 plugins/experimentation
+content-ai-proxy
