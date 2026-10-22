@@ -1,4 +1,5 @@
 import { isSafeUrl, labelFromUrl } from './url.js';
+import { renderMarkdown } from './answer-markdown.js';
 
 export const CONFIG_KEYS = [
   'base-url',
@@ -70,5 +71,48 @@ export function createRequestTracker() {
     isCurrent(id) {
       return id === latest;
     },
+  };
+}
+
+async function post(url, body, errorLabel, fetchImpl) {
+  const resp = await fetchImpl(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+  if (!resp.ok) throw new Error(`${errorLabel}: ${resp.status}`);
+  return resp.json();
+}
+
+function contentSource(config) {
+  return { name: config.contentSource, type: config.contentSourceType };
+}
+
+export async function fetchResults(config, query, fetchImpl = fetch) {
+  const data = await post(`${config.baseUrl}/search`, {
+    contentSource: contentSource(config),
+    query: { type: 'vector', text: query, options: {} },
+    queryOptions: { pagination: { limit: config.resultsSize } },
+  }, 'Content AI search failed', fetchImpl);
+  return (Array.isArray(data?.results) ? data.results : [])
+    .map((item) => mapResultItem(item))
+    .filter(Boolean);
+}
+
+function mapSource(hit) {
+  const meta = hit?.metadata && typeof hit.metadata === 'object' ? hit.metadata : {};
+  const url = [meta.url, meta.source].find((candidate) => isSafeUrl(candidate)) || '';
+  const title = typeof meta.title === 'string' ? meta.title.trim() : '';
+  return { label: title || (url ? labelFromUrl(url) : '') || hit?.id || 'Source', url };
+}
+
+export async function fetchAnswer(config, query, fetchImpl = fetch) {
+  const data = await post(`${config.baseUrl}/gensearch`, {
+    contentSource: contentSource(config),
+    query,
+  }, 'Content AI request failed', fetchImpl);
+  return {
+    html: renderMarkdown(data?.result),
+    sources: (Array.isArray(data?.hits) ? data.hits : []).map(mapSource),
   };
 }
