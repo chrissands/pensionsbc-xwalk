@@ -4,7 +4,7 @@
 import heroPanelParser from './parsers/hero-panel.js';
 import { buildTiles } from './parsers/cards-tiles.js';
 import { articleContent } from './parsers/plan-content.js';
-import { PLAN_HOSTS } from './plan-sites.js';
+import { PLAN_HOSTS, planNameOf } from './plan-sites.js';
 
 /**
  * Plan site homepage (<site>/en/index, LOCAL to the plan's live copy) from the shared Liferay
@@ -75,8 +75,7 @@ export default {
     });
 
     // metadata: the source title repeats the site name ("College home - College - College")
-    const planName = (document.querySelector('.global-navigation li.active img')?.getAttribute('alt') || '')
-      .replace(/\s*Home Page$/i, '').trim();
+    const planName = planNameOf(document, site);
     const pageName = document.title.split(' - ')[0].trim();
     const meta = { Title: planName ? `${pageName} - ${planName}` : pageName };
     const description = document.querySelector('meta[name="description"]')?.getAttribute('content');

@@ -4,7 +4,7 @@
 import { buildTiles } from './parsers/cards-tiles.js';
 import { topicCards, eventCards, resourceCards } from './parsers/cards-topics.js';
 import { articleContent } from './parsers/plan-content.js';
-import { PLAN_HOSTS, siteHref } from './plan-sites.js';
+import { PLAN_HOSTS, siteHref, planNameOf } from './plan-sites.js';
 
 /**
  * Plan site section pages (Your pension, Learning resources, About us, ... : LOCAL to the plan's
@@ -18,6 +18,7 @@ import { PLAN_HOSTS, siteHref } from './plan-sites.js';
  * - .subnavQuickLinks                -> section styled quick-links: h2 + list of links
  * - .eventsListing                   -> Cards (events)
  * - .featureCards                    -> Cards (resources)
+ * - .search-bar                      -> Search block (the site's search page)
  * - a row with a 2/3 and a filled 1/3 column -> section styled sidebar: the main column's
  *   components, then the 1/3 column's articles as Cards (tiles)
  * - any other article                -> default content (its headings become h2)
@@ -27,7 +28,7 @@ import { PLAN_HOSTS, siteHref } from './plan-sites.js';
 
 const UNIT = [
   '.featuredTopics', '.row.topics', '[class*="sitenavigationsitemapportlet"]', '.subnavQuickLinks',
-  '.eventsListing', '.featureCards', '.journal-content-article',
+  '.eventsListing', '.featureCards', '.journal-content-article', '.search-bar',
 ].join(', ');
 
 const text = (el) => (el?.textContent || '').replace(/\s+/g, ' ').trim();
@@ -41,7 +42,7 @@ function sectionStyle(document, style) {
 /** Units in document order, outermost only (a unit inside another is part of it). */
 function unitsIn(root) {
   const all = [...root.querySelectorAll(UNIT)]
-    .filter((u) => text(u) || u.querySelector('img'));
+    .filter((u) => text(u) || u.querySelector('img') || u.matches('.search-bar'));
   return all.filter((u) => !all.some((o) => o !== u && o.contains(u)));
 }
 
@@ -83,6 +84,8 @@ export default {
       }
       if (unit.matches('.eventsListing')) return eventCards(document, unit, base);
       if (unit.matches('.featureCards')) return resourceCards(document, unit, base);
+      // Liferay search bar -> Search block (no index yet: Content AI search plugs in later)
+      if (unit.matches('.search-bar')) return WebImporter.Blocks.createBlock(document, { name: 'Search', cells: [['']] });
       return null;
     };
 
@@ -164,8 +167,7 @@ export default {
     });
 
     // metadata: the source title repeats the site name ("About us - College - College")
-    const planName = (document.querySelector('.global-navigation li.active img')?.getAttribute('alt') || '')
-      .replace(/\s*Home Page$/i, '').trim();
+    const planName = planNameOf(document, site);
     const pageName = document.title.split(' - ')[0].trim();
     const meta = { Title: planName ? `${pageName} - ${planName}` : pageName, Breadcrumbs: 'true' };
     const description = document.querySelector('meta[name="description"]')?.getAttribute('content');

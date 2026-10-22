@@ -305,6 +305,22 @@ header nav .nav-sections ul > li > ul > li {
   }
 }
 
+/* the search page link, with a magnifier icon (decorative) */
+header nav:has(.nav-sections a) .nav-sections .default-content-wrapper a[href$='/search']:any-link {
+  color: var(--link-color);
+}
+
+header nav .nav-sections a[href$='/search']::after {
+  content: '';
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  margin-left: var(--space-xs);
+  background-color: currentcolor;
+  vertical-align: -3px;
+  mask: url('../../icons/search.svg') center / contain no-repeat;
+}
+
 /* tools: text links, and a primary button (e.g. Sign in to My Account) */
 header nav .nav-tools {
   grid-area: tools;
@@ -438,6 +454,12 @@ body.theme-plan header nav .nav-brand img {
   header nav:has(.nav-sections a) .nav-sections a[aria-current] {
     box-shadow: inset 0 -4px 0 var(--site-accent-color);
   }
+
+  /* the search page link sits at the right end of the nav row */
+  header nav .nav-sections .default-content-wrapper > ul > li:has(> a[href$='/search']) {
+    margin-left: auto;
+  }
+
 }
 
 /* breadcrumbs */

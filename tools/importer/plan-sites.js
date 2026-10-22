@@ -29,6 +29,23 @@ export const MY_ACCOUNT_URL = 'https://myaccount.pensionsbc.ca/';
 
 export const planHomeUrl = (site) => `https://${PLAN_HOSTS[site]}/en/`;
 
+// full plan names, for page titles; the source shows them only in its (hidden) plan switcher
+export const PLAN_NAMES = {
+  corporate: 'PensionsBC',
+  college: 'College Pension Plan',
+  mpp: 'Municipal Pension Plan',
+  pspp: 'Public Service Pension Plan',
+  tpp: 'Teachers’ Pension Plan',
+  worksafe: 'WorkSafeBC Pension Plan',
+};
+
+/** The plan's name: from the source's plan switcher when it is in the page, else PLAN_NAMES. */
+export function planNameOf(document, site) {
+  const fromSwitcher = (document.querySelector('.global-navigation li.active img')?.getAttribute('alt') || '')
+    .replace(/\s*Home Page$/i, '').trim();
+  return fromSwitcher || PLAN_NAMES[site] || '';
+}
+
 /**
  * The plan site whose home page a source link points at, or null. Deep links into another
  * plan site are not matched: their source paths do not exist on the migrated sites.
@@ -66,7 +83,10 @@ export function siteHref(href, base) {
   if (MY_ACCOUNT_PATHS.includes(path)) return MY_ACCOUNT_URL;
   if (url.hostname !== new URL(base).hostname) return productionHref(url.href, base);
   // Liferay duplicate friendly URLs of the same page (welcome-to-the-plan1, f-taking-time-off-...)
-  const page = path.replace(/\/f-([a-z])/g, '/$1').replace(/([a-z])1$/, '$1');
+  // and the /web/<site> prefix (/web/college/search is the site's /search)
+  const page = path.replace(/^\/web\/[a-z-]+(?=\/|$)/, '')
+    .replace(/\/f-([a-z])/g, '/$1')
+    .replace(/([a-z])1$/, '$1');
   return `/en${page || '/'}${url.hash}`;
 }
 

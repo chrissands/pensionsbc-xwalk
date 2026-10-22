@@ -1,7 +1,7 @@
 /* eslint-disable */
 /* global WebImporter */
 
-import { PLAN_HOSTS, siteHref, MY_ACCOUNT_URL } from './plan-sites.js';
+import { PLAN_HOSTS, siteHref, MY_ACCOUNT_URL, planNameOf } from './plan-sites.js';
 import { damSrc, pushSafeAlt } from './dam-assets.js';
 
 /**
@@ -11,8 +11,9 @@ import { damSrc, pushSafeAlt } from './dam-assets.js';
  * - brand: plan logo (DAM asset, see dam-assets.js) followed by a link to /en/; header.js joins
  *   them into a linked logo (Universal Editor has no linked-image component)
  * - sections: the main navigation links (.main-navigation__inner), as relative /en/ links
- * - tools: Employer (external) and Sign in to My Account (a primary button). The source's
- *   Search links to a Liferay search page that is not migrated, so it is left out.
+ * - Search: the last section link, to the site's /en/search page (Search block; Content AI search
+ *   plugs in later), shown at the right of the nav row
+ * - tools: Employer (external) and Sign in to My Account (a primary button)
  * Run with tools/importer/urls-<site>-global.txt.
  */
 
@@ -46,8 +47,7 @@ export default {
     if (!logo || !menu) throw new Error('Plan header (.page-header logo, .main-navigation__inner) not found');
 
     // the plan's full name, from the (hidden) plan switcher entry for this site
-    const planName = (document.querySelector('.global-navigation li.active img')?.getAttribute('alt') || '')
-      .replace(/\s*Home Page$/i, '').trim() || logo.getAttribute('alt');
+    const planName = planNameOf(document, site);
 
     const main = document.createElement('div');
 
@@ -69,6 +69,13 @@ export default {
       li.append(link(document, siteHref(a.getAttribute('href'), base), text));
       ul.append(li);
     });
+    const search = header.querySelector('.page-header__link-list a[href*="search"]')
+      || menu.querySelector('a[href*="search"]');
+    if (search) {
+      const li = document.createElement('li');
+      li.append(link(document, siteHref(search.getAttribute('href'), base), 'Search'));
+      ul.append(li);
+    }
     main.append(ul);
     main.append(sectionName(document, 'Sections'));
     main.append(document.createElement('hr'));

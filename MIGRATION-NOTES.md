@@ -213,6 +213,7 @@ Demo: https://main--pensionsbc-college--chrissands.aem.page/en/
 | Your pension | `college/en/your-pension` | local | https://college.pensionsbc.ca/your-pension |
 | About us | `college/en/about-us` | local | https://college.pensionsbc.ca/about-us |
 | Learning resources | `college/en/learning-resources` | local | https://college.pensionsbc.ca/learning-resources |
+| Search | `college/en/search` | local | https://college.pensionsbc.ca/web/college/search |
 | Copyright, Privacy, Disclaimer | `college/en/{copyright,privacy,disclaimer}` | inherited | `language-masters/en/*` |
 
 - Importers `tools/importer/import-plan-nav.js` and `import-plan-footer.js` work for every plan site (the
@@ -224,18 +225,30 @@ Demo: https://main--pensionsbc-college--chrissands.aem.page/en/
 - On 2026-10-22 pensionsbc.ca started timing out for this environment (bot protection). The homepage
   was imported from the saved page at `tools/importer/bd-snapshots/college.pensionsbc.ca/index.html`
   (captured the same day); the import runner uses a saved page automatically when one exists.
+- **Search** (decided 2026-10-22): the search page will become a Content AI search page. Until then
+  `college/en/search` has the title and the Search block as a shell (search box, results area; with
+  no index it shows its "no results" message). The nav's last section link goes to `/en/search`
+  (shown at the right end of the nav row with a magnifier). To connect Content AI search, replace
+  `fetchData()`/`filterData()` in `blocks/search/search.js` with the search service call and keep
+  `renderResults()`; no content changes are needed. Labels come from the placeholders sheet
+  (`search-placeholder`, `search-no-results`); add those keys to `language-masters/en/placeholders`.
+  The search block's xwalk definition referenced a `search` filter that doesn't exist; it was removed
+  so pages with the block convert to AEM content.
 - Section pages: `tools/importer/import-plan-section.js` (every plan site), with `urls-college-sections.txt`.
   Batch 1 (Your pension, About us, Learning resources) was imported from pages saved in a browser with
   SingleFile (2026-10-21) because the source was still blocking this environment.
   `tools/importer/prepare-snapshot.mjs <saved.html> <site> [--folder <dam folder>]` turns such a save into
   an import snapshot: embedded images already in AEM keep their DAM path, new ones are named from their
   alt text and staged for upload (zipped as `tools/aem-assets/college-batch1-images.zip`).
-- Liferay duplicate addresses of the same page (`welcome-to-the-plan1`, `f-taking-time-off-...`) are
-  normalised to the page's address.
+- Liferay duplicate addresses of the same page (`welcome-to-the-plan1`, `f-taking-time-off-...`) and
+  the `/web/<site>/` prefix (`/web/college/search`) are normalised to the page's address.
+- Page titles are "<page> - <plan name>"; the plan names are in `plan-sites.js` (`PLAN_NAMES`), because
+  browser-saved pages drop the hidden plan switcher the name was read from. The homepage and nav were
+  re-imported from the SingleFile homepage save (identical output); `prepare-snapshot.mjs` also maps
+  CSS background images (the hero) and header images.
 
 Known gaps:
-- Nav: Search (a Liferay search page) is not migrated. The source's sign-in button shows a "My Account"
-  logo; it is text here.
+- Nav: the source's sign-in button shows a "My Account" logo; it is text here.
 - Footer: Co-browse (third-party script) is not migrated. "Register for My Account" goes to
   myaccount.pensionsbc.ca (the source's registration form is a Liferay page). Footer headings are h2
   (h4 on the source) so the heading order is valid.
