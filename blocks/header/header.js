@@ -141,7 +141,9 @@ async function buildBreadcrumbsFromNavTree(nav, currentUrl) {
     crumbs.unshift({ title: getMetadata('og:title'), url: currentUrl });
   }
 
-  crumbs.unshift({ title: labels.breadcrumbsHomeLabel || '', url: homeUrl });
+  // home label from the placeholders sheet, else the site's name (the brand logo's alt text)
+  const brandName = document.querySelector('.nav-brand img')?.alt || document.querySelector('.nav-brand a')?.textContent.trim();
+  crumbs.unshift({ title: labels.breadcrumbsHomeLabel || brandName || '', url: homeUrl });
 
   // last link is current page and should not be linked
   if (crumbs.length > 1) {

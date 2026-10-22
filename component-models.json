@@ -22,6 +22,13 @@
         "label": "Keywords"
       },
       {
+        "component": "boolean",
+        "valueType": "boolean",
+        "name": "breadcrumbs",
+        "label": "Show breadcrumbs",
+        "description": "Show the breadcrumb trail (built from the site navigation) under the header."
+      },
+      {
         "component": "text",
         "valueType": "string",
         "name": "topic",
