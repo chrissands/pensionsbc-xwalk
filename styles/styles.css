@@ -127,6 +127,7 @@ body.theme-plan {
   --content-max-width: 1280px;
   --content-padding: 20px;
   --site-top-border-width: 6px;
+  --section-spacing: var(--space-xxl);
 }
 
 body.site-college {
@@ -359,6 +360,40 @@ main > .section > div {
 
 main > .section:first-of-type {
   margin-top: 0;
+}
+
+/* plan sites: page spacing, outlined buttons, headings outside blocks (college.pensionsbc.ca) */
+body.theme-plan main > .section:first-of-type {
+  padding-top: var(--space-xl);
+}
+
+/* the source's light teal (#37a2ac) is below 4.5:1 on white and grey; the plan teal meets WCAG AA */
+body.theme-plan main a.button:any-link {
+  display: inline-block;
+  border: 1px solid var(--color-plan-teal);
+  border-radius: 2px;
+  padding: 12px 21px;
+  color: var(--color-plan-teal);
+  font-size: 16px;
+  line-height: 1.5;
+  text-align: start;
+  white-space: normal;
+}
+
+body.theme-plan main a.button:hover,
+body.theme-plan main a.button:focus {
+  background-color: var(--color-plan-teal);
+  color: var(--color-white);
+}
+
+body.theme-plan main > .section > .default-content-wrapper > h2 {
+  margin: 0 0 var(--space-l);
+  border-top: 1px solid var(--color-plan-rule);
+  padding-top: var(--space-xxl);
+  color: var(--site-accent-color);
+  font-size: 32px;
+  font-weight: 600;
+  line-height: 1.3;
 }
 
 /* section metadata */

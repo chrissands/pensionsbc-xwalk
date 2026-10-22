@@ -79,7 +79,14 @@ represent. These notes are written so a partner can repeat the work in their own
 - **Footer:** plan footers are five sections with Section Metadata styles `footer-links`, `footer-about`,
   `footer-connect`, `footer-plans`, `footer-legal` (options in the section model). The corporate footer is
   one unstyled section and is laid out as before.
-- Blocks reused so far: Hero (`split` style), Cards (`logos` style). Block models are in
+- Blocks and styles so far:
+  - Hero: `split` (corporate), `panel` (plan homepages: box of topic links over the image).
+  - Cards: `logos` (corporate), `tiles` (plan homepages: bordered tiles in two masonry columns, filled
+    down the left column then the right). Each card has an optional **Card style** field; `highlight`
+    is the yellow notice tile. In tiles, a paragraph holding only a YouTube link becomes an embedded
+    player (youtube-nocookie, lazy), and an icon-sized image (≤ 120px, a 2x asset) sits beside the heading.
+- Plan theme buttons are outlined in the plan teal (#167183). The source's lighter teal (#37a2ac) is
+  below 4.5:1 contrast on white and grey, so it is not used (WCAG 2.1 AA). Block models are in
   `blocks/<block>/_<block>.json`; run `npm run build:json` after changing them.
 - Design tokens are CSS custom properties at the top of `styles/styles.css`. A rebrand is one edit there.
 - Page metadata model (`models/_page.json`): title, description, keywords, plus `topic` and `audience`
@@ -195,12 +202,18 @@ Demo: https://main--pensionsbc-college--chrissands.aem.page/en/
 |---|---|---|---|
 | Nav | `college/en/nav` | local | college.pensionsbc.ca header |
 | Footer | `college/en/footer` | local | college.pensionsbc.ca footer |
-| Homepage | `college/en/index` | local | https://college.pensionsbc.ca/ (next) |
+| Homepage | `college/en/index` | local | https://college.pensionsbc.ca/ |
 | Copyright, Privacy, Disclaimer | `college/en/{copyright,privacy,disclaimer}` | inherited | `language-masters/en/*` |
 
 - Importers `tools/importer/import-plan-nav.js` and `import-plan-footer.js` work for every plan site (the
   site comes from the source host); run with `tools/importer/urls-college-global.txt`.
 - Images: `tools/aem-assets/college-images.zip` (12 images, uploaded 2026-10-22), mapped in `dam-assets.js`.
+- Homepage importer `tools/importer/import-plan-home.js` (also for every plan site): hero -> Hero (panel),
+  each two-column layout row -> Cards (tiles), separators -> section breaks, other articles -> default
+  content. Run with `tools/importer/urls-college-home.txt`.
+- On 2026-10-22 pensionsbc.ca started timing out for this environment (bot protection). The homepage
+  was imported from the saved page at `tools/importer/bd-snapshots/college.pensionsbc.ca/index.html`
+  (captured the same day); the import runner uses a saved page automatically when one exists.
 
 Known gaps:
 - Nav: Search (a Liferay search page) is not migrated. The source's sign-in button shows a "My Account"
@@ -209,6 +222,9 @@ Known gaps:
   myaccount.pensionsbc.ca (the source's registration form is a Liferay page). Footer headings are h2
   (h4 on the source) so the heading order is valid.
 - The nav and footer links point at pages that are not migrated yet (404 until they are).
+- Homepage: the source's white bordered tiles (video, Pension Life) are grey like the others; the
+  courses promo image contains text ("Learn about my pension!") but has no alt text on the source, and
+  none here; the annual report image's alt was "Image" on the source and is empty here (decorative).
 
 ### MPP, PSPP, TPP, WorkSafeBC
 

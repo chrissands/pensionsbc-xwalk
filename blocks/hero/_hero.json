@@ -34,6 +34,10 @@
             {
               "name": "Split (text beside image)",
               "value": "split"
+            },
+            {
+              "name": "Panel (box over image)",
+              "value": "panel"
             }
           ]
         },
