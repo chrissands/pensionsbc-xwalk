@@ -74,8 +74,10 @@ of date), Learning resources "View available dates" / "Register for a session".
   variants and the panel.
 - **Names the engine reserves:** section settings and page metadata named `experiment…`,
   `campaign…` or `audience…` are read by the engine on experiment pages. The sections' **Show to**
-  setting is stored as `show-to` for that reason (it was `audience`, which broke the engine; pages
-  saved with the old name are read as `show-to`). The page model's empty `audience` placeholder field
+  setting is stored as `show-to` for that reason. It was `audience`, which crashed the engine (blank
+  page) in the local preview, where section settings are a Section Metadata table; AEM delivers them
+  as attributes (`data-audience`), which the engine doesn't read, and pages saved with the old name
+  still work. The page model's empty `audience` placeholder field
   should be renamed before anyone fills it in on a page with an experiment.
 - Location audiences (in BC / outside BC, `scripts/audience.js`) are separate from experiments and
   work alongside them.
