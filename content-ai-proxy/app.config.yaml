@@ -1,0 +1,28 @@
+application:
+  actions: actions
+  runtimeManifest:
+    packages:
+      content-ai:
+        license: Apache-2.0
+        actions:
+          search:
+            function: actions/search/index.js
+            web: 'yes'
+            runtime: 'nodejs:20'
+            inputs: &inputs
+              apiKey: $CONTENT_AI_API_KEY
+              baseUrl: $CONTENT_AI_BASE_URL
+              defaultContentSource: $DEFAULT_CONTENT_SOURCE
+              allowedContentSources: $ALLOWED_CONTENT_SOURCES
+              contentSourceType: $CONTENT_SOURCE_TYPE
+              allowedOrigin: $ALLOWED_ORIGIN
+              rateLimitPerMinute: $RATE_LIMIT_PER_MINUTE
+            annotations: &annotations
+              require-adobe-auth: false
+              web-custom-options: true
+          gensearch:
+            function: actions/gensearch/index.js
+            web: 'yes'
+            runtime: 'nodejs:20'
+            inputs: *inputs
+            annotations: *annotations

@@ -19,7 +19,7 @@ module.exports = {
     'linebreak-style': ['error', 'unix'], // enforce unix linebreaks
     'no-param-reassign': [2, { props: false }], // allow modifying properties of param
     // page-metadata is page properties, not a block table: allow the topic/audience fields
-    'xwalk/max-cells': ['error', { 'page-metadata': 6, search: 10 }],
+    'xwalk/max-cells': ['error', { 'page-metadata': 6, 'content-ai-search': 9 }],
   },
   overrides: [{
     // Node command-line tooling, not site code

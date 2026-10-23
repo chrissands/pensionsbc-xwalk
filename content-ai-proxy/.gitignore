@@ -1,0 +1,9 @@
+node_modules
+.env
+.env.*
+!.env.example
+.aio
+console.json
+config.json
+.manifest-dist.yml
+dist

@@ -239,20 +239,21 @@ Demo: https://main--pensionsbc-college--chrissands.aem.page/en/
 - On 2026-10-22 pensionsbc.ca started timing out for this environment (bot protection). The homepage
   was imported from the saved page at `tools/importer/bd-snapshots/college.pensionsbc.ca/index.html`
   (captured the same day); the import runner uses a saved page automatically when one exists.
-- **Search** (decided 2026-10-22): the search page will become a Content AI search page. Until then
-  `college/en/search` has the title and the Search block as a shell (search box, results area; with
-  no index it shows its "no results" message). The nav's last section link goes to `/en/search`
-  (shown at the right end of the nav row with a magnifier). Content AI mode is switched on by the Search
-  block properties (`base-url`, `content-source`, `content-source-type`, `ai-search-mode-enabled`,
-  `gen-search-error-retry-visible`, `disclaimer-text`, `results-size`, `results-layout`), authored in
-  Universal Editor; with `base-url` empty the shell above stays, so the other sites are unaffected.
-  Do not re-push `college/en/search` with `aem:push` after the properties are authored: the push
-  replaces the page's `jcr:content` and would erase them. Labels come from the placeholders sheet
-  (`search-placeholder`, `search-no-results`, plus `search-error`, `search-answer-title`,
-  `search-answer-loading`, `search-answer-sources`, `search-answer-retry`, `search-results-found`);
-  add those keys to `language-masters/en/placeholders`.
-  The search block's xwalk definition referenced a `search` filter that doesn't exist; it was removed
-  so pages with the block convert to AEM content.
+- **Search** (decided 2026-10-22): `college/en/search` is a Content AI search page. It uses the
+  **Content AI Search** block (`blocks/content-ai-search`, taken from
+  https://github.com/Apoorv-R98/content-ai-search-block): a hybrid (vector + full-text) query, a
+  Search Results / AI Mode tab pair with a generated answer and source chips, and a Load more button
+  (cursor paging). Results link to the live college.pensionsbc.ca pages; `#main-content` copies are
+  treated as the same page, a result with no meta description shows the start of its text, and a
+  document (PDF) without a title is titled from its file name. The block is a key-value block whose
+  properties (`base-url`, `content-source`, `content-source-type`, `ai-search-mode-enabled`,
+  `gen-search-error-retry-visible`, `disclaimer-text`, `results-size`, `results-layout`) are authored in
+  Universal Editor. `base-url` is the App Builder proxy in `content-ai-proxy/` (its `search` and
+  `gensearch` actions; the proxy holds the API key, pins the source and limits CORS to the demo
+  origins). Do not re-push `college/en/search` with `aem:push` after the properties are authored: the
+  push replaces the page's `jcr:content` and would erase them. The block's labels are built in
+  (English). The `search` block stays the plain shell used by the other sites; the nav's last section
+  link goes to `/en/search` (shown at the right end of the nav row with a magnifier).
 - Section pages: `tools/importer/import-plan-section.js` (every plan site), with `urls-college-sections.txt`.
   Batch 1 (Your pension, About us, Learning resources) was imported from pages saved in a browser with
   SingleFile (2026-10-21) because the source was still blocking this environment.

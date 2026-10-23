@@ -1,0 +1,20 @@
+{
+  "name": "pensionsbc-content-ai-proxy",
+  "version": "0.0.1",
+  "private": true,
+  "dependencies": {
+    "node-fetch": "^2.6.0"
+  },
+  "devDependencies": {
+    "jest": "^29",
+    "eslint": "^8",
+    "eslint-plugin-jest": "^27.2.3"
+  },
+  "scripts": {
+    "test": "jest ./test",
+    "lint": "eslint test actions"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
