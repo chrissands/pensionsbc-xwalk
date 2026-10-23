@@ -278,12 +278,26 @@
 .content-ai-search .cmp-content-ai-search__load-more {
   display: block;
   margin: 1em auto 0;
-  padding: 0.4em 0.9em;
-  border: 1px solid #e2e0dc;
+  padding: 0.4em 1.2em;
+  border: 1px solid var(--link-color, #5b2be0);
   border-radius: 6px;
   background-color: #fff;
+  color: var(--link-color, #5b2be0);
   font-size: 0.875rem;
   cursor: pointer;
+}
+
+.content-ai-search .cmp-content-ai-search__load-more:hover,
+.content-ai-search .cmp-content-ai-search__load-more:focus {
+  background-color: var(--link-color, #5b2be0);
+  color: #fff;
+}
+
+.content-ai-search .cmp-content-ai-search__load-more:disabled {
+  background-color: #fff;
+  color: #666;
+  border-color: #e2e0dc;
+  cursor: default;
 }
 
 .content-ai-search .cmp-content-ai-search__results {
