@@ -1,0 +1,42 @@
+{
+  "totalResults": 3,
+  "cursor": null,
+  "results": [
+    {
+      "id": "story-1",
+      "score": 0.92,
+      "data": {
+        "source": "/stories/coffee-origins",
+        "metadata": {
+          "title": "The Origins of Fréscopa Coffee",
+          "description": "Discover how our beans are sourced from high-altitude farms across three continents.",
+          "image": "/media/coffee-origins.jpg"
+        }
+      }
+    },
+    {
+      "id": "story-2",
+      "score": 0.87,
+      "data": {
+        "source": "/stories/pour-over-guide",
+        "metadata": {
+          "title": "Brewing the Perfect Pour-Over",
+          "description": "A step-by-step guide to our recommended brewing method for light roasts.",
+          "image": "/media/pour-over.jpg"
+        }
+      }
+    },
+    {
+      "id": "story-3",
+      "score": 0.81,
+      "data": {
+        "source": "/stories/sustainability",
+        "metadata": {
+          "title": "Sustainability at Every Step",
+          "description": "How Fréscopa partners with growers to reduce water usage and protect biodiversity.",
+          "image": "/media/sustainability.jpg"
+        }
+      }
+    }
+  ]
+}

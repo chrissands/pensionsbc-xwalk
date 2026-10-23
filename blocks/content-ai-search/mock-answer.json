@@ -1,0 +1,20 @@
+{
+  "query": "What makes Fréscopa coffee sustainable?",
+  "result": "Fréscopa sources beans from high-altitude farms that use shade-grown cultivation to protect biodiversity, partners directly with growers on water-conservation programs, and ships in fully recyclable packaging. Roasting is done in small batches to minimize energy waste.",
+  "hits": [
+    {
+      "id": "story-3",
+      "metadata": {
+        "title": "Sustainability at Every Step",
+        "source": "/stories/sustainability"
+      }
+    },
+    {
+      "id": "story-1",
+      "metadata": {
+        "title": "The Origins of Fréscopa Coffee",
+        "source": "/stories/coffee-origins"
+      }
+    }
+  ]
+}
