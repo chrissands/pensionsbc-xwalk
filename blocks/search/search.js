@@ -1,16 +1,8 @@
 import {
   createOptimizedPicture,
   decorateIcons,
-  readBlockConfig,
 } from '../../scripts/aem.js';
 import { fetchPlaceholders } from '../../scripts/placeholders.js';
-import {
-  parseConfig,
-  normalizeQuery,
-  createRequestTracker,
-  fetchResults,
-  fetchAnswer,
-} from './content-ai.js';
 
 const searchParams = new URLSearchParams(window.location.search);
 
@@ -234,11 +226,9 @@ function searchInput(block, config) {
   input.placeholder = searchPlaceholder;
   input.setAttribute('aria-label', searchPlaceholder);
 
-  if (!config.contentAi?.enabled) {
-    input.addEventListener('input', (e) => {
-      handleSearch(e, block, config);
-    });
-  }
+  input.addEventListener('input', (e) => {
+    handleSearch(e, block, config);
+  });
 
   input.addEventListener('keyup', (e) => { if (e.code === 'Escape') { clearSearch(block); } });
 
@@ -263,206 +253,14 @@ function searchBox(block, config) {
 }
 
 /*
- * Content AI mode: switched on by the block properties (see content-ai.js parseConfig).
- * Runs on submit, not on every keystroke, because each run also requests a generated answer.
- */
-const MIN_QUERY_LENGTH = 3;
-const panels = new WeakMap();
-const trackers = new WeakMap();
-
-function createEl(tag, className, content) {
-  const node = document.createElement(tag);
-  if (className) node.className = className;
-  if (content) node.textContent = content;
-  return node;
-}
-
-function contentAiAnswerPanel(config, placeholders) {
-  const label = (key, fallback) => placeholders[key] || fallback;
-  const element = createEl('div', 'search-answer');
-  element.hidden = true;
-  element.setAttribute('aria-live', 'polite');
-
-  const loading = createEl('p', 'search-answer-loading', label('searchAnswerLoading', 'Generating answer…'));
-  const card = createEl('div', 'search-answer-card');
-  const body = createEl('div', 'search-answer-text');
-  const sources = createEl('ul', 'search-answer-sources');
-  const sourcesSection = createEl('div', 'search-answer-sources-section');
-  sourcesSection.append(createEl('p', 'search-answer-sources-label', label('searchAnswerSources', 'Sources')), sources);
-  card.append(createEl('p', 'search-answer-title', label('searchAnswerTitle', 'Generative answer')), body, sourcesSection);
-  if (config.disclaimer) card.append(createEl('p', 'search-answer-disclaimer', config.disclaimer));
-
-  const error = createEl('div', 'search-answer-error');
-  error.append(createEl('p', 'search-answer-error-text', label('searchError', 'Something went wrong generating the answer.')));
-  let retry;
-  if (config.retryVisible) {
-    retry = createEl('button', 'search-answer-retry', label('searchAnswerRetry', 'Try again'));
-    retry.type = 'button';
-    error.append(retry);
-  }
-
-  element.append(loading, card, error);
-
-  const show = (section) => {
-    element.hidden = false;
-    [loading, card, error].forEach((part) => { part.hidden = part !== section; });
-  };
-
-  return {
-    element,
-    showLoading() {
-      show(loading);
-    },
-    showAnswer(answer) {
-      body.innerHTML = answer.html;
-      sources.innerHTML = '';
-      answer.sources.forEach((source) => {
-        const li = document.createElement('li');
-        if (source.url) {
-          const a = createEl('a', 'search-answer-source', source.label);
-          a.href = source.url;
-          a.target = '_blank';
-          a.rel = 'noopener';
-          li.append(a);
-        } else {
-          li.append(createEl('span', 'search-answer-source', source.label));
-        }
-        sources.append(li);
-      });
-      sourcesSection.hidden = !answer.sources.length;
-      show(card);
-    },
-    showError(onRetry) {
-      if (retry) retry.onclick = onRetry;
-      show(error);
-    },
-    clear() {
-      element.hidden = true;
-    },
-  };
-}
-
-function renderMessage(block, message) {
-  clearSearchResults(block);
-  const searchResults = block.querySelector('.search-results');
-  const li = document.createElement('li');
-  searchResults.classList.add('no-results');
-  li.textContent = message;
-  searchResults.append(li);
-}
-
-function setStatus(block, message) {
-  const status = block.querySelector('.search-status');
-  if (status) status.textContent = message;
-}
-
-function resetContentAiSearch(block) {
-  const { results, answer } = trackers.get(block);
-  results.next();
-  answer.next();
-  clearSearch(block);
-  panels.get(block)?.clear();
-  setStatus(block, '');
-}
-
-function startAnswer(block, config, query) {
-  const panel = panels.get(block);
-  if (!panel) return Promise.resolve();
-  const tracker = trackers.get(block).answer;
-  const id = tracker.next();
-  panel.showLoading();
-  return fetchAnswer(config.contentAi, query).then((answer) => {
-    if (!tracker.isCurrent(id)) return;
-    if (answer.html) panel.showAnswer(answer);
-    else panel.clear();
-  }).catch(() => {
-    if (!tracker.isCurrent(id)) return;
-    panel.showError(() => startAnswer(block, config, query));
-  });
-}
-
-async function startResults(block, config, query, searchTerms) {
-  const tracker = trackers.get(block).results;
-  const id = tracker.next();
-  try {
-    const items = await fetchResults(config.contentAi, query);
-    if (!tracker.isCurrent(id)) return;
-    await renderResults(block, config, items, searchTerms);
-    setStatus(block, `${config.placeholders.searchResultsFound || 'Results found:'} ${items.length}`);
-  } catch (error) {
-    if (!tracker.isCurrent(id)) return;
-    const message = config.placeholders.searchError || 'Something went wrong. Please try again.';
-    renderMessage(block, message);
-    setStatus(block, message);
-  }
-}
-
-async function runContentAiSearch(block, config, rawQuery) {
-  const query = normalizeQuery(rawQuery);
-  if (query.length < MIN_QUERY_LENGTH) {
-    resetContentAiSearch(block);
-    return;
-  }
-  searchParams.set('q', query);
-  if (window.history.replaceState) {
-    const url = new URL(window.location.href);
-    url.search = searchParams.toString();
-    window.history.replaceState({}, '', url.toString());
-  }
-  const searchTerms = query.toLowerCase().split(/\s+/).filter((term) => !!term);
-  const pending = [startResults(block, config, query, searchTerms)];
-  if (config.contentAi.aiMode) pending.push(startAnswer(block, config, query));
-  await Promise.all(pending);
-}
-
-function contentAiForm(block, config) {
-  const form = document.createElement('form');
-  form.className = 'search-form';
-  form.setAttribute('role', 'search');
-  const box = searchBox(block, config);
-  const input = box.querySelector('input');
-  form.append(box);
-  form.addEventListener('submit', (e) => {
-    e.preventDefault();
-    runContentAiSearch(block, config, input.value);
-  });
-  input.addEventListener('keyup', (e) => { if (e.code === 'Escape') resetContentAiSearch(block); });
-  return form;
-}
-
-/*
  * The PensionsBC search pages use this block as the shell (search box + results area) until
  * Content AI search is connected: that replaces fetchData()/filterData() above with a call to
  * the search service and keeps renderResults() for the results list.
  */
 export default async function decorate(block) {
   const placeholders = await fetchPlaceholders();
-  const contentAi = parseConfig(readBlockConfig(block));
   const source = block.querySelector('a[href]')?.href || `${window.hlx.codeBasePath}/query-index.json`;
   block.innerHTML = '';
-
-  if (contentAi.enabled) {
-    const config = { source, placeholders, contentAi };
-    if (contentAi.layout === 'list') block.classList.add('minimal');
-    trackers.set(block, { results: createRequestTracker(), answer: createRequestTracker() });
-    const status = createEl('p', 'search-status');
-    status.setAttribute('role', 'status');
-    block.append(contentAiForm(block, config), status);
-    if (contentAi.aiMode) {
-      const panel = contentAiAnswerPanel(contentAi, placeholders);
-      panels.set(block, panel);
-      block.append(panel.element);
-    }
-    block.append(searchResultsContainer(block));
-    const initialQuery = searchParams.get('q');
-    if (initialQuery) {
-      block.querySelector('input').value = initialQuery;
-      runContentAiSearch(block, config, initialQuery);
-    }
-    decorateIcons(block);
-    return;
-  }
-
   block.append(
     searchBox(block, { source, placeholders }),
     searchResultsContainer(block),
