@@ -44,6 +44,31 @@ export function normalizeQuery(input) {
   return input.trim().slice(0, MAX_QUERY_LENGTH);
 }
 
+export const EXCERPT_LENGTH = 160;
+const MIN_EXCERPT_LINE = 40;
+
+function stripMarkdown(line) {
+  return line
+    .replace(/!\[[^\]]*\]\([^)]*\)/g, '')
+    .replace(/\[([^\]]*)\]\([^)]*\)/g, '$1')
+    .replace(/^[\s>#*\-+\d.)]+/, '')
+    .replace(/[*_`]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+export function excerptFromText(value, title = '', length = EXCERPT_LENGTH) {
+  if (typeof value !== 'string') return '';
+  const heading = title.trim().toLowerCase();
+  const line = value.split('\n')
+    .map(stripMarkdown)
+    .find((l) => l.length >= MIN_EXCERPT_LINE && l.toLowerCase() !== heading);
+  if (!line) return '';
+  if (line.length <= length) return line;
+  const cut = line.slice(0, length);
+  return `${cut.slice(0, Math.max(cut.lastIndexOf(' '), 1)).replace(/[\s,;:.-]+$/, '')}…`;
+}
+
 export function mapResultItem(item, base) {
   const data = item?.data;
   if (!data || typeof data !== 'object') return null;
@@ -53,10 +78,11 @@ export function mapResultItem(item, base) {
   const title = typeof meta.title === 'string' && meta.title.trim()
     ? meta.title
     : labelFromUrl(path, base);
+  const metaDescription = typeof meta.description === 'string' ? meta.description.trim() : '';
   return {
     path,
     title,
-    description: typeof meta.description === 'string' ? meta.description : '',
+    description: metaDescription || excerptFromText(data.text, title),
     image: isSafeUrl(meta.image, base) ? meta.image : '',
   };
 }

@@ -8,6 +8,7 @@ import {
   parseConfig,
   normalizeQuery,
   mapResultItem,
+  excerptFromText,
   createRequestTracker,
 } from '../../blocks/search/content-ai.js';
 
@@ -107,10 +108,37 @@ describe('mapResultItem', () => {
     assert.deepEqual([r.path, r.title, r.description, r.image], [SOURCE, 'Leaving Your Job', '', '']);
   });
 
+  it('uses a text excerpt when there is no description', () => {
+    const text = '# Nearing retirement - College\n\n# Guide for plan members\n\n'
+      + '## College Pension Plan is committed to helping you make the most of your pension.\n\nMore text.';
+    const r = mapResultItem({ data: { source: SOURCE, text, metadata: { title: 'Nearing retirement - College' } } });
+    assert.equal(r.description, 'College Pension Plan is committed to helping you make the most of your pension.');
+  });
+
+  it('keeps the metadata description over the text excerpt', () => {
+    const r = mapResultItem({ data: { source: SOURCE, text: 'x'.repeat(100), metadata: { description: ' d ' } } });
+    assert.equal(r.description, 'd');
+  });
+
   it('drops unsafe images and returns null for unusable items', () => {
     assert.equal(mapResultItem({ data: { source: SOURCE, metadata: { image: 'javascript:x' } } }).image, '');
     [null, {}, { id: 'x' }, { data: { source: 'javascript:alert(1)' } }]
       .forEach((i) => assert.equal(mapResultItem(i), null));
+  });
+});
+
+describe('excerptFromText', () => {
+  it('skips short headings, the title line and markdown, and cuts at a word', () => {
+    const text = '# Title here\n\n![img](https://x/i.jpg)\n\n'
+      + '**Learn** about [your pension](https://x/p) options so you can make decisions with confidence and plan ahead for later.';
+    const out = excerptFromText(text, 'Title here', 60);
+    assert.equal(out, 'Learn about your pension options so you can make decisions…');
+    assert.ok(out.length <= 61);
+  });
+
+  it('returns an empty string when nothing is usable', () => {
+    assert.equal(excerptFromText(undefined), '');
+    assert.equal(excerptFromText('# Short\n\nTiny'), '');
   });
 });
 
