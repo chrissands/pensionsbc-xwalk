@@ -106,7 +106,12 @@ represent. These notes are written so a partner can repeat the work in their own
   `blocks/<block>/_<block>.json`; run `npm run build:json` after changing them.
 - Design tokens are CSS custom properties at the top of `styles/styles.css`. A rebrand is one edit there.
 - Page metadata model (`models/_page.json`): title, description, keywords, plus `topic` and `audience`
-  left empty for later tagging.
+  left empty for later tagging. Rename `audience` before it is used: on experiment pages the
+  experimentation engine reads metadata named `audience…` as its own.
+- **Experimentation (A/B tests):** the AEM experimentation engine v2.0.0 in `plugins/experimentation`
+  (git subtree), loaded only on pages with an experiment; experiments are created in Universal Editor
+  (A/B extension). Set-up, the first experiment (College homepage hero task links) and cautions:
+  `docs/experimentation.md`.
 
 ## Import → AEM pipeline
 
@@ -279,7 +284,8 @@ Demo: https://main--pensionsbc-college--chrissands.aem.page/en/
 - **Location audience** (2026-10-23; ContextHub doesn't work with Edge Delivery / xwalk): visitors in BC
   are `local`, everyone else `online`, from an IP lookup (GeoJS) with the device time zone as fallback,
   once per visit; `?audience=` overrides (`scripts/audience.js`). Sections have a **Show to** setting
-  (section model `audience`). Learning resources has the events section twice: "Upcoming webinars"
+  (section model `show-to`; first stored as `audience`, renamed 2026-10-23 because the experimentation
+  engine reserves that name). Learning resources has the events section twice: "Upcoming webinars"
   (online) and "Upcoming in-person sessions" (local, in-person workshops); the importer writes both
   for the college site (`EVENT_AUDIENCES` in `import-plan-section.js`). Privacy: the IP lookup sends
   the visitor's IP to GeoJS; fine for the demo, a production site needs a privacy review (FOIPPA) or
@@ -314,4 +320,5 @@ Not started. Scope: 15 pages per site (homepage included) plus nav and footer.
 | 2026-10-21 | Pilot scope: 15 pages per site, homepage included, plus nav and footer. |
 | 2026-10-22 | Events are content fragments (model Event) per site in `<site>/events`, tagged by type; authors pick them in an Event List block; delivered by a persisted GraphQL query from publish. |
 | 2026-10-22 | Audience swaps are per Event List item (default fragment + audience + fragment for that audience); the visitor's audience comes from `?audience=` on the arrival link and lasts for the visit. No experimentation plugin or Target. |
+| 2026-10-23 | A/B tests with AEM Contextual Experimentation (engine v2.0.0, Universal Editor A/B extension), loaded only on experiment pages; first experiment: College homepage hero task links. Section "Show to" stored as `show-to` (not `audience`, which the engine reserves). |
 | 2026-10-23 | Audience by location: IP lookup (GeoJS) then device time zone; BC = local, else online. Sections get a "Show to" audience; Learning resources shows "Upcoming in-person sessions" to local visitors and "Upcoming webinars" to others. |

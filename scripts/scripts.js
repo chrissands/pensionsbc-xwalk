@@ -14,6 +14,9 @@ import {
 } from './aem.js';
 import { aemHost, AEM_PUBLISH } from './aem-config.js';
 import getAudience from './audience.js';
+import {
+  isExperimentationEnabled, runExperimentation, runExperimentationLazy,
+} from './experiment-loader.js';
 
 /**
  * Moves all the attributes from a given elmenet to another given element.
@@ -137,6 +140,26 @@ function siteOf({ hostname, pathname }) {
   return path && Object.values(SITES).includes(path[1]) ? path[1] : '';
 }
 
+/** A site's demo host (main--pensionsbc-<site>--chrissands.aem.page): the sites never go live. */
+function demoHost(site) {
+  const eds = Object.keys(SITES).find((key) => SITES[key] === site);
+  return eds ? `main--${eds}--chrissands.aem.page` : '';
+}
+
+/*
+ * Experimentation (plugins/experimentation; loaded only on pages with an experiment).
+ * prodHost is the site's aem.page demo host, where the demo's visits (and so the experiment's
+ * results) are. The engine still treats *.page as preview, so its simulation tools load there; in
+ * Universal Editor the panel is the A/B extension.
+ */
+const experimentationConfig = {
+  prodHost: window.location.hostname.match(EDS_HOST)
+    ? window.location.hostname.replace(/\.aem\.live$/, '.aem.page')
+    : demoHost(siteOf(window.location)),
+  simulationUI: aemHost() !== AEM_PUBLISH ? 'universal-editor' : 'auto',
+  storage: window.sessionStorage,
+};
+
 /** body.site-<site>, plus body.theme-plan on the plan sites (see the site themes in styles.css) */
 function decorateSiteTheme() {
   const site = siteOf(window.location);
@@ -178,18 +201,19 @@ function a11yLinks(main) {
 }
 
 /**
- * Decorates the main element.
- * @param {Element} main The main element
- */
-/**
- * Sections with a "Show to" audience (section metadata "audience") are shown only to visitors in
+ * Sections with a "Show to" audience (section metadata "show-to") are shown only to visitors in
  * that audience (scripts/audience.js); the others are removed. In Universal Editor all are shown,
  * outlined and labelled with their audience.
  * @param {Element} main The main element
  */
 function decorateAudienceSections(main) {
-  const sections = [...main.querySelectorAll(':scope > .section[data-audience]')]
-    .filter((section) => section.dataset.audience.trim());
+  // sections saved before the setting was renamed from "audience" (a name the experimentation
+  // engine reserves): AEM delivers it as data-audience
+  main.querySelectorAll(':scope > .section[data-audience]:not([data-show-to])').forEach((section) => {
+    section.dataset.showTo = section.dataset.audience;
+  });
+  const sections = [...main.querySelectorAll(':scope > .section[data-show-to]')]
+    .filter((section) => section.dataset.showTo.trim());
   if (!sections.length) return;
   if (aemHost() !== AEM_PUBLISH) {
     sections.forEach((section) => section.classList.add('audience-preview'));
@@ -197,11 +221,15 @@ function decorateAudienceSections(main) {
   }
   sections.forEach((section) => section.classList.add('audience-pending'));
   getAudience().then((audience) => sections.forEach((section) => {
-    if (section.dataset.audience.trim().toLowerCase() === audience) section.classList.remove('audience-pending');
+    if (section.dataset.showTo.trim().toLowerCase() === audience) section.classList.remove('audience-pending');
     else section.remove();
   }));
 }
 
+/**
+ * Decorates the main element.
+ * @param {Element} main The main element
+ */
 // eslint-disable-next-line import/prefer-default-export
 export function decorateMain(main) {
   // hopefully forward compatible button decoration
@@ -227,6 +255,8 @@ async function loadEager(doc) {
   if (getMetadata('breadcrumbs').toLowerCase() === 'true') {
     doc.body.dataset.breadcrumbs = true;
   }
+  // swaps in the visitor's variant (replaces main) before the page is decorated
+  await runExperimentation(doc, experimentationConfig);
   const main = doc.querySelector('main');
   if (main) {
     decorateMain(main);
@@ -263,6 +293,10 @@ async function loadLazy(doc) {
 
   loadCSS(`${window.hlx.codeBasePath}/styles/lazy-styles.css`);
   loadFonts();
+
+  // the demo runs on *.page, which the engine treats as preview: load its preview tools only on
+  // pages with an experiment (the eager step already answers the editor panel on other pages)
+  if (isExperimentationEnabled()) await runExperimentationLazy(doc, experimentationConfig);
 }
 
 /**
