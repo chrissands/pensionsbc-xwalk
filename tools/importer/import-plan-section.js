@@ -82,8 +82,8 @@ function splitEventSection(document, list, data, folder, local) {
   if (h2) h2.textContent = local.heading;
   const intro = copy.find((n, i) => n.tagName === 'P' && i > copy.indexOf(h2));
   if (intro) intro.innerHTML = local.intro;
-  const online = setSectionMeta(document, nodes, 'audience', 'online').filter((n) => !nodes.includes(n));
-  last.after(...online, document.createElement('hr'), ...setSectionMeta(document, copy, 'audience', 'local'));
+  const online = setSectionMeta(document, nodes, 'show-to', 'online').filter((n) => !nodes.includes(n));
+  last.after(...online, document.createElement('hr'), ...setSectionMeta(document, copy, 'show-to', 'local'));
 }
 
 /** Units in document order, outermost only (a unit inside another is part of it). */

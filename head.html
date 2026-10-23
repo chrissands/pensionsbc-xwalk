@@ -1,4 +1,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
+<script>
+  // pages running an experiment, campaign or audience: sample 1 in 10 visits for RUM, not 1 in 100
+  if (document.head.querySelector('[name^="experiment"],[name^="campaign-"],[name^="audience-"]')) {
+    window.SAMPLE_PAGEVIEWS_AT_RATE = 'high';
+  }
+</script>
 <script src="/scripts/aem.js" type="module"></script>
 <script src="/scripts/scripts.js" type="module"></script>
+<link rel="modulepreload" href="/scripts/experiment-loader.js"/>
 <link rel="stylesheet" href="/styles/styles.css"/>

@@ -70,7 +70,7 @@
         },
         {
           "component": "select",
-          "name": "audience",
+          "name": "show-to",
           "label": "Show to",
           "valueType": "string",
           "description": "Show this section only to one audience, e.g. an in-person version for visitors in BC and an online version for everyone else. The audience comes from the visitor's location (or ?audience= on the link).",
