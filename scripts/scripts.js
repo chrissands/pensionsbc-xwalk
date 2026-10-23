@@ -201,16 +201,17 @@ function a11yLinks(main) {
 }
 
 /**
- * Decorates the main element.
- * @param {Element} main The main element
- */
-/**
  * Sections with a "Show to" audience (section metadata "show-to") are shown only to visitors in
  * that audience (scripts/audience.js); the others are removed. In Universal Editor all are shown,
  * outlined and labelled with their audience.
  * @param {Element} main The main element
  */
 function decorateAudienceSections(main) {
+  // sections saved before the setting was renamed from "audience" (a name the experimentation
+  // engine reserves): AEM delivers it as data-audience
+  main.querySelectorAll(':scope > .section[data-audience]:not([data-show-to])').forEach((section) => {
+    section.dataset.showTo = section.dataset.audience;
+  });
   const sections = [...main.querySelectorAll(':scope > .section[data-show-to]')]
     .filter((section) => section.dataset.showTo.trim());
   if (!sections.length) return;
@@ -225,6 +226,10 @@ function decorateAudienceSections(main) {
   }));
 }
 
+/**
+ * Decorates the main element.
+ * @param {Element} main The main element
+ */
 // eslint-disable-next-line import/prefer-default-export
 export function decorateMain(main) {
   // hopefully forward compatible button decoration
@@ -250,11 +255,6 @@ async function loadEager(doc) {
   if (getMetadata('breadcrumbs').toLowerCase() === 'true') {
     doc.body.dataset.breadcrumbs = true;
   }
-  // sections saved when "Show to" was stored as "audience": that name is the experimentation
-  // engine's own section audience setting (and breaks it), so read it as "show-to"
-  doc.querySelectorAll('main .section-metadata > div > div:first-child').forEach((key) => {
-    if (key.textContent.trim().toLowerCase() === 'audience') key.textContent = 'show-to';
-  });
   // swaps in the visitor's variant (replaces main) before the page is decorated
   await runExperimentation(doc, experimentationConfig);
   const main = doc.querySelector('main');
