@@ -68,7 +68,6 @@ function eventCard(item) {
 
 export default async function decorate(block) {
   const authoring = aemHost() !== AEM_PUBLISH;
-  const visitor = getAudience();
   const ul = document.createElement('ul');
   const rows = [...block.children].map((row) => {
     const li = document.createElement('li');
@@ -82,7 +81,11 @@ export default async function decorate(block) {
 
   const paths = [...new Set(rows.flatMap(({ item }) => [item.fragment, item.alternative]))]
     .filter(Boolean);
-  const results = await Promise.all(paths.map((path) => persistedQuery(QUERY, { path })));
+  // the audience is only worked out when an item swaps for one
+  const [visitor, ...results] = await Promise.all([
+    rows.some(({ item }) => item.alternative) ? getAudience() : '',
+    ...paths.map((path) => persistedQuery(QUERY, { path })),
+  ]);
   const loaded = Object.fromEntries(paths.map((path, i) => [path, results[i]?.eventByPath?.item]));
 
   rows.forEach(({ li, item }) => {

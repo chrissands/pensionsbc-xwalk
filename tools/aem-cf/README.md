@@ -126,14 +126,28 @@ To make the sites skip every cached response at once, change `QUERY_CACHE_VERSIO
 
 ## Audiences
 
-A visitor's audience comes from the link they arrive on and lasts for the visit (`scripts/audience.js`):
+Every visitor is **local** (in BC) or **online** (anywhere else, or unknown), worked out once per visit
+and only on pages with audience content (`scripts/audience.js`):
 
-- `…/en/learning-resources?audience=local`: local visitors, e.g. from a regional email campaign;
-- `…?audience=online`: online visitors;
-- `…?audience=` (empty): clears it.
+1. `?audience=local` or `?audience=online` on the link they arrive on wins (campaign links, demos);
+   `?audience=` with no value clears it and detects again.
+2. Otherwise the province from an IP lookup ([GeoJS](https://www.geojs.io/), free, no account). The
+   visitor's IP address goes to that service, so a production site would need a privacy review or an
+   Adobe-side alternative (e.g. Adobe Target or the Experience Platform Edge Network). Skipped when
+   the browser sends Global Privacy Control.
+3. If the lookup is skipped, blocked (ad blockers) or takes over 2 seconds: the device time zone
+   (BC's own zones: Vancouver, Dawson Creek, Fort Nelson, Creston).
 
-To demo, open the page with and without `?audience=local`. Audiences are a value list in the Event item
-model (`blocks/event-list/_event-list.json`); add an option there for a new audience.
+Two ways to show content per audience:
+
+- **Sections:** set a section's **Show to** (Everyone / Local visitors / Online visitors). Learning
+  resources has two events sections: "Upcoming webinars" (online) and "Upcoming in-person sessions"
+  (local), each with its own heading, intro and Event List. Sections for another audience are removed;
+  in Universal Editor all are shown, outlined and labelled.
+- **Event items:** **Swap for audience**, above.
+
+To demo, open the page with `?audience=local` and `?audience=online`. Audiences are value lists in the
+section model (`models/_section.json`) and the Event item model (`blocks/event-list/_event-list.json`).
 
 ## Rebuilding the package
 

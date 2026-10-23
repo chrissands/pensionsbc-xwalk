@@ -204,6 +204,27 @@
             "value": "accent-heading"
           }
         ]
+      },
+      {
+        "component": "select",
+        "name": "audience",
+        "label": "Show to",
+        "valueType": "string",
+        "description": "Show this section only to one audience, e.g. an in-person version for visitors in BC and an online version for everyone else. The audience comes from the visitor's location (or ?audience= on the link).",
+        "options": [
+          {
+            "name": "Everyone",
+            "value": ""
+          },
+          {
+            "name": "Local visitors (in BC)",
+            "value": "local"
+          },
+          {
+            "name": "Online visitors (outside BC)",
+            "value": "online"
+          }
+        ]
       }
     ]
   },
@@ -399,18 +420,18 @@
         "name": "audience",
         "label": "Swap for audience",
         "valueType": "string",
-        "description": "Visitors in this audience see the fragment below instead. A visitor's audience comes from the link they arrived on (?audience=local) and lasts for the visit.",
+        "description": "Visitors in this audience see the fragment below instead. The audience comes from the visitor's location (or ?audience= on the link) and lasts for the visit.",
         "options": [
           {
             "name": "No swap",
             "value": ""
           },
           {
-            "name": "Local (in person)",
+            "name": "Local visitors (in BC)",
             "value": "local"
           },
           {
-            "name": "Online",
+            "name": "Online visitors (outside BC)",
             "value": "online"
           }
         ]

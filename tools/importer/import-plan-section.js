@@ -34,8 +34,15 @@ const UNIT = [
   '.eventsListing', '.featureCards', '.journal-content-article', '.search-bar',
 ].join(', ');
 
-// sites whose events have in-person versions (tools/aem-cf/events/<site>.json): local visitors see those
-const EVENT_SWAPS = { college: { audience: 'local', suffix: '-in-person' } };
+// sites whose events have in-person versions (tools/aem-cf/events/<site>.json): the events section is
+// written twice, shown to online visitors (the source's webinars) and to local visitors (in BC)
+const EVENT_AUDIENCES = {
+  college: {
+    suffix: '-in-person',
+    heading: 'Upcoming in-person sessions',
+    intro: 'Meet our pension educators face to face at a session near you. Select <em>View available dates</em> to register for a session that fits your schedule.',
+  },
+};
 
 const text = (el) => (el?.textContent || '').replace(/\s+/g, ' ').trim();
 // blocks are still tables while the importer builds the page; section metadata is not a block
@@ -43,6 +50,40 @@ const isBlock = (el) => el?.tagName === 'TABLE' && !/section metadata/i.test(tex
 
 function sectionStyle(document, style) {
   return WebImporter.Blocks.createBlock(document, { name: 'Section Metadata', cells: { style } });
+}
+
+/** Adds a key to a section's Section Metadata, or adds Section Metadata after its last node. */
+function setSectionMeta(document, nodes, key, value) {
+  const meta = nodes.find((n) => n.tagName === 'TABLE' && /section metadata/i.test(text(n.querySelector('th, td'))));
+  if (!meta) return [...nodes, WebImporter.Blocks.createBlock(document, { name: 'Section Metadata', cells: { [key]: value } })];
+  const row = document.createElement('tr');
+  [key, value].forEach((v) => {
+    const td = document.createElement('td');
+    td.textContent = v;
+    row.append(td);
+  });
+  (meta.querySelector('tbody') || meta).append(row);
+  return nodes;
+}
+
+/**
+ * The events section, shown to online visitors, followed by a copy for local visitors with the
+ * in-person heading, intro and events (<slug><suffix>).
+ */
+function splitEventSection(document, list, data, folder, local) {
+  const nodes = [list];
+  for (let n = list.previousElementSibling; n && n.tagName !== 'HR'; n = n.previousElementSibling) nodes.unshift(n);
+  for (let n = list.nextElementSibling; n && n.tagName !== 'HR'; n = n.nextElementSibling) nodes.push(n);
+  const last = nodes[nodes.length - 1];
+  const copy = nodes.map((n) => (n === list
+    ? eventListBlock(document, data.map((e) => ({ slug: `${e.slug}${local.suffix}` })), folder)
+    : n.cloneNode(true)));
+  const h2 = copy.find((n) => n.tagName === 'H2');
+  if (h2) h2.textContent = local.heading;
+  const intro = copy.find((n, i) => n.tagName === 'P' && i > copy.indexOf(h2));
+  if (intro) intro.innerHTML = local.intro;
+  const online = setSectionMeta(document, nodes, 'audience', 'online').filter((n) => !nodes.includes(n));
+  last.after(...online, document.createElement('hr'), ...setSectionMeta(document, copy, 'audience', 'local'));
 }
 
 /** Units in document order, outermost only (a unit inside another is part of it). */
@@ -71,6 +112,8 @@ export default {
 
     const main = document.createElement('div');
     const events = [];
+    const eventFolder = `/content/dam/pensionsbc-base/${site}/events`;
+    let eventList = null;
     let newSection = false;
     const startSection = () => {
       if (main.children.length && (newSection || isBlock(main.lastElementChild))) main.append(document.createElement('hr'));
@@ -94,7 +137,8 @@ export default {
         // referenced by an Event list block
         const data = eventData(document, unit, base);
         events.push(...data);
-        return eventListBlock(document, data, `/content/dam/pensionsbc-base/${site}/events`, EVENT_SWAPS[site]);
+        eventList = { data, table: eventListBlock(document, data, eventFolder) };
+        return eventList.table;
       }
       if (unit.matches('.featureCards')) return resourceCards(document, unit, base);
       // Liferay search bar -> Search block (no index yet: Content AI search plugs in later)
@@ -178,6 +222,10 @@ export default {
         } else main.append(n);
       });
     });
+
+    if (eventList && EVENT_AUDIENCES[site]) {
+      splitEventSection(document, eventList.table, eventList.data, eventFolder, EVENT_AUDIENCES[site]);
+    }
 
     // metadata: the source title repeats the site name ("About us - College - College")
     const planName = planNameOf(document, site);

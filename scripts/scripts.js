@@ -12,6 +12,8 @@ import {
   loadSections,
   loadCSS,
 } from './aem.js';
+import { aemHost, AEM_PUBLISH } from './aem-config.js';
+import getAudience from './audience.js';
 
 /**
  * Moves all the attributes from a given elmenet to another given element.
@@ -179,6 +181,27 @@ function a11yLinks(main) {
  * Decorates the main element.
  * @param {Element} main The main element
  */
+/**
+ * Sections with a "Show to" audience (section metadata "audience") are shown only to visitors in
+ * that audience (scripts/audience.js); the others are removed. In Universal Editor all are shown,
+ * outlined and labelled with their audience.
+ * @param {Element} main The main element
+ */
+function decorateAudienceSections(main) {
+  const sections = [...main.querySelectorAll(':scope > .section[data-audience]')]
+    .filter((section) => section.dataset.audience.trim());
+  if (!sections.length) return;
+  if (aemHost() !== AEM_PUBLISH) {
+    sections.forEach((section) => section.classList.add('audience-preview'));
+    return;
+  }
+  sections.forEach((section) => section.classList.add('audience-pending'));
+  getAudience().then((audience) => sections.forEach((section) => {
+    if (section.dataset.audience.trim().toLowerCase() === audience) section.classList.remove('audience-pending');
+    else section.remove();
+  }));
+}
+
 // eslint-disable-next-line import/prefer-default-export
 export function decorateMain(main) {
   // hopefully forward compatible button decoration
@@ -186,6 +209,7 @@ export function decorateMain(main) {
   decorateIcons(main);
   buildAutoBlocks(main);
   decorateSections(main);
+  decorateAudienceSections(main);
   decorateBlocks(main);
   rewritePlanLinks(main);
   // add aria-label to links
