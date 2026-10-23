@@ -47,11 +47,11 @@
           "name": "audience",
           "label": "Swap for audience",
           "valueType": "string",
-          "description": "Visitors in this audience see the fragment below instead. A visitor's audience comes from the link they arrived on (?audience=local) and lasts for the visit.",
+          "description": "Visitors in this audience see the fragment below instead. The audience comes from the visitor's location (or ?audience= on the link) and lasts for the visit.",
           "options": [
             { "name": "No swap", "value": "" },
-            { "name": "Local (in person)", "value": "local" },
-            { "name": "Online", "value": "online" }
+            { "name": "Local visitors (in BC)", "value": "local" },
+            { "name": "Online visitors (outside BC)", "value": "online" }
           ]
         },
         {

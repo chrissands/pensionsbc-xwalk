@@ -470,6 +470,29 @@ body.theme-plan main > .section.accent-heading > .default-content-wrapper > h2 {
   }
 }
 
+/* sections shown to one audience (scripts.js decorateAudienceSections) */
+main > .section.audience-pending {
+  display: none !important;
+}
+
+/* Universal Editor: every audience's section is shown, labelled with its audience */
+main > .section.audience-preview {
+  position: relative;
+  outline: 1px dashed var(--border-color);
+  outline-offset: -1px;
+}
+
+main > .section.audience-preview::before {
+  content: attr(data-audience);
+  position: absolute;
+  top: 4px;
+  right: var(--space-xs);
+  color: var(--color-neutral-700);
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
 /* section metadata */
 main .section.light,
 main .section.highlight {
