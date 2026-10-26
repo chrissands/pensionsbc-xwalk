@@ -2,6 +2,7 @@
 /* global WebImporter */
 
 import { damSrc, pushSafeAlt } from './dam-assets.js';
+import { pageTitle } from './page-title.js';
 
 /**
  * Corporate footer (corporate/en/footer, LOCAL to the corporate live copy, and the blueprint
@@ -60,6 +61,7 @@ export default {
       ul.append(li);
     });
     main.append(ul);
+    main.append(pageTitle(document, 'Footer'));
 
     return [{
       element: main,

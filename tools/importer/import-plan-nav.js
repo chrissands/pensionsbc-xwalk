@@ -3,6 +3,7 @@
 
 import { PLAN_HOSTS, siteHref, MY_ACCOUNT_URL, planNameOf } from './plan-sites.js';
 import { damSrc, pushSafeAlt } from './dam-assets.js';
+import { pageTitle } from './page-title.js';
 
 /**
  * Plan site nav (<site>/en/nav, LOCAL to the plan's live copy) from the shared Liferay theme
@@ -88,6 +89,7 @@ export default {
     strong.append(link(document, MY_ACCOUNT_URL, 'Sign in to My Account'));
     main.append(para(document, strong));
     main.append(sectionName(document, 'Tools'));
+    main.append(pageTitle(document, 'Navigation'));
 
     return [{
       element: main,

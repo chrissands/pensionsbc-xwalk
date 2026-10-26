@@ -140,6 +140,17 @@ function siteOf({ hostname, pathname }) {
   return path && Object.values(SITES).includes(path[1]) ? path[1] : '';
 }
 
+/**
+ * The current page's language root, where its nav, footer and placeholders live: the path up to
+ * and including the language segment. /en on the sites, /content/pensionsbc-base/<site>/en in
+ * Universal Editor and AEM author, /content/<site>/en in the local preview; '' if there is none.
+ */
+export function languageRoot(pathname = window.location.pathname) {
+  const segments = pathname.split('/');
+  const lang = segments.findIndex((s, i) => i > 0 && /^[a-z]{2}(-[a-z]{2})?$/.test(s.replace(/\.html$/, '')));
+  return lang > 0 ? segments.slice(0, lang + 1).join('/').replace(/\.html$/, '') : '';
+}
+
 /** A site's demo host (main--pensionsbc-<site>--chrissands.aem.page): the sites never go live. */
 function demoHost(site) {
   const eds = Object.keys(SITES).find((key) => SITES[key] === site);

@@ -1,7 +1,7 @@
 import { getMetadata } from '../../scripts/aem.js';
 import { fetchPlaceholders } from '../../scripts/placeholders.js';
 import { loadFragment } from '../fragment/fragment.js';
-import { joinLinkedImages } from '../../scripts/scripts.js';
+import { joinLinkedImages, languageRoot } from '../../scripts/scripts.js';
 
 // media query match that indicates mobile/tablet width
 const isDesktop = window.matchMedia('(min-width: 900px)');
@@ -183,11 +183,9 @@ async function buildBreadcrumbs() {
  * @param {Element} block The header block element
  */
 export default async function decorate(block) {
-  // load nav as fragment
+  // load nav as fragment: <language root>/nav (on the sites, in Universal Editor and locally)
   const navMeta = getMetadata('nav');
-  // const navPath = navMeta ? new URL(navMeta, window.location).pathname : '/nav';
-  const lang = window.location.pathname.split('/')[1];
-  const root = /^[a-z]{2}$/.test(lang) ? `/${lang}` : '';
+  const root = languageRoot();
   const navPath = navMeta ? new URL(navMeta, window.location).pathname : `${root}/nav`;
   const [fragment, placeholders] = await Promise.all([
     loadFragment(navPath),

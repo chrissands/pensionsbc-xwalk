@@ -3,6 +3,7 @@
 
 import { PLAN_HOSTS, siteHref, productionHref, planNameOf } from './plan-sites.js';
 import { damSrc, pushSafeAlt } from './dam-assets.js';
+import { pageTitle } from './page-title.js';
 
 /**
  * Plan site footer (<site>/en/footer, LOCAL to the plan's live copy) from the shared Liferay
@@ -31,6 +32,21 @@ function el(document, tag, props = {}, ...children) {
   Object.entries(props).forEach(([k, v]) => { e[k] = v; });
   e.append(...children);
   return e;
+}
+
+// the other plans' footer logos (MPP.svg etc. in dam-assets.js), by the plan host they link to:
+// browser-saved pages embed them as data URIs (blob: URLs by the time the importer runs),
+// which have no file name to map
+const PLAN_LOGO_FILES = {
+  'mpp.pensionsbc.ca': 'MPP.svg', 'pspp.pensionsbc.ca': 'PSPP.svg', 'tpp.pensionsbc.ca': 'TPP.svg', 'worksafe.pensionsbc.ca': 'WSBC.svg',
+};
+
+function planLogoSrc(a, base) {
+  const src = a.querySelector('img').getAttribute('src');
+  if (!/^(data|blob):/.test(src)) return src;
+  let host = '';
+  try { host = new URL(a.getAttribute('href'), base).hostname; } catch (e) { /* keep src */ }
+  return PLAN_LOGO_FILES[host] ? `/${PLAN_LOGO_FILES[host]}` : src;
 }
 
 /** An image paragraph followed by a link paragraph (joined into a linked image by footer.js). */
@@ -91,7 +107,7 @@ export default {
     const plans = [...footer.querySelectorAll('.footer-plans:not(.d-none) a[href]')];
     section(document, main, 'Other plans', 'footer-plans', [
       el(document, 'h2', {}, text(plansHeading)),
-      ...plans.flatMap((a) => linkedImage(document, a.querySelector('img').getAttribute('src'), base,
+      ...plans.flatMap((a) => linkedImage(document, planLogoSrc(a, base), base,
         productionHref(a.getAttribute('href'), base), pushSafeAlt(a.querySelector('img').alt.replace(/\s*logo$/i, '')))),
     ]);
 
@@ -102,6 +118,7 @@ export default {
       linkList(document, legal, base),
       el(document, 'p', {}, el(document, 'a', { href: corp.getAttribute('href') }, text(corp))),
     ]);
+    main.append(pageTitle(document, 'Footer'));
 
     return [{
       element: main,
