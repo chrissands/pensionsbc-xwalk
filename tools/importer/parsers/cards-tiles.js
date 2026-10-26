@@ -44,7 +44,14 @@ export function buildTiles(document, articles, base) {
     }
     const textCell = document.createDocumentFragment();
     textCell.appendChild(document.createComment(' field:text '));
-    articleContent(document, article, base).forEach((el) => textCell.appendChild(el));
+    // tile headings are h3 (the source mixes h3 and h4, which skips a level after the section's h2)
+    articleContent(document, article, base).forEach((el) => {
+      if (/^H[4-6]$/.test(el.tagName)) {
+        const h3 = document.createElement('h3');
+        h3.append(...el.childNodes);
+        textCell.appendChild(h3);
+      } else textCell.appendChild(el);
+    });
     let variantCell = '';
     if (article.querySelector('.portlet-msg-alert')) {
       variantCell = document.createDocumentFragment();

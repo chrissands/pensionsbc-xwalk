@@ -177,6 +177,54 @@
   border: 0;
 }
 
+/* lists of links in a card: room between them so each is a 24px touch target (WCAG 2.5.8) */
+.cards .cards-card-body li + li {
+  margin-top: var(--space-xs);
+}
+
+.cards .cards-card-body li > a:any-link {
+  display: inline-block;
+  min-height: 24px;
+}
+
+/* the video's thumbnail and play button, until the visitor plays it */
+.cards.tiles .cards-card-video-play {
+  position: relative;
+  display: block;
+  width: 100%;
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  padding: 0;
+  aspect-ratio: 16 / 9;
+  background: var(--color-neutral-900);
+  cursor: pointer;
+}
+
+.cards.tiles > ul > li .cards-card-video-play img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.cards.tiles .cards-card-video-play::after {
+  content: '';
+  position: absolute;
+  inset: 50% auto auto 50%;
+  width: 68px;
+  height: 48px;
+  border-radius: 12px;
+  transform: translate(-50%, -50%);
+  background: rgb(0 0 0 / 75%) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23fff' d='M8 5v14l11-7z'/%3E%3C/svg%3E") center / 28px no-repeat;
+  transition: background-color var(--transition-duration) var(--transition-easing);
+}
+
+.cards.tiles .cards-card-video-play:hover::after,
+.cards.tiles .cards-card-video-play:focus-visible::after {
+  background-color: var(--site-accent-dark-color);
+}
+
 @media (width >= 768px) {
   .cards.tiles > ul {
     columns: 2;
