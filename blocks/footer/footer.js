@@ -1,18 +1,15 @@
 import { getMetadata } from '../../scripts/aem.js';
 import { loadFragment } from '../fragment/fragment.js';
-import { joinLinkedImages } from '../../scripts/scripts.js';
+import { joinLinkedImages, languageRoot } from '../../scripts/scripts.js';
 
 /**
  * loads and decorates the footer
  * @param {Element} block The footer block element
  */
 export default async function decorate(block) {
-  // load footer as fragment
+  // load footer as fragment: <language root>/footer (on the sites, in Universal Editor and locally)
   const footerMeta = getMetadata('footer');
-  // const footerPath = footerMeta ? new URL(footerMeta, window.location).pathname : '/footer';
-  const lang = window.location.pathname.split('/')[1];
-  const root = /^[a-z]{2}$/.test(lang) ? `/${lang}` : '';
-  const footerPath = footerMeta ? new URL(footerMeta, window.location).pathname : `${root}/footer`;
+  const footerPath = footerMeta ? new URL(footerMeta, window.location).pathname : `${languageRoot()}/footer`;
   const fragment = await loadFragment(footerPath);
 
   // decorate footer DOM

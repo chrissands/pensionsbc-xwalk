@@ -1,6 +1,8 @@
 /* eslint-disable */
 /* global WebImporter */
 
+import { pageTitle } from './page-title.js';
+
 /**
  * Corporate nav (corporate/en/nav, LOCAL to the corporate live copy), also the blueprint
  * default nav (language-masters/en/nav, written by import-blueprint-nav.js).
@@ -22,6 +24,7 @@ export default {
       if (i) main.append(document.createElement('hr'));
       main.append(sectionName(document, name));
     });
+    main.append(pageTitle(document, 'Navigation'));
 
     return [{
       element: main,

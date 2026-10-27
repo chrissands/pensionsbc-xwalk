@@ -24,6 +24,8 @@ export async function loadFragment(path) {
     if (resp.ok) {
       const main = document.createElement('main');
       main.innerHTML = await resp.text();
+      // a fragment page's Metadata block (e.g. the nav's title) is page data, not content
+      main.querySelectorAll(':scope > div > .metadata').forEach((meta) => meta.remove());
 
       // reset base path for media to fragment base
       const resetAttributeBase = (tag, attr) => {
