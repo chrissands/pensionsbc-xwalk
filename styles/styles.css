@@ -109,6 +109,12 @@
   }
 }
 
+/* an empty nav (corporate, as on www.pensionsbc.ca) is a plain 45px band above the page */
+body.nav-empty {
+  --nav-height: 45px;
+  --header-height: var(--nav-height);
+}
+
 /*
  * Site themes. scripts.js sets body.site-<site> from the aem.page host or the AEM path, and
  * body.theme-plan on the five plan sites, which share one source theme (values from

@@ -177,6 +177,9 @@ function decorateSiteTheme() {
   if (!site) return;
   document.body.classList.add(`site-${site}`);
   if (site !== 'corporate') document.body.classList.add('theme-plan');
+  // the corporate nav is empty (like www.pensionsbc.ca): set before the header loads so the page
+  // doesn't shift when it does; header.js sets or clears nav-empty from the nav itself
+  if (site === 'corporate') document.body.classList.add('nav-empty');
 }
 
 function rewritePlanLinks(main) {
