@@ -19,7 +19,7 @@ export const DAM_ASSETS = {
   'tpp_logo.jpg': `${DAM}/corporate/tpp-logo.jpg`,
   'wsbc_logo.jpg': `${DAM}/corporate/wsbc-logo.jpg`,
   // college
-  'layout_set_logo?img_id=23968480': `${DAM}/college/college-pension-plan-logo.png`,
+  'layout_set_logo?img_id=23968480': `${DAM}/college/college-pension-plan-logo-2x.png`,
   'college-hero-banner-img-spr-2026.jpg': `${DAM}/college/hero-mountain-meadow.jpg`,
   '1233847/Web-homepage.jpg': `${DAM}/college/annual-report-2025.jpg`,
   'IMG Board message promo April 24, 2025.jpg': `${DAM}/college/board-message-2025.jpg`,
