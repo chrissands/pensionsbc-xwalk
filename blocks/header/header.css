@@ -8,6 +8,11 @@ header .nav-wrapper {
   position: fixed;
 }
 
+/* an empty nav: no rule under the band (styles.css body.nav-empty) */
+body.nav-empty header .nav-wrapper {
+  box-shadow: none;
+}
+
 header nav {
   box-sizing: border-box;
   display: grid;

@@ -256,6 +256,8 @@ export default async function decorate(block) {
   setLabel(hamburger.querySelector('button'), 'aria-label', labels.navOpen);
   // a nav without links (e.g. corporate) has nothing to open on small screens
   hamburger.hidden = !nav.querySelector('.nav-sections a, .nav-tools a');
+  // a nav with nothing in it at all is a plain band (styles.css body.nav-empty)
+  document.body.classList.toggle('nav-empty', !nav.querySelector('.nav-brand :is(a, img), .nav-sections a, .nav-tools a'));
   hamburger.addEventListener('click', () => toggleMenu(nav, navSections));
   nav.prepend(hamburger);
   nav.setAttribute('aria-expanded', 'false');
