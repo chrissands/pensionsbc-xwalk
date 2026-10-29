@@ -1,5 +1,5 @@
 {
-  "note": "College Pension Plan events for the demo. The two webinars dated 2026-10-29 and 2026-11-02 are from the source listing; the others are demo content written for the Event List audience swap (only the two webinar registration pages exist on Arlo, so the others link to the plan's Arlo event listing). type: webinar | in-person (sets the tag).",
+  "note": "College Pension Plan events for the demo. The two webinars dated 2026-10-29 and 2026-11-02 are from the source listing; the others are demo content written for the Event List audience swap (only the two webinar registration pages exist on Arlo, so the others link to the plan's Arlo event listing). type: webinar | in-person (sets the tag). Layoff support events (2026-10-29) are for the layoff-support demo scenario.",
   "events": [
     {
       "slug": "approaching-retirement",
@@ -130,6 +130,28 @@
       "duration": "2 hours",
       "location": "In person, Victoria. Venue details are sent when you register.",
       "description": "Go through retirement health and dental options with our team, including eligibility, costs and sign-up deadlines, and get answers to your questions.",
+      "registrationUrl": "https://pensionsbc.arlo.co/w/cp/events/",
+      "linkText": "View available dates"
+    },
+    {
+      "slug": "layoff-support",
+      "type": "webinar",
+      "title": "Layoff support: what it means for your pension",
+      "startDate": "2026-11-04",
+      "duration": "60 minutes",
+      "location": "Online, live",
+      "description": "Facing a layoff? Learn what happens to the pension you have earned, the choices you may need to make and the deadlines that apply, with time for your questions.",
+      "registrationUrl": "https://pensionsbc.arlo.co/w/cp/events/",
+      "linkText": "View available dates"
+    },
+    {
+      "slug": "layoff-support-in-person",
+      "type": "in-person",
+      "title": "Layoff support: in-person session",
+      "startDate": "2026-11-09",
+      "duration": "2 hours",
+      "location": "In person, Vancouver. Venue details are sent when you register.",
+      "description": "Talk through your options after a layoff with a pension educator, ask questions about your own situation and leave with clear next steps for your pension.",
       "registrationUrl": "https://pensionsbc.arlo.co/w/cp/events/",
       "linkText": "View available dates"
     }
