@@ -4,6 +4,9 @@
  *
  *   node tools/aem-cf/build-events-package.mjs <site>
  *   -> tools/aem-assets/<site>-events-package.zip
+ *   node tools/aem-cf/build-events-package.mjs <site> --only=<slug>,<slug> --package=<label>
+ *   -> tools/aem-assets/<site>-events-<label>-package.zip: only those events, as a package of its
+ *      own (pensionsbc-<site>-events-<label>), for adding events without reinstalling the others
  *
  * The events come from tools/aem-cf/events/<site>.json (demo events; "type" webinar | in-person)
  * and the import reports (tools/importer/reports/<site>/en/*.report.json, field "events", written
@@ -34,9 +37,12 @@ const tagId = (type) => `pensionsbc:event-type/${type}`;
 const NS = 'xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:dam="http://www.day.com/dam/1.0" xmlns:mix="http://www.jcp.org/jcr/mix/1.0"';
 const BUILT = new Date().toISOString();
 
-const site = process.argv[2];
-if (!site) {
-  console.error('Usage: build-events-package.mjs <site>');
+const [site, ...options] = process.argv.slice(2);
+const option = (key) => options.find((o) => o.startsWith(`--${key}=`))?.split('=')[1];
+const only = option('only')?.split(',').filter(Boolean);
+const label = option('package');
+if (!site || (only && !label)) {
+  console.error('Usage: build-events-package.mjs <site> [--only=<slug>,<slug> --package=<label>]');
   process.exit(1);
 }
 const xml = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
@@ -52,7 +58,13 @@ const imported = existsSync(reports) ? readdirSync(reports).filter((f) => f.ends
 const eventsFile = join(ROOT, 'tools/aem-cf/events', `${site}.json`);
 const listed = existsSync(eventsFile) ? JSON.parse(readFileSync(eventsFile, 'utf8')).events : [];
 const events = [...listed, ...imported.filter((e) => !listed.some((l) => l.slug === e.slug))]
-  .map((e) => ({ type: 'webinar', location: '', ...e }));
+  .map((e) => ({ type: 'webinar', location: '', ...e }))
+  .filter((e) => !only || only.includes(e.slug));
+const missing = (only || []).filter((slug) => !events.some((e) => e.slug === slug));
+if (missing.length) {
+  console.error(`Not in the events file or reports: ${missing.join(', ')}`);
+  process.exit(1);
+}
 const unknown = events.filter((e) => !TYPES[e.type]);
 if (unknown.length) {
   console.error(`Unknown event type: ${unknown.map((e) => `${e.slug} (${e.type})`).join(', ')}`);
@@ -117,21 +129,21 @@ events.forEach((e) => {
   filters.push(`    <filter root="${path}"/>`);
 });
 
-const name = `pensionsbc-${site}-events`;
+const name = label ? `pensionsbc-${site}-events-${label}` : `pensionsbc-${site}-events`;
 zip.file('META-INF/vault/filter.xml', `<?xml version="1.0" encoding="UTF-8"?>\n<workspaceFilter version="1.0">\n${filters.join('\n')}\n</workspaceFilter>\n`);
 zip.file('META-INF/vault/properties.xml', `<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
 <entry key="group">pensionsbc</entry>
 <entry key="name">${name}</entry>
-<entry key="version">1.2</entry>
+<entry key="version">${label ? '1.0' : '1.2'}</entry>
 <entry key="description">PensionsBC ${site}: event type tags, events folder and Event content fragments (tools/aem-cf)</entry>
 <entry key="packageType">content</entry>
 <entry key="requiresRoot">false</entry>
 </properties>
 `);
 
-const out = join(ROOT, 'tools/aem-assets', `${site}-events-package.zip`);
+const out = join(ROOT, 'tools/aem-assets', label ? `${site}-events-${label}-package.zip` : `${site}-events-package.zip`);
 writeFileSync(out, await zip.generateAsync({ type: 'nodebuffer', compression: 'DEFLATE' }));
 console.log(`Built ${out}`);
 events.forEach((e) => console.log(`  fragment ${folder}/${e.slug}  (${e.startDate}, tag ${tagId(e.type)})`));

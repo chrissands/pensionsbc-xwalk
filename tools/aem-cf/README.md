@@ -160,5 +160,13 @@ slug. After editing the events file or a re-import:
 node tools/aem-cf/build-events-package.mjs <site>   # -> tools/aem-assets/<site>-events-package.zip
 ```
 
+**Adding events later:** add them to the events file, then package only those, as a package of their
+own, so the existing fragments (and any edits made to them in AEM) are left alone:
+
+```bash
+node tools/aem-cf/build-events-package.mjs college --only=layoff-support,layoff-support-in-person --package=layoff
+# -> tools/aem-assets/college-events-layoff-package.zip (package pensionsbc-college-events-layoff)
+```
+
 The source only shows weekday, month and day; the year is the first year (from the page's save date)
 in which that day is that weekday.
