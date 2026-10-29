@@ -140,10 +140,11 @@ and only on pages with audience content (`scripts/audience.js`):
 
 Two ways to show content per audience:
 
-- **Sections:** set a section's **Show to** (Everyone / Local visitors / Online visitors). Learning
-  resources has two events sections: "Upcoming webinars" (online) and "Upcoming in-person sessions"
-  (local), each with its own heading, intro and Event List. Sections for another audience are removed;
-  in Universal Editor all are shown, outlined and labelled.
+- **Sections:** set a section's **Show to** (Everyone / Local visitors / Online visitors). Sections for
+  another audience are removed; in Universal Editor all are shown, outlined and labelled.
+- Learning resources uses the **Event items** swap: one "Upcoming Events" section (heading and intro
+  for both formats) whose items show the webinar, swapped for its in-person session for local
+  visitors. (It had two sections, one per audience, until 2026-10-29.)
 - **Event items:** **Swap for audience**, above.
 
 To demo, open the page with `?audience=local` and `?audience=online`. Audiences are value lists in the

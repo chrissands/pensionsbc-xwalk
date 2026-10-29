@@ -286,9 +286,9 @@ Demo: https://main--pensionsbc-college--chrissands.aem.page/en/
   are `local`, everyone else `online`, from an IP lookup (GeoJS) with the device time zone as fallback,
   once per visit; `?audience=` overrides (`scripts/audience.js`). Sections have a **Show to** setting
   (section model `show-to`; first stored as `audience`, renamed 2026-10-23 because the experimentation
-  engine reserves that name). Learning resources has the events section twice: "Upcoming webinars"
-  (online) and "Upcoming in-person sessions" (local, in-person workshops); the importer writes both
-  for the college site (`EVENT_AUDIENCES` in `import-plan-section.js`). Privacy: the IP lookup sends
+  engine reserves that name). Learning resources has one "Upcoming Events" section (since 2026-10-29;
+  before, one section per audience): its Event items show each webinar, swapped for its in-person
+  workshop for local visitors (`EVENT_SECTIONS` in `import-plan-section.js`). Privacy: the IP lookup sends
   the visitor's IP to GeoJS; fine for the demo, a production site needs a privacy review (FOIPPA) or
   an Adobe-side alternative.
 
