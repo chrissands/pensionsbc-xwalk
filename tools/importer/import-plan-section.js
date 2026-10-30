@@ -34,13 +34,14 @@ const UNIT = [
   '.eventsListing', '.featureCards', '.journal-content-article', '.search-bar',
 ].join(', ');
 
-// sites whose events have in-person versions (tools/aem-cf/events/<site>.json): the events section is
-// written twice, shown to online visitors (the source's webinars) and to local visitors (in BC)
-const EVENT_AUDIENCES = {
+// sites whose events have in-person versions (tools/aem-cf/events/<site>.json): one events section
+// for everyone, whose Event items swap each webinar for its in-person session (<slug><suffix>) for
+// local visitors (in BC); its heading and intro cover both
+const EVENT_SECTIONS = {
   college: {
-    suffix: '-in-person',
-    heading: 'Upcoming in-person sessions',
-    intro: 'Meet our pension educators face to face at a session near you. Select <em>View available dates</em> to register for a session that fits your schedule.',
+    swap: { audience: 'local', suffix: '-in-person' },
+    heading: 'Upcoming Events',
+    intro: 'Learn about your pension from our pension educators, online or in person. Join a live webinar from wherever you are, or meet us at an in-person session in a community near you. Select <em>View available dates</em> to register for a session that fits your schedule.',
   },
 };
 
@@ -52,38 +53,14 @@ function sectionStyle(document, style) {
   return WebImporter.Blocks.createBlock(document, { name: 'Section Metadata', cells: { style } });
 }
 
-/** Adds a key to a section's Section Metadata, or adds Section Metadata after its last node. */
-function setSectionMeta(document, nodes, key, value) {
-  const meta = nodes.find((n) => n.tagName === 'TABLE' && /section metadata/i.test(text(n.querySelector('th, td'))));
-  if (!meta) return [...nodes, WebImporter.Blocks.createBlock(document, { name: 'Section Metadata', cells: { [key]: value } })];
-  const row = document.createElement('tr');
-  [key, value].forEach((v) => {
-    const td = document.createElement('td');
-    td.textContent = v;
-    row.append(td);
-  });
-  (meta.querySelector('tbody') || meta).append(row);
-  return nodes;
-}
-
-/**
- * The events section, shown to online visitors, followed by a copy for local visitors with the
- * in-person heading, intro and events (<slug><suffix>).
- */
-function splitEventSection(document, list, data, folder, local) {
-  const nodes = [list];
-  for (let n = list.previousElementSibling; n && n.tagName !== 'HR'; n = n.previousElementSibling) nodes.unshift(n);
-  for (let n = list.nextElementSibling; n && n.tagName !== 'HR'; n = n.nextElementSibling) nodes.push(n);
-  const last = nodes[nodes.length - 1];
-  const copy = nodes.map((n) => (n === list
-    ? eventListBlock(document, data.map((e) => ({ slug: `${e.slug}${local.suffix}` })), folder)
-    : n.cloneNode(true)));
-  const h2 = copy.find((n) => n.tagName === 'H2');
-  if (h2) h2.textContent = local.heading;
-  const intro = copy.find((n, i) => n.tagName === 'P' && i > copy.indexOf(h2));
-  if (intro) intro.innerHTML = local.intro;
-  const online = setSectionMeta(document, nodes, 'show-to', 'online').filter((n) => !nodes.includes(n));
-  last.after(...online, document.createElement('hr'), ...setSectionMeta(document, copy, 'show-to', 'local'));
+/** The events section's heading and intro paragraph (the nodes before its Event List). */
+function retitleEventSection(list, { heading, intro }) {
+  const before = [];
+  for (let n = list.previousElementSibling; n && n.tagName !== 'HR'; n = n.previousElementSibling) before.unshift(n);
+  const h2 = before.find((n) => n.tagName === 'H2');
+  if (h2) h2.textContent = heading;
+  const p = before.find((n, i) => n.tagName === 'P' && i > before.indexOf(h2));
+  if (p) p.innerHTML = intro;
 }
 
 /** Units in document order, outermost only (a unit inside another is part of it). */
@@ -137,7 +114,7 @@ export default {
         // referenced by an Event list block
         const data = eventData(document, unit, base);
         events.push(...data);
-        eventList = { data, table: eventListBlock(document, data, eventFolder) };
+        eventList = { data, table: eventListBlock(document, data, eventFolder, EVENT_SECTIONS[site]?.swap) };
         return eventList.table;
       }
       if (unit.matches('.featureCards')) return resourceCards(document, unit, base);
@@ -223,9 +200,7 @@ export default {
       });
     });
 
-    if (eventList && EVENT_AUDIENCES[site]) {
-      splitEventSection(document, eventList.table, eventList.data, eventFolder, EVENT_AUDIENCES[site]);
-    }
+    if (eventList && EVENT_SECTIONS[site]) retitleEventSection(eventList.table, EVENT_SECTIONS[site]);
 
     // metadata: the source title repeats the site name ("About us - College - College")
     const planName = planNameOf(document, site);
