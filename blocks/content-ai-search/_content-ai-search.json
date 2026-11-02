@@ -38,6 +38,13 @@
         {
           "component": "text",
           "valueType": "string",
+          "name": "stream-url",
+          "label": "Streaming answer URL (optional, enables live streaming)",
+          "value": ""
+        },
+        {
+          "component": "text",
+          "valueType": "string",
           "name": "content-source",
           "label": "Content AI source name",
           "value": ""
