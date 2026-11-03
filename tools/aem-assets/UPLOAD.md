@@ -25,6 +25,15 @@ Everything below `pensionsbc-base/` maps 1:1 to `/content/dam/pensionsbc-base/` 
 `shared/` already exists: the first corporate package put `bc-pension-corporation-logo.jpg` and
 `bci-logo.png` there. Leave those two as they are.
 
+## College logo: `college-logo/`
+
+| AEM folder | Files |
+|---|---|
+| `/content/dam/pensionsbc-base/college/` | `college-pension-plan-logo-teal.png` (teal, transparent background; used by the nav and footer since 2026-11-03) |
+
+A new file name, not a replacement: Edge Delivery keeps showing the old image when a DAM asset is
+replaced in place. `college-pension-plan-logo-2x.png` (purple) is no longer used; leave it in AEM.
+
 ## College batch 1: `college-batch1-images.zip`
 
 For Learning resources (Your pension and About us use images that are already uploaded).
@@ -35,15 +44,6 @@ For Learning resources (Your pension and About us use images that are already up
 
 `learning` is a new folder inside `shared`: open `shared`, then **Create → Folder** with Title and Name
 `learning`, and upload the 12 files into it.
-
-## College logo: `college-logo/`
-
-| AEM folder | Files |
-|---|---|
-| `/content/dam/pensionsbc-base/college/` | `college-pension-plan-logo-teal.png` (teal, transparent background; used by the nav and footer since 2026-11-03) |
-
-A new file name, not a replacement: Edge Delivery keeps showing the old image when a DAM asset is
-replaced in place. `college-pension-plan-logo-2x.png` (purple) is no longer used; leave it in AEM.
 
 ## Steps
 
