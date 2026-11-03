@@ -36,6 +36,15 @@ For Learning resources (Your pension and About us use images that are already up
 `learning` is a new folder inside `shared`: open `shared`, then **Create → Folder** with Title and Name
 `learning`, and upload the 12 files into it.
 
+## College logo: `college-logo/`
+
+| AEM folder | Files |
+|---|---|
+| `/content/dam/pensionsbc-base/college/` | `college-pension-plan-logo-teal.png` (teal, transparent background; used by the nav and footer since 2026-11-03) |
+
+A new file name, not a replacement: Edge Delivery keeps showing the old image when a DAM asset is
+replaced in place. `college-pension-plan-logo-2x.png` (purple) is no longer used; leave it in AEM.
+
 ## Steps
 
 1. **Download** the zip from GitHub: open the file on the site's branch, click **Download raw file**,

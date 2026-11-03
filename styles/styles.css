@@ -393,6 +393,20 @@ body.theme-plan main a.button:focus {
   color: var(--color-white);
 }
 
+/* College: card buttons filled in the dark accent (#513f77, white text 9:1; hover 6:1) */
+body.site-college main .cards a.button:any-link {
+  border-color: var(--site-accent-dark-color);
+  background-color: var(--site-accent-dark-color);
+  color: var(--color-white);
+}
+
+body.site-college main .cards a.button:hover,
+body.site-college main .cards a.button:focus {
+  border-color: var(--site-accent-color);
+  background-color: var(--site-accent-color);
+  color: var(--color-white);
+}
+
 body.theme-plan main > .section > .default-content-wrapper > h1 {
   margin: 0 0 var(--space-l);
   color: var(--heading-color);

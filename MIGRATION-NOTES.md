@@ -233,6 +233,10 @@ Demo: https://main--pensionsbc-college--chrissands.aem.page/en/
 - Importers `tools/importer/import-plan-nav.js` and `import-plan-footer.js` work for every plan site (the
   site comes from the source host); run with `tools/importer/urls-college-global.txt`.
 - Images: `tools/aem-assets/college-images.zip` (12 images, uploaded 2026-10-22), mapped in `dam-assets.js`.
+- **Brand update** (2026-11-03): the nav and footer logo is the teal `college-pension-plan-logo-teal.png`
+  (supplied as a 230×51 JPG on black; the black was made transparent), and buttons in Cards are filled
+  `#513f77` with white text (`body.site-college` in `styles/styles.css`). The supplied logo is 1x: a
+  2x PNG or an SVG would be sharper on high-density screens.
 - Homepage importer `tools/importer/import-plan-home.js` (also for every plan site): hero -> Hero (panel),
   each two-column layout row -> Cards (tiles), separators -> section breaks, other articles -> default
   content. Run with `tools/importer/urls-college-home.txt`.
