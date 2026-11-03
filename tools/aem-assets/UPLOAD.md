@@ -36,6 +36,15 @@ For Learning resources (Your pension and About us use images that are already up
 `learning` is a new folder inside `shared`: open `shared`, then **Create → Folder** with Title and Name
 `learning`, and upload the 12 files into it.
 
+## College: Welcome to the plan, `college-welcome/`
+
+| AEM folder | Files |
+|---|---|
+| `/content/dam/pensionsbc-base/college/` | `welcome-to-the-plan.jpg` (the page's feature image) |
+
+The page's e-course tile uses `shared/learning/getting-to-know-your-pension.jpg` from batch 1, which is
+already uploaded. Download the one file from GitHub (**Download raw file**), not a zip.
+
 ## Steps
 
 1. **Download** the zip from GitHub: open the file on the site's branch, click **Download raw file**,

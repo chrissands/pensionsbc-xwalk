@@ -227,6 +227,7 @@ Demo: https://main--pensionsbc-college--chrissands.aem.page/en/
 | Your pension | `college/en/your-pension` | local | https://college.pensionsbc.ca/your-pension |
 | About us | `college/en/about-us` | local | https://college.pensionsbc.ca/about-us |
 | Learning resources | `college/en/learning-resources` | local | https://college.pensionsbc.ca/learning-resources |
+| Welcome to the plan | `college/en/welcome-to-the-plan` | local | https://college.pensionsbc.ca/welcome-to-the-plan |
 | Search | `college/en/search` | local | https://college.pensionsbc.ca/web/college/search |
 | Copyright, Privacy, Disclaimer | `college/en/{copyright,privacy,disclaimer}` | inherited | `language-masters/en/*` |
 
@@ -291,6 +292,12 @@ Demo: https://main--pensionsbc-college--chrissands.aem.page/en/
   workshop for local visitors (`EVENT_SECTIONS` in `import-plan-section.js`). Privacy: the IP lookup sends
   the visitor's IP to GeoJS; fine for the demo, a production site needs a privacy review (FOIPPA) or
   an Adobe-side alternative.
+- **Welcome to the plan** (2026-11-03): imported with the section importer from a saved page
+  (`bd-snapshots/college.pensionsbc.ca/welcome-to-the-plan.html`). The importer now keeps nested lists
+  (the My Account steps), keeps an article image when it is in AEM Assets (the feature image,
+  `tools/aem-assets/college-welcome/`), gives a site-map card the link of its own row, and starts every
+  main-column article in a sidebar layout at h2. Re-importing the other College section pages gives
+  the same output, except About us, whose tile headings are now h3 (they were h4).
 
 Known gaps:
 - Nav: the source's sign-in button shows a "My Account" logo; it is text here.

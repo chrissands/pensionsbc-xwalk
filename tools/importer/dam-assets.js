@@ -23,6 +23,9 @@ export const DAM_ASSETS = {
   'college-hero-banner-img-spr-2026.jpg': `${DAM}/college/hero-mountain-meadow.jpg`,
   '1233847/Web-homepage.jpg': `${DAM}/college/annual-report-2025.jpg`,
   'IMG Board message promo April 24, 2025.jpg': `${DAM}/college/board-message-2025.jpg`,
+  'cpp-welcome-to-the-plan.jpg': `${DAM}/college/welcome-to-the-plan.jpg`,
+  // the same photo as the Learning resources course card
+  'getting-to-know-your-pension-ecourse.jpg': `${DAM}/shared/learning/getting-to-know-your-pension.jpg`,
   // shared by several sites
   'logo-pensions-corp250x40.jpg': `${DAM}/shared/bc-pension-corporation-logo.jpg`,
   'IMG - BCI logo.png': `${DAM}/shared/bci-logo.png`,

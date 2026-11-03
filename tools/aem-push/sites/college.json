@@ -31,6 +31,11 @@
       "note": "Section page: topic boxes beside promo tiles"
     },
     {
+      "content": "college/en/welcome-to-the-plan",
+      "scope": "local",
+      "note": "Section page: feature image, My Account steps, Explore the value of your pension links; sidebar tiles (e-course, video, guide)"
+    },
+    {
       "content": "college/en/learning-resources",
       "scope": "local",
       "note": "Section page: libraries, webinars, course / video / article cards"

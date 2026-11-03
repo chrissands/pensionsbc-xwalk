@@ -45,7 +45,7 @@ function imageCell(document, img, base) {
 /** Site-map topics: every <description> with the link of its item. */
 export function topicCards(document, container, style, base) {
   const cells = [...container.querySelectorAll('description')].map((d) => {
-    const item = d.closest('.featuredTopicCard, [class*="col-md-12"], .container-fluid') || d.parentElement;
+    const item = d.closest('.featuredTopicCard, [class*="col-md-12"], .row, .container-fluid') || d.parentElement;
     const a = item.querySelector('a[href]');
     if (!a) return null;
     return ['', textCell(document, [
