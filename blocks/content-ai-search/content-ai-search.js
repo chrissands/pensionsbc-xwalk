@@ -1,6 +1,11 @@
 import { readBlockConfig } from '../../scripts/aem.js';
+import { readSseStream, closeOpenMarkdown } from './stream.js';
 
 const LOADING_DISPLAY_DELAY = 300;
+// Word-by-word reveal used when the answer arrives in one piece (no stream URL, or the
+// stream failed before any text). The whole reveal is capped so long answers do not drag.
+const REVEAL_TICK_MS = 25;
+const REVEAL_MAX_MS = 4000;
 const TAB_RESULTS = 'search-results';
 const TAB_AI = 'ai-mode';
 const MAX_RESULTS_SIZE = 50;
@@ -73,6 +78,67 @@ async function fetchSearchAnswer(baseUrl, contentSource, contentSourceType, quer
   });
   if (!resp.ok) throw new Error(`Content AI request failed: ${resp.status}`);
   return resp.json();
+}
+
+// Streams the generative answer (Server-Sent Events). onText receives the whole answer so
+// far on every update; the returned promise resolves with the final { result, hits }.
+async function streamSearchAnswer(
+  streamUrl,
+  contentSource,
+  contentSourceType,
+  query,
+  signal,
+  onText,
+) {
+  const resp = await fetch(streamUrl, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Accept: 'text/event-stream' },
+    body: JSON.stringify({
+      contentSource: { name: contentSource, type: contentSourceType },
+      query,
+    }),
+    signal,
+  });
+  if (!resp.ok || !resp.body) throw new Error(`Content AI stream request failed: ${resp.status}`);
+  let final = null;
+  await readSseStream(resp.body, (event) => {
+    if (event.type === 'ERROR') throw new Error(event.result || 'Content AI stream error');
+    if (event.type === 'STREAMING') onText(event.result || '');
+    if (event.type === 'END') final = event;
+  });
+  if (!final) throw new Error('Content AI stream ended before the answer was complete');
+  return final;
+}
+
+function wait(ms) {
+  return new Promise((resolve) => { setTimeout(resolve, ms); });
+}
+
+// Puts html in the container and uncovers its text word by word, so links, bold text and
+// lists keep their structure while the answer appears. Stops when isCurrent() turns false.
+async function revealHtml(container, html, isCurrent) {
+  container.innerHTML = html;
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT);
+  const entries = [];
+  while (walker.nextNode()) {
+    const node = walker.currentNode;
+    const words = node.nodeValue.match(/\S+\s*/g) || [];
+    if (words.length) entries.push({ node, words, full: node.nodeValue });
+  }
+  const total = entries.reduce((sum, entry) => sum + entry.words.length, 0);
+  const step = Math.max(1, Math.ceil(total / (REVEAL_MAX_MS / REVEAL_TICK_MS)));
+  entries.forEach((entry) => { entry.node.nodeValue = ''; });
+  for (let e = 0; e < entries.length; e += 1) {
+    const { node, words, full } = entries[e];
+    for (let i = 0; i < words.length; i += step) {
+      if (!isCurrent()) return;
+      node.nodeValue += words.slice(i, i + step).join('');
+      // eslint-disable-next-line no-await-in-loop
+      await wait(REVEAL_TICK_MS);
+    }
+    node.nodeValue = full;
+  }
 }
 
 // Longer, natural-language queries are better served by the semantic vector match than by
@@ -377,6 +443,7 @@ export default function decorate(block) {
   const genSearchErrorRetryVisible = config['gen-search-error-retry-visible'] !== 'false';
   const disclaimerText = config['disclaimer-text'] || '';
   const baseUrl = (config['base-url'] || '').replace(/\/+$/, '');
+  const streamUrl = (config['stream-url'] || '').trim();
   const contentSource = config['content-source'] || '';
   const contentSourceType = config['content-source-type'] || 'ACQUISITION';
   const resultsSize = Math.min(parseInt(config['results-size'], 10) || 10, MAX_RESULTS_SIZE);
@@ -596,6 +663,7 @@ export default function decorate(block) {
   let currentQuery = '';
   let resultsRequestId = 0;
   let genSearchRequestId = 0;
+  let genSearchAbort;
   let visibleCount = 0;
   let pageSize = 0;
   let seenIds = new Set();
@@ -730,34 +798,103 @@ export default function decorate(block) {
     }
   }
 
+  function showAnswerSources(hits) {
+    sourcesEl.innerHTML = '';
+    (hits || []).forEach((hit) => sourcesEl.append(renderSourceChip(hit)));
+    sourcesEl.parentElement.hidden = !sourcesEl.children.length;
+  }
+
+  // Streams the answer into the card as it arrives. Resolves true when the card was shown
+  // (complete or partial), false when the stream failed before any text so the caller can
+  // fall back to the blocking call.
+  async function streamAnswer(query, requestId, signal) {
+    let latest = '';
+    let shown = false;
+    let frame = 0;
+    const isCurrent = () => requestId === genSearchRequestId;
+    const showCard = () => {
+      shown = true;
+      summaryLoading.hidden = true;
+      sourcesEl.parentElement.hidden = true;
+      summaryEl.hidden = false;
+      summaryEl.setAttribute('aria-busy', 'true');
+      summaryText.classList.add('cmp-content-ai-search__summary-text--streaming');
+    };
+    const finish = () => {
+      cancelAnimationFrame(frame);
+      summaryEl.removeAttribute('aria-busy');
+      summaryText.classList.remove('cmp-content-ai-search__summary-text--streaming');
+    };
+    try {
+      const final = await streamSearchAnswer(
+        streamUrl,
+        contentSource,
+        contentSourceType,
+        query,
+        signal,
+        (text) => {
+          if (!isCurrent()) return;
+          latest = text;
+          if (!shown) showCard();
+          if (!frame) {
+            frame = requestAnimationFrame(() => {
+              frame = 0;
+              if (!isCurrent()) return;
+              summaryText.innerHTML = renderMarkdownSummary(closeOpenMarkdown(latest));
+            });
+          }
+        },
+      );
+      if (!isCurrent()) return true;
+      if (!shown) showCard();
+      finish();
+      summaryText.innerHTML = renderMarkdownSummary(final.result || latest);
+      showAnswerSources(final.hits);
+      return true;
+    } catch (error) {
+      if (!isCurrent() || signal.aborted) return true;
+      if (!shown) return false;
+      finish();
+      summaryText.innerHTML = renderMarkdownSummary(latest);
+      sourcesEl.parentElement.hidden = true;
+      if (errorEl) errorEl.hidden = false;
+      return true;
+    }
+  }
+
   async function runGenSearch(query) {
     if (!summaryEl) return;
     genSearchRequestId += 1;
     const requestId = genSearchRequestId;
+    if (genSearchAbort) genSearchAbort.abort();
+    genSearchAbort = new AbortController();
     const start = Date.now();
     if (errorEl) errorEl.hidden = true;
     summaryEl.hidden = true;
     summaryLoading.hidden = false;
+    if (streamUrl && await streamAnswer(query, requestId, genSearchAbort.signal)) return;
+    if (requestId !== genSearchRequestId) return;
     try {
       const data = baseUrl
         ? await fetchSearchAnswer(baseUrl, contentSource, contentSourceType, query)
         : await fetchMockAnswer();
       const elapsed = Date.now() - start;
-      setTimeout(() => {
-        if (requestId !== genSearchRequestId) return;
-        summaryLoading.hidden = true;
-        summaryText.innerHTML = renderMarkdownSummary(data.result || '');
-        sourcesEl.innerHTML = '';
-        (data.hits || []).forEach((hit) => sourcesEl.append(renderSourceChip(hit)));
-        summaryEl.hidden = false;
-      }, Math.max(0, LOADING_DISPLAY_DELAY - elapsed));
+      await wait(Math.max(0, LOADING_DISPLAY_DELAY - elapsed));
+      if (requestId !== genSearchRequestId) return;
+      summaryLoading.hidden = true;
+      showAnswerSources(data.hits);
+      summaryEl.hidden = false;
+      await revealHtml(
+        summaryText,
+        renderMarkdownSummary(data.result || ''),
+        () => requestId === genSearchRequestId,
+      );
     } catch (error) {
       const elapsed = Date.now() - start;
-      setTimeout(() => {
-        if (requestId !== genSearchRequestId) return;
-        summaryLoading.hidden = true;
-        if (errorEl) errorEl.hidden = false;
-      }, Math.max(0, LOADING_DISPLAY_DELAY - elapsed));
+      await wait(Math.max(0, LOADING_DISPLAY_DELAY - elapsed));
+      if (requestId !== genSearchRequestId) return;
+      summaryLoading.hidden = true;
+      if (errorEl) errorEl.hidden = false;
     }
   }
 
