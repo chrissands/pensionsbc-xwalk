@@ -518,3 +518,14 @@ main :is(.default-content-wrapper, .cards-card-body) p a:any-link:not(.button) {
 main :is(.default-content-wrapper, .cards-card-body) p a:not(.button):is(:hover, :focus) {
   text-decoration-thickness: 2px;
 }
+
+/* press release pages (page setting Template: Press release): the date line under the title */
+body.press-release main > .section > .default-content-wrapper > h1 {
+  margin-bottom: var(--space-xs);
+}
+
+body.press-release main > .section > .default-content-wrapper > h1 + p {
+  margin-bottom: var(--space-l);
+  color: var(--color-neutral-700);
+  font-size: var(--body-font-size-s);
+}

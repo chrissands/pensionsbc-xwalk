@@ -29,6 +29,23 @@
         "description": "Show the breadcrumb trail (built from the site navigation) under the header."
       },
       {
+        "component": "select",
+        "valueType": "string",
+        "name": "template",
+        "label": "Template",
+        "description": "The page layout. Pages created from the Press release template are set to Press release.",
+        "options": [
+          {
+            "name": "Standard page",
+            "value": ""
+          },
+          {
+            "name": "Press release",
+            "value": "press-release"
+          }
+        ]
+      },
+      {
         "component": "text",
         "valueType": "string",
         "name": "topic",
