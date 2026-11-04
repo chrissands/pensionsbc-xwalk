@@ -1,7 +1,7 @@
 /* eslint-disable */
 /* global WebImporter */
 
-import { buildTiles } from './parsers/cards-tiles.js';
+import { buildTiles, buildSteps } from './parsers/cards-tiles.js';
 import {
   topicCards, resourceCards, eventData, eventListBlock,
 } from './parsers/cards-topics.js';
@@ -25,15 +25,26 @@ import { PLAN_HOSTS, siteHref, planNameOf } from './plan-sites.js';
  * - .search-bar                      -> Search block (the site's search page)
  * - a row with a 2/3 and a filled 1/3 column -> section styled sidebar: the main column's
  *   components, then the 1/3 column's articles as Cards (tiles)
+ * - .section-inner with an image (landing page hero, e.g. Join our participant list) -> Columns:
+ *   the overview's articles beside the image
+ * - .sign-up-steps                   -> Cards (steps)
+ * - section#how-to-contact, #privacy -> a section of their own, styled box / footnote
+ *   (STYLED_SECTIONS)
  * - any other article                -> default content (its headings become h2); an image in it is
  *   kept when it is in AEM Assets (dam-assets.js), otherwise left out
  * Images are referenced by DAM path (dam-assets.js / prepare-snapshot.mjs), so they must be in
  * AEM Assets first. Run with tools/importer/urls-<site>-sections.txt.
  */
 
+// source sections (by id) that become a section of their own with this section style
+const STYLED_SECTIONS = { 'how-to-contact': 'box', privacy: 'footnote' };
+const STYLED = Object.keys(STYLED_SECTIONS).map((id) => `section[id="${id}"]`).join(', ');
+const HERO = '.section-inner:has(> .section-inner__image img)';
+
 const UNIT = [
   '.featuredTopics', '.row.topics', '[class*="sitenavigationsitemapportlet"]', '.subnavQuickLinks',
   '.eventsListing', '.featureCards', '.journal-content-article', '.search-bar',
+  HERO, '.sign-up-steps', STYLED,
 ].join(', ');
 
 // sites whose events have in-person versions (tools/aem-cf/events/<site>.json): one events section
@@ -140,6 +151,16 @@ export default {
         return eventList.table;
       }
       if (unit.matches('.featureCards')) return resourceCards(document, unit, base);
+      if (unit.matches('.sign-up-steps')) return buildSteps(document, unit, base);
+      if (unit.matches(HERO)) {
+        // the overview's articles beside the image (the image left out when not in AEM Assets)
+        const overview = document.createDocumentFragment();
+        unit.querySelectorAll('.section-inner__overview .journal-content-article').forEach((a) => {
+          articleContent(document, a, base).forEach((n) => overview.append(n));
+        });
+        const img = articleImages.image(unit.querySelector('.section-inner__image img'));
+        return WebImporter.Blocks.createBlock(document, { name: 'Columns', cells: [[overview, img || '']] });
+      }
       // Liferay search bar -> Search block (no index yet: Content AI search plugs in later)
       if (unit.matches('.search-bar')) return WebImporter.Blocks.createBlock(document, { name: 'Search', cells: [['']] });
       return null;
@@ -184,6 +205,15 @@ export default {
         });
         main.append(h2, ul);
         closeStyled('quick-links');
+        return;
+      }
+      if (unit.matches(STYLED)) {
+        if (main.children.length) main.append(document.createElement('hr'));
+        unit.querySelectorAll('.journal-content-article').forEach((a) => {
+          withH2(document, articleContent(document, a, base)).forEach((n) => main.append(n));
+        });
+        closeStyled(STYLED_SECTIONS[unit.id]);
+        afterH1 = false;
         return;
       }
       const block = component(unit);

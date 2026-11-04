@@ -63,6 +63,35 @@ export function buildTiles(document, articles, base) {
   return WebImporter.Blocks.createBlock(document, { name: 'Cards (tiles)', cells });
 }
 
+/**
+ * Cards, "steps" style, from numbered steps (.sign-up-steps > .step, e.g. Join our participant
+ * list): one row per step, [image (empty) | text: the step's article, its heading as h3 | variant].
+ * The step number and icon are not content (the steps style numbers the cards); a tinted step
+ * (.highlight-bg) gets the card style "highlight".
+ */
+export function buildSteps(document, container, base) {
+  const cells = [...container.querySelectorAll('.step')].map((step) => {
+    const textCell = document.createDocumentFragment();
+    textCell.appendChild(document.createComment(' field:text '));
+    // step headings are h3, under the section's h2 (h4 on the source)
+    articleContent(document, step.querySelector('.step__bottom') || step, base).forEach((el) => {
+      if (/^H[2-6]$/.test(el.tagName)) {
+        const h3 = document.createElement('h3');
+        h3.append(...el.childNodes);
+        textCell.appendChild(h3);
+      } else textCell.appendChild(el);
+    });
+    let variantCell = '';
+    if (step.matches('.highlight-bg')) {
+      variantCell = document.createDocumentFragment();
+      variantCell.appendChild(document.createComment(' field:variant '));
+      variantCell.appendChild(document.createTextNode('highlight'));
+    }
+    return ['', textCell, variantCell];
+  });
+  return WebImporter.Blocks.createBlock(document, { name: 'Cards (steps)', cells });
+}
+
 export default function parse(element, { document, base, articles }) {
   element.replaceWith(buildTiles(document, articles || [element], base));
 }

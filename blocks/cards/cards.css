@@ -413,4 +413,76 @@
   outline: none;
 }
 
+
+/* steps style: numbered step cards, a third and two thirds wide, an odd last step full width
+   (values from college.pensionsbc.ca/join-our-participant-list); the card style Highlight tints a step */
+.cards.steps > ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 20px;
+  counter-reset: step;
+}
+
+.cards.steps > ol > li {
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 24px 20px;
+  background-color: var(--background-color);
+  counter-increment: step;
+}
+
+.cards.steps > ol > li::before {
+  content: counter(step);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  margin-bottom: 16px;
+  border-radius: 50%;
+  background-color: #e6f3f5;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.cards.steps > ol > li.cards-card-highlight {
+  background-color: #e6f3f5;
+}
+
+.cards.steps > ol > li.cards-card-highlight::before {
+  background-color: var(--link-color);
+  color: var(--color-white);
+}
+
+.cards.steps .cards-card-body {
+  margin: 0;
+}
+
+.cards.steps .cards-card-body :is(h2, h3, h4) {
+  margin: 0 0 16px;
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.cards.steps .cards-card-body ul {
+  list-style: disc;
+}
+
+.cards.steps .cards-card-body > :last-child {
+  margin-bottom: 0;
+}
+
+@media (width >= 851px) {
+  .cards.steps > ol {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+  }
+
+  .cards.steps > ol > li:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+  }
+}
+
 /* stylelint-enable no-descending-specificity */

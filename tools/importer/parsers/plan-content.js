@@ -100,6 +100,10 @@ export function articleContent(document, article, base, opts = {}) {
       } else if (el.tagName === 'A' || (el.tagName === 'STRONG' && el.children.length === 1 && el.firstElementChild.tagName === 'A')) {
         const p = trimmed(copyInline(document, { childNodes: [el] }, document.createElement('p'), base));
         if (p.textContent.trim()) out.push(p);
+      } else if (['EM', 'STRONG', 'SMALL'].includes(el.tagName)) {
+        // a note outside any paragraph ("Takes less than three minutes to sign up")
+        const p = trimmed(copyInline(document, { childNodes: [el] }, document.createElement('p'), base));
+        if (p.textContent.trim()) out.push(p);
       } else if (!INLINE.includes(el.tagName)) {
         walk(el);
       }

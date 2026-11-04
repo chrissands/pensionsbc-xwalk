@@ -228,6 +228,7 @@ Demo: https://main--pensionsbc-college--chrissands.aem.page/en/
 | About us | `college/en/about-us` | local | https://college.pensionsbc.ca/about-us |
 | Learning resources | `college/en/learning-resources` | local | https://college.pensionsbc.ca/learning-resources |
 | Welcome to the plan | `college/en/welcome-to-the-plan` | local | https://college.pensionsbc.ca/welcome-to-the-plan |
+| Join our participant list | `college/en/join-our-participant-list` | local | https://college.pensionsbc.ca/join-our-participant-list |
 | Search | `college/en/search` | local | https://college.pensionsbc.ca/web/college/search |
 | Copyright, Privacy, Disclaimer | `college/en/{copyright,privacy,disclaimer}` | inherited | `language-masters/en/*` |
 
@@ -298,6 +299,18 @@ Demo: https://main--pensionsbc-college--chrissands.aem.page/en/
   `tools/aem-assets/college-welcome/`), gives a site-map card the link of its own row, and starts every
   main-column article in a sidebar layout at h2. Re-importing the other College section pages gives
   the same output, except About us, whose tile headings are now h3 (they were h4).
+- **Join our participant list** (2026-11-04): a landing page with its own layout on the source
+  (snapshot `bd-snapshots/college.pensionsbc.ca/join-our-participant-list.html`; the source blocks
+  headless browsers, plain downloads worked). The section importer maps its parts: the hero
+  (`.section-inner` with an image) -> Columns (text and sign-up button beside the image; on plan sites
+  7/12 + 5/12, bottom aligned, rounded image), the numbered steps (`.sign-up-steps`) -> Cards style
+  **Numbered steps** (`steps`: an ordered list numbered by CSS, 1/3 + 2/3 wide, an odd last step full
+  width; card style Highlight tints a step), `#how-to-contact` -> section style **Box** (`box`), and
+  `#privacy` -> section style **Footnote** (`footnote`). A loose note in an article (`<em>`, `<strong>` or
+  `<small>` outside a paragraph) becomes a paragraph. The hero image is `shared/participant-list.jpg`
+  (`tools/aem-assets/college-participant-list/`). The step icons (user, envelope, check) and the
+  clock / arrow / question icons are decorative and not migrated; the sign-up button uses the plan
+  button style (outlined), not the source's filled one.
 
 Known gaps:
 - Nav: the source's sign-in button shows a "My Account" logo; it is text here.

@@ -49,8 +49,8 @@ function embedVideos(ul) {
 }
 
 export default function decorate(block) {
-  /* change to ul, li */
-  const ul = document.createElement('ul');
+  /* change to ul, li (steps: ol, numbered by the list) */
+  const ul = document.createElement(block.classList.contains('steps') ? 'ol' : 'ul');
   [...block.children].forEach((row) => {
     const li = document.createElement('li');
     moveInstrumentation(row, li);

@@ -45,6 +45,14 @@ For Learning resources (Your pension and About us use images that are already up
 The page's e-course tile uses `shared/learning/getting-to-know-your-pension.jpg` from batch 1, which is
 already uploaded. Download the one file from GitHub (**Download raw file**), not a zip.
 
+## College: Join our participant list, `college-participant-list/`
+
+| AEM folder | Files |
+|---|---|
+| `/content/dam/pensionsbc-base/shared/` | `participant-list.jpg` (the page's hero image; the source keeps it in its global folder, so it is shared) |
+
+One file: download it from GitHub (**Download raw file**).
+
 ## Steps
 
 1. **Download** the zip from GitHub: open the file on the site's branch, click **Download raw file**,

@@ -27,6 +27,8 @@ export const DAM_ASSETS = {
   // the same photo as the Learning resources course card
   'getting-to-know-your-pension-ecourse.jpg': `${DAM}/shared/learning/getting-to-know-your-pension.jpg`,
   // shared by several sites
+  // Join our participant list hero (the source keeps it in its global folder)
+  'participant-list_hero-image': `${DAM}/shared/participant-list.jpg`,
   'logo-pensions-corp250x40.jpg': `${DAM}/shared/bc-pension-corporation-logo.jpg`,
   'IMG - BCI logo.png': `${DAM}/shared/bci-logo.png`,
   'MPP.svg': `${DAM}/shared/mpp-logo.png`,
