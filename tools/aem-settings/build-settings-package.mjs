@@ -9,8 +9,9 @@
  * - theme.plain.html: the Site theme page's starting content (a Site Theme block, read by
  *   scripts/site-theme.js), converted like a pushed page (html2md -> md2jcr with this repo's
  *   component models) into /content/pensionsbc-base/<site>/en/theme
- * - styles.json: the Site styles sheet ({ title, columns, rows }), an AEM spreadsheet page (the
- *   built-in Spreadsheet template, one row_<n> node per row, as AEM stores the placeholders) at
+ * - styles.json: the Site styles sheet ({ title, version, columns, rows }), an AEM spreadsheet
+ *   page (the built-in Spreadsheet template, one row_<n> node per row, as AEM stores the
+ *   placeholders) at
  *   /content/pensionsbc-base/<site>/en/styles, delivered as /en/styles.json once the site's
  *   public.json maps it
  * The pages are local pages of the site (not rolled out). Installing a package again replaces its
@@ -79,9 +80,16 @@ ${rowNodes}
 `;
 }
 
+// package versions: the theme page's is fixed, the sheet's comes from styles.json (bump it with
+// each change, so Package Manager installs the new values as an update)
+const stylesVersion = () => JSON.parse(readFileSync(join(dir, 'styles.json'), 'utf8')).version || '1.0';
 const PAGES = {
-  theme: { source: 'theme.plain.html', build: themeXml, label: 'Site theme page' },
-  styles: { source: 'styles.json', build: stylesXml, label: 'Site styles sheet' },
+  theme: {
+    source: 'theme.plain.html', build: themeXml, label: 'Site theme page', version: () => '1.0',
+  },
+  styles: {
+    source: 'styles.json', build: stylesXml, label: 'Site styles sheet', version: stylesVersion,
+  },
 };
 const names = (named.length ? named : Object.keys(PAGES)).filter((n) => {
   if (!PAGES[n]) throw new Error(`Unknown page "${n}" (theme, styles)`);
@@ -102,7 +110,7 @@ await Promise.all(names.map(async (name) => {
 <properties>
 <entry key="group">pensionsbc</entry>
 <entry key="name">pensionsbc-${site}-${name}</entry>
-<entry key="version">1.0</entry>
+<entry key="version">${PAGES[name].version()}</entry>
 <entry key="description">PensionsBC ${site}: ${PAGES[name].label} for author-set styles (tools/aem-settings)</entry>
 <entry key="packageType">content</entry>
 <entry key="requiresRoot">false</entry>
