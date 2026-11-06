@@ -1,14 +1,19 @@
 /*
- * Site theme: button colours, button shape, link colour and accent colour that authors set on the
- * site's theme page (<language root>/theme, a Site theme block), so a style change needs no code
- * deployment. The values become CSS custom properties on <body>; empty or unreadable values keep
- * the site's own styles. Guardrail: a colour that would make text hard to read (below WCAG AA
- * contrast) is not applied.
+ * Author-set styles, applied on every page with no code deployment. Two sources per site:
+ * - the theme page (<language root>/theme, a Site theme block, edited in Universal Editor): button
+ *   colours, button shape, link colour, accent colour;
+ * - the Site styles spreadsheet (<language root>/styles, delivered as styles.json): fonts.
+ * The values become CSS custom properties on <body> (and @font-face rules for fonts in AEM Assets);
+ * empty or unreadable values keep the site's own styles. Guardrails: only known settings are read,
+ * a colour that would make text hard to read (below WCAG AA contrast) is not applied, and a font is
+ * either one shipped with the site or a .woff2/.woff file in AEM Assets.
  */
 import { toClassName } from './aem.js';
+import { aemHost } from './aem-config.js';
 
-// sites with a theme page: the others don't request one (a missing page would be a 404 on every
-// visit). Theming a new site is this one-line switch; after that every change is an author edit.
+// sites with a theme page and a Site styles sheet: the others don't request them (a missing page
+// would be a 404 on every visit). Styling a new site is this one-line switch plus its two pages;
+// after that every change is an author edit.
 export const THEMED_SITES = ['college'];
 
 const HEX = /^#?([0-9a-f]{3}|[0-9a-f]{6})$/i;
@@ -18,11 +23,13 @@ const BLACK = '#000000';
 const AA_TEXT = 4.5;
 const AA_LARGE = 3;
 const SHAPES = { square: '0', rounded: '8px', pill: '999px' };
-const VARS = [
-  '--button-color', '--button-text-color', '--button-hover-color', '--button-outline-color',
-  '--button-radius', '--link-color', '--site-accent-color',
-];
-const CACHE = 'site-theme';
+// fonts shipped with the site (styles/fonts.css); anything else needs a font file in AEM Assets
+const SHIPPED_FONTS = ['Source Sans Pro', 'Roboto', 'Roboto Condensed'];
+const FONT_NAME = /^[a-z0-9][a-z0-9 -]{0,39}$/i;
+const FONT_FILE = /^\/content\/dam\/[\w\-./ ]+\.(woff2|woff)$/i;
+const FONT_STACK = 'source-sans-pro-fallback, helvetica, sans-serif';
+const FONT_ROLES = { body: '--body-font-family', heading: '--heading-font-family' };
+const CACHE = 'site-styles';
 
 /** #rgb / #rrggbb (with or without #) as #rrggbb, or '' */
 function hex(value) {
@@ -112,12 +119,75 @@ export function themeVars(settings) {
   return { vars, checks };
 }
 
+/** The rows of a Site styles sheet (columns Key and Value) as { 'heading-font': 'Roboto', ... } */
+export function readStyles(json) {
+  const settings = {};
+  (json?.data || []).forEach((row) => {
+    const entries = Object.fromEntries(Object.entries(row).map(([k, v]) => [k.toLowerCase(), `${v}`]));
+    const key = entries.key || entries.setting || entries.name;
+    if (key) settings[toClassName(key)] = (entries.value ?? entries.text ?? '').trim();
+  });
+  return settings;
+}
+
+/**
+ * Fonts from Site styles settings: <role>-font (a font name), and for a font that isn't shipped
+ * with the site, <role>-font-file (regular) and <role>-font-file-bold (bold), AEM Assets paths of
+ * .woff2/.woff files. Roles: body, heading. { vars, faces: [{ family, url, weight }] }
+ */
+export function styleVars(settings) {
+  const vars = {};
+  const faces = [];
+  Object.entries(FONT_ROLES).forEach(([role, prop]) => {
+    const name = (settings[`${role}-font`] || '').trim().replace(/\s+/g, ' ');
+    if (!FONT_NAME.test(name)) return;
+    const shipped = SHIPPED_FONTS.find((f) => f.toLowerCase() === name.toLowerCase());
+    if (shipped) {
+      vars[prop] = `'${shipped}', ${FONT_STACK}`;
+      return;
+    }
+    const files = [['', '400'], ['-bold', '600 700']]
+      .map(([suffix, weight]) => ({ path: (settings[`${role}-font-file${suffix}`] || '').trim(), weight }))
+      .filter(({ path }) => FONT_FILE.test(path));
+    if (!files.length) return;
+    const family = `site ${name}`;
+    files.forEach(({ path, weight }) => faces.push({ family, url: `${aemHost()}${encodeURI(path)}`, weight }));
+    vars[prop] = `'${family}', ${FONT_STACK}`;
+  });
+  return { vars, faces };
+}
+
+// custom properties set by each source, so one source's update doesn't clear the other's
+const applied = {};
+
+function applyVars(source, vars) {
+  const { style } = document.body;
+  (applied[source] || []).forEach((name) => style.removeProperty(name));
+  Object.entries(vars).forEach(([name, value]) => style.setProperty(name, value));
+  applied[source] = Object.keys(vars);
+}
+
 /** Sets the theme's custom properties on <body> (replacing the previous theme's) */
 export function applyTheme(vars) {
-  const { style, classList } = document.body;
-  VARS.forEach((name) => style.removeProperty(name));
-  Object.entries(vars).forEach(([name, value]) => style.setProperty(name, value));
-  classList.toggle('theme-buttons', Boolean(vars['--button-color']));
+  applyVars('theme', vars);
+  document.body.classList.toggle('theme-buttons', Boolean(vars['--button-color']));
+}
+
+/** Sets the Site styles fonts: custom properties, and @font-face rules for fonts in AEM Assets */
+export function applyStyles({ vars = {}, faces = [] } = {}) {
+  applyVars('styles', vars);
+  let sheet = document.getElementById('site-styles-fonts');
+  if (!faces.length) {
+    sheet?.remove();
+    return;
+  }
+  if (!sheet) {
+    sheet = document.createElement('style');
+    sheet.id = 'site-styles-fonts';
+    document.head.append(sheet);
+  }
+  // swap: text shows in the site's font until the file has loaded
+  sheet.textContent = faces.map(({ family, url, weight }) => `@font-face { font-family: '${family}'; font-weight: ${weight}; font-display: swap; src: url('${url}') format('${url.endsWith('.woff') ? 'woff' : 'woff2'}'); }`).join('\n');
 }
 
 async function fetchTheme(root) {
@@ -132,12 +202,22 @@ async function fetchTheme(root) {
   }
 }
 
+async function fetchStyles(root) {
+  try {
+    const resp = await fetch(`${root}/styles.json`);
+    if (!resp.ok) return {};
+    return styleVars(readStyles(await resp.json()));
+  } catch (e) {
+    return {};
+  }
+}
+
 /**
- * Applies the site's theme. The last theme seen in this visit is applied at once (no flash of the
- * default colours) and refreshed from the theme page, so a published change shows on the next page
- * load. The first page of a visit waits for the theme page up to `wait` ms.
- * @param {string} site the site (siteOf), only THEMED_SITES have a theme page
- * @param {string} root the language root (languageRoot), where the theme page lives
+ * Applies the site's theme page and Site styles. The last values seen in this visit apply at once
+ * (no flash of the default style) and are refreshed, so a published change shows on the next page
+ * load. The first page of a visit waits for them up to `wait` ms.
+ * @param {string} site the site (siteOf), only THEMED_SITES have a theme page and Site styles
+ * @param {string} root the language root (languageRoot), where both live
  */
 export async function loadSiteTheme(site, root, wait = 400) {
   if (!THEMED_SITES.includes(site) || !root) return;
@@ -148,11 +228,15 @@ export async function loadSiteTheme(site, root, wait = 400) {
   } catch (e) {
     // no storage: fetch every time
   }
-  if (cached) applyTheme(cached);
-  const fresh = fetchTheme(root).then((vars) => {
-    applyTheme(vars);
+  if (cached) {
+    applyTheme(cached.theme || {});
+    applyStyles(cached.styles);
+  }
+  const fresh = Promise.all([fetchTheme(root), fetchStyles(root)]).then(([theme, styles]) => {
+    applyTheme(theme);
+    applyStyles(styles);
     try {
-      sessionStorage.setItem(key, JSON.stringify(vars));
+      sessionStorage.setItem(key, JSON.stringify({ theme, styles }));
     } catch (e) {
       // no storage
     }
