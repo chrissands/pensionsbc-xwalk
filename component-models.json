@@ -307,6 +307,28 @@
             "value": "resources"
           }
         ]
+      },
+      {
+        "component": "select",
+        "name": "classes_buttons",
+        "label": "Button style",
+        "description": "Buttons in these cards: the site's style (set on the site's theme page), filled, or outlined.",
+        "valueType": "string",
+        "value": "",
+        "options": [
+          {
+            "name": "Default",
+            "value": ""
+          },
+          {
+            "name": "Filled",
+            "value": "buttons-filled"
+          },
+          {
+            "name": "Outline",
+            "value": "buttons-outline"
+          }
+        ]
       }
     ]
   },
@@ -679,6 +701,84 @@
             ]
           }
         ]
+      }
+    ]
+  },
+  {
+    "id": "site-theme",
+    "fields": [
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "button-color",
+        "label": "Button colour",
+        "description": "Background of buttons, as a colour code such as #513F77. Empty: the site's own buttons.",
+        "valueFormat": "regexp",
+        "validation": {
+          "regExp": "^#?([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$",
+          "customErrorMsg": "Use a colour code such as #513F77."
+        }
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "button-text-color",
+        "label": "Button text colour",
+        "description": "Text on buttons, such as #FFFFFF. Empty: white or black, whichever reads better. A pair below 4.5:1 contrast isn't used.",
+        "valueFormat": "regexp",
+        "validation": {
+          "regExp": "^#?([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$",
+          "customErrorMsg": "Use a colour code such as #FFFFFF."
+        }
+      },
+      {
+        "component": "select",
+        "valueType": "string",
+        "name": "button-shape",
+        "label": "Button shape",
+        "value": "",
+        "options": [
+          {
+            "name": "Default",
+            "value": ""
+          },
+          {
+            "name": "Square",
+            "value": "square"
+          },
+          {
+            "name": "Rounded",
+            "value": "rounded"
+          },
+          {
+            "name": "Pill",
+            "value": "pill"
+          }
+        ]
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "link-color",
+        "label": "Link colour",
+        "description": "Text links, such as #167183. Needs 4.5:1 contrast on white; otherwise the site's own colour stays.",
+        "valueFormat": "regexp",
+        "validation": {
+          "regExp": "^#?([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$",
+          "customErrorMsg": "Use a colour code such as #167183."
+        }
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "accent-color",
+        "label": "Accent colour",
+        "description": "The coloured bar above the header and accent headings, such as #7845C1. Needs 3:1 contrast on white.",
+        "valueFormat": "regexp",
+        "validation": {
+          "regExp": "^#?([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$",
+          "customErrorMsg": "Use a colour code such as #7845C1."
+        }
       }
     ]
   },

@@ -14,6 +14,7 @@ import {
 } from './aem.js';
 import { aemHost, AEM_PUBLISH } from './aem-config.js';
 import getAudience from './audience.js';
+import { loadSiteTheme } from './site-theme.js';
 import {
   isExperimentationEnabled, runExperimentation, runExperimentationLazy,
 } from './experiment-loader.js';
@@ -266,6 +267,8 @@ async function loadEager(doc) {
   document.documentElement.lang = 'en';
   decorateTemplateAndTheme();
   decorateSiteTheme();
+  // the author-set colours of the site's theme page (scripts/site-theme.js), fetched meanwhile
+  const theme = loadSiteTheme(siteOf(window.location), languageRoot());
   if (getMetadata('breadcrumbs').toLowerCase() === 'true') {
     doc.body.dataset.breadcrumbs = true;
   }
@@ -274,6 +277,7 @@ async function loadEager(doc) {
   const main = doc.querySelector('main');
   if (main) {
     decorateMain(main);
+    await theme;
     document.body.classList.add('appear');
     await loadSection(main.querySelector('.section'), waitForFirstImage);
   }

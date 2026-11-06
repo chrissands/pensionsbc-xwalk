@@ -378,7 +378,7 @@ body.theme-plan main > .section:first-of-type {
 body.theme-plan main a.button:any-link {
   display: inline-block;
   border: 1px solid var(--color-plan-teal);
-  border-radius: 2px;
+  border-radius: var(--button-radius, 2px);
   padding: 12px 21px;
   color: var(--color-plan-teal);
   font-size: 16px;
@@ -391,6 +391,20 @@ body.theme-plan main a.button:hover,
 body.theme-plan main a.button:focus {
   background-color: var(--color-plan-teal);
   color: var(--color-white);
+}
+
+/* site theme (scripts/site-theme.js): buttons filled in the colours set on the site's theme page */
+body.theme-buttons main a.button:any-link {
+  border-color: var(--button-color);
+  background-color: var(--button-color);
+  color: var(--button-text-color);
+}
+
+body.theme-buttons main a.button:hover,
+body.theme-buttons main a.button:focus {
+  border-color: var(--button-hover-color);
+  background-color: var(--button-hover-color);
+  color: var(--button-text-color);
 }
 
 body.theme-plan main > .section > .default-content-wrapper > h1 {
