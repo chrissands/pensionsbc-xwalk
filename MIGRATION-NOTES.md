@@ -100,9 +100,11 @@ represent. These notes are written so a partner can repeat the work in their own
     (bold only, for headings); or any name with its file), `heading-font-file`,
     `heading-font-file-bold`, `body-font-file`, `body-font-file-bold` (AEM Assets paths of .woff2 /
     .woff files under `/content/dam/pensionsbc-base/fonts/`). Unknown keys, names with symbols and
-    files outside `/content/dam/` are ignored. Fonts from Assets load from AEM publish (another origin)
-    and need the one-time CDN rule in `tools/aem-cdn` (AEM publish sends no CORS header for Assets
-    files today); until then they fall back to the site's font. In Universal Editor (author) the
+    files outside `/content/dam/` are ignored. Fonts from Assets load from AEM publish (another
+    origin). They must be published. AEM publish sends `Access-Control-Allow-Origin: *` for .woff2
+    files on every request (checked 2026-11-06, with and without `Origin`), so browsers accept them
+    and no CDN rule is needed. It doesn't send it for images, and those don't need it. A font whose
+    file can't load falls back to the site's font. In Universal Editor (author) the
     sheet isn't read: `styles.json` there is AEM's own page JSON, so fonts show on the sites only.
   - **Cards: Button style** (`classes_buttons`: Default / Filled / Outline), filled or outlined in the
     theme's button colour (else the link colour).
@@ -379,4 +381,4 @@ Not started. Scope: 15 pages per site (homepage included) plus nav and footer.
 | 2026-10-22 | Audience swaps are per Event List item (default fragment + audience + fragment for that audience); the visitor's audience comes from `?audience=` on the arrival link and lasts for the visit. No experimentation plugin or Target. |
 | 2026-10-23 | A/B tests with AEM Contextual Experimentation (engine v2.0.0, Universal Editor A/B extension), loaded only on experiment pages; first experiment: College homepage hero task links. Section "Show to" stored as `show-to` (not `audience`, which the engine reserves). |
 | 2026-10-23 | Audience by location: IP lookup (GeoJS) then device time zone; BC = local, else online. Sections get a "Show to" audience; Learning resources shows "Upcoming in-person sessions" to local visitors and "Upcoming webinars" to others. |
-| 2026-11-06 | Low-code styling: a Site theme page per site (button colours and shape, link and accent colours, with a contrast guardrail), a Site styles spreadsheet for fonts (shipped fonts, or font files in AEM Assets behind a one-time CDN CORS rule), and a Cards Button style option, instead of hard-coded colours (PR #39, College card buttons in #513f77, closed). College first. |
+| 2026-11-06 | Low-code styling: a Site theme page per site (button colours and shape, link and accent colours, with a contrast guardrail), a Site styles spreadsheet for fonts (shipped fonts, or font files in AEM Assets, which AEM publish already serves with CORS), and a Cards Button style option, instead of hard-coded colours (PR #39, College card buttons in #513f77, closed). College first. |
