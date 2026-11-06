@@ -72,8 +72,10 @@ represent. These notes are written so a partner can repeat the work in their own
   text, teal links, grey footer). Each plan only sets its accent colours (`--site-accent-color`,
   `--site-accent-dark-color`) in `styles/styles.css`.
 - **Author-set styles (no code deployment):**
-  - **Site theme page** `<site>/en/theme` (a local page per site, created by authors in Universal
-    Editor) with a **Site theme** block (`blocks/site-theme`, key-value): button colour, button text
+  - **Site theme page** `<site>/en/theme` (a local page per site; College's starting page is the
+    package `tools/aem-assets/college-settings-package.zip`, built by
+    `node tools/aem-settings/build-settings-package.mjs college`; install once, then edit in Universal
+    Editor) with a **Site Theme** block (`blocks/site-theme`, key-value): button colour, button text
     colour, button shape (square / rounded / pill), link colour, accent colour. `scripts/site-theme.js`
     reads it on every page and sets CSS custom properties on `<body>` (`--button-color`,
     `--button-text-color`, `--button-hover-color`, `--button-outline-color`, `--button-radius`,
