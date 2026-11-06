@@ -53,6 +53,18 @@ already uploaded. Download the one file from GitHub (**Download raw file**), not
 
 One file: download it from GitHub (**Download raw file**).
 
+## Example font: `fonts/`
+
+| AEM folder | Files |
+|---|---|
+| `/content/dam/pensionsbc-base/fonts/` | `merriweather.woff2` (Merriweather, SIL Open Font License: `merriweather-OFL.txt` stays with it in the repo) |
+
+`fonts` is a new folder: open `pensionsbc-base`, then **Create → Folder** with Title and Name `fonts`, upload
+the file, and **publish** it. The sites load fonts from AEM publish. It is the example in the College Site
+styles sheet: setting `heading-font` to `Merriweather` uses it. Browsers only use it once AEM publish
+allows fonts from another origin (`tools/aem-cdn`, deployed once by an AEM admin); until then headings stay
+in the site's font.
+
 ## Steps
 
 1. **Download** the zip from GitHub: open the file on the site's branch, click **Download raw file**,

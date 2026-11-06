@@ -152,7 +152,8 @@ export function styleVars(settings) {
     if (!files.length) return;
     const family = `site ${name}`;
     files.forEach(({ path, weight }) => faces.push({ family, url: `${aemHost()}${encodeURI(path)}`, weight }));
-    vars[prop] = `'${family}', ${FONT_STACK}`;
+    // if the file can't load (e.g. AEM publish doesn't allow fonts yet), the site's own font
+    vars[prop] = `'${family}', '${SHIPPED_FONTS[0]}', ${FONT_STACK}`;
   });
   return { vars, faces };
 }
