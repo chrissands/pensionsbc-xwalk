@@ -219,6 +219,14 @@
           {
             "name": "Accent heading with rule",
             "value": "accent-heading"
+          },
+          {
+            "name": "Box (grey, bordered)",
+            "value": "box"
+          },
+          {
+            "name": "Footnote (rule above, small text)",
+            "value": "footnote"
           }
         ]
       },
@@ -305,6 +313,10 @@
           {
             "name": "Resources (three-column, linked)",
             "value": "resources"
+          },
+          {
+            "name": "Numbered steps",
+            "value": "steps"
           }
         ]
       },

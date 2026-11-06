@@ -466,6 +466,37 @@ body.theme-plan main > .section.accent-heading > .default-content-wrapper > h2 {
   font-size: 32px;
 }
 
+/* section style: box (grey, bordered), e.g. "How to contact us" */
+main > .section.box > div {
+  width: calc(100% - 2 * var(--content-padding));
+  max-width: calc(var(--content-max-width) - 2 * var(--content-padding));
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 20px;
+  background-color: #f7f7f7;
+}
+
+main > .section.box > div + div {
+  margin-top: var(--space-l);
+}
+
+/* section style: footnote (rule above, small text), e.g. how personal information is used */
+main > .section.footnote {
+  border-top: 1px solid #ccc;
+  padding-top: 48px;
+}
+
+body main > .section.footnote > .default-content-wrapper > :is(h2, h3) {
+  margin: 0 0 var(--space-s);
+  font-size: 18px;
+}
+
+/* as specific as the plan paragraph size, and after it, so it wins on every site */
+/* stylelint-disable-next-line no-descending-specificity */
+body main > .section.footnote > .default-content-wrapper > p {
+  font-size: 14px;
+}
+
 /* section style: main column and sidebar (2/3 + 1/3) on wide screens */
 @media (width >= 900px) {
   main > .section.sidebar {

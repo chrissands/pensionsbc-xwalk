@@ -74,6 +74,10 @@
             {
               "name": "Resources (three-column, linked)",
               "value": "resources"
+            },
+            {
+              "name": "Numbered steps",
+              "value": "steps"
             }
           ]
         },

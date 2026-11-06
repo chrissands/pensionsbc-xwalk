@@ -31,6 +31,16 @@
       "note": "Section page: topic boxes beside promo tiles"
     },
     {
+      "content": "college/en/welcome-to-the-plan",
+      "scope": "local",
+      "note": "Section page: feature image, My Account steps, Explore the value of your pension links; sidebar tiles (e-course, video, guide)"
+    },
+    {
+      "content": "college/en/join-our-participant-list",
+      "scope": "local",
+      "note": "Landing page: hero columns (sign-up button, image), numbered steps, contact box, privacy footnote"
+    },
+    {
       "content": "college/en/learning-resources",
       "scope": "local",
       "note": "Section page: libraries, webinars, course / video / article cards"

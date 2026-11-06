@@ -40,12 +40,29 @@ function trimmed(el) {
   return el;
 }
 
+/** A list with its items' inline content; a list inside an item stays a list (nested). */
+function listOf(document, el, base) {
+  const list = document.createElement(el.tagName.toLowerCase());
+  el.querySelectorAll(':scope > li').forEach((li) => {
+    const own = li.cloneNode(true);
+    own.querySelectorAll(':scope > ul, :scope > ol').forEach((n) => n.remove());
+    const item = trimmed(copyInline(document, own, document.createElement('li'), base));
+    li.querySelectorAll(':scope > ul, :scope > ol').forEach((n) => {
+      const sub = listOf(document, n, base);
+      if (sub.children.length) item.append(sub);
+    });
+    if (item.textContent.trim()) list.append(item);
+  });
+  return list;
+}
+
 /**
- * The authored content of a journal article as clean block elements. YouTube iframes become a
+ * The authored content of a journal article as clean block elements. With opts.image (img ->
+ * <img> or null), an image in a paragraph is kept as its own paragraph before the text. YouTube iframes become a
  * paragraph with a link to the video (the Cards tiles style plays it inline); a link or a
  * bold link outside any paragraph gets its own paragraph (rendered as a button).
  */
-export function articleContent(document, article, base) {
+export function articleContent(document, article, base, opts = {}) {
   const out = [];
   const heading = article.querySelector('h2, h3, h4');
   const walk = (node) => {
@@ -64,17 +81,27 @@ export function articleContent(document, article, base) {
         out.push(p);
       } else if (BLOCK.includes(el.tagName)) {
         if (['UL', 'OL'].includes(el.tagName)) {
-          const list = document.createElement(el.tagName.toLowerCase());
-          el.querySelectorAll(':scope > li').forEach((li) => {
-            const item = trimmed(copyInline(document, li, document.createElement('li'), base));
-            if (item.textContent.trim()) list.append(item);
-          });
+          const list = listOf(document, el, base);
           if (list.children.length) out.push(list);
         } else {
+          if (opts.image && el.tagName === 'P') {
+            el.querySelectorAll('img').forEach((img) => {
+              const kept = opts.image(img);
+              if (kept) {
+                const p = document.createElement('p');
+                p.append(kept);
+                out.push(p);
+              }
+            });
+          }
           const block = trimmed(copyInline(document, el, document.createElement(el.tagName.toLowerCase()), base));
           if (block.textContent.trim()) out.push(block);
         }
       } else if (el.tagName === 'A' || (el.tagName === 'STRONG' && el.children.length === 1 && el.firstElementChild.tagName === 'A')) {
+        const p = trimmed(copyInline(document, { childNodes: [el] }, document.createElement('p'), base));
+        if (p.textContent.trim()) out.push(p);
+      } else if (['EM', 'STRONG', 'SMALL'].includes(el.tagName)) {
+        // a note outside any paragraph ("Takes less than three minutes to sign up")
         const p = trimmed(copyInline(document, { childNodes: [el] }, document.createElement('p'), base));
         if (p.textContent.trim()) out.push(p);
       } else if (!INLINE.includes(el.tagName)) {

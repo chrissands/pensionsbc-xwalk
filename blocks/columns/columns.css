@@ -31,3 +31,36 @@
     order: unset;
   }
 }
+
+/* plan sites: text beside an image 7/12 + 5/12, bottom aligned, rounded image
+   (values from college.pensionsbc.ca/join-our-participant-list) */
+body.theme-plan .columns > div > .columns-img-col img {
+  border-radius: 8px;
+}
+
+@media (width >= 900px) {
+  body.theme-plan .columns > div:has(> .columns-img-col) {
+    align-items: flex-end;
+    gap: 20px;
+  }
+
+  body.theme-plan .columns > div:has(> .columns-img-col) > div {
+    flex: 7;
+  }
+
+  body.theme-plan .columns > div:has(> .columns-img-col) > .columns-img-col {
+    flex: 5;
+  }
+}
+
+body.theme-plan .columns > div {
+  gap: 32px;
+}
+
+body.theme-plan .columns h2 {
+  margin: 0 0 var(--space-s);
+  color: var(--heading-color);
+  font-size: 28px;
+  font-weight: 600;
+  line-height: 1.3;
+}

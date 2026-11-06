@@ -1,11 +1,12 @@
 /* eslint-disable */
 /* global WebImporter */
 
-import { buildTiles } from './parsers/cards-tiles.js';
+import { buildTiles, buildSteps } from './parsers/cards-tiles.js';
 import {
   topicCards, resourceCards, eventData, eventListBlock,
 } from './parsers/cards-topics.js';
 import { articleContent } from './parsers/plan-content.js';
+import { damSrc, pushSafeAlt } from './dam-assets.js';
 import { PLAN_HOSTS, siteHref, planNameOf } from './plan-sites.js';
 
 /**
@@ -24,14 +25,26 @@ import { PLAN_HOSTS, siteHref, planNameOf } from './plan-sites.js';
  * - .search-bar                      -> Search block (the site's search page)
  * - a row with a 2/3 and a filled 1/3 column -> section styled sidebar: the main column's
  *   components, then the 1/3 column's articles as Cards (tiles)
- * - any other article                -> default content (its headings become h2)
+ * - .section-inner with an image (landing page hero, e.g. Join our participant list) -> Columns:
+ *   the overview's articles beside the image
+ * - .sign-up-steps                   -> Cards (steps)
+ * - section#how-to-contact, #privacy -> a section of their own, styled box / footnote
+ *   (STYLED_SECTIONS)
+ * - any other article                -> default content (its headings become h2); an image in it is
+ *   kept when it is in AEM Assets (dam-assets.js), otherwise left out
  * Images are referenced by DAM path (dam-assets.js / prepare-snapshot.mjs), so they must be in
  * AEM Assets first. Run with tools/importer/urls-<site>-sections.txt.
  */
 
+// source sections (by id) that become a section of their own with this section style
+const STYLED_SECTIONS = { 'how-to-contact': 'box', privacy: 'footnote' };
+const STYLED = Object.keys(STYLED_SECTIONS).map((id) => `section[id="${id}"]`).join(', ');
+const HERO = '.section-inner:has(> .section-inner__image img)';
+
 const UNIT = [
   '.featuredTopics', '.row.topics', '[class*="sitenavigationsitemapportlet"]', '.subnavQuickLinks',
   '.eventsListing', '.featureCards', '.journal-content-article', '.search-bar',
+  HERO, '.sign-up-steps', STYLED,
 ].join(', ');
 
 // sites whose events have in-person versions (tools/aem-cf/events/<site>.json): one events section
@@ -61,6 +74,17 @@ function retitleEventSection(list, { heading, intro }) {
   if (h2) h2.textContent = heading;
   const p = before.find((n, i) => n.tagName === 'P' && i > before.indexOf(h2));
   if (p) p.innerHTML = intro;
+}
+
+/** An article's content with its first heading as h2 (the source often starts at h3 or h4). */
+function withH2(document, content) {
+  const first = content.find((c) => /^H[2-6]$/.test(c.tagName));
+  return content.map((n) => {
+    if (n !== first || n.tagName === 'H2') return n;
+    const h2 = document.createElement('h2');
+    h2.append(...n.childNodes);
+    return h2;
+  });
 }
 
 /** Units in document order, outermost only (a unit inside another is part of it). */
@@ -101,6 +125,15 @@ export default {
       newSection = true;
     };
 
+    // an article image that is in AEM Assets, as an <img>; others are left out
+    const articleImages = {
+      image: (img) => {
+        const src = damSrc(new URL(img.getAttribute('src'), base).href, base);
+        if (!src.startsWith('/content/dam/')) return null;
+        return Object.assign(document.createElement('img'), { src, alt: pushSafeAlt(img.getAttribute('alt') || '') });
+      },
+    };
+
     const component = (unit) => {
       if (unit.matches('.featuredTopics')) return topicCards(document, unit, 'featured', base);
       if (unit.matches('.row.topics')) return topicCards(document, unit, 'link-list', base);
@@ -118,6 +151,16 @@ export default {
         return eventList.table;
       }
       if (unit.matches('.featureCards')) return resourceCards(document, unit, base);
+      if (unit.matches('.sign-up-steps')) return buildSteps(document, unit, base);
+      if (unit.matches(HERO)) {
+        // the overview's articles beside the image (the image left out when not in AEM Assets)
+        const overview = document.createDocumentFragment();
+        unit.querySelectorAll('.section-inner__overview .journal-content-article').forEach((a) => {
+          articleContent(document, a, base).forEach((n) => overview.append(n));
+        });
+        const img = articleImages.image(unit.querySelector('.section-inner__image img'));
+        return WebImporter.Blocks.createBlock(document, { name: 'Columns', cells: [[overview, img || '']] });
+      }
       // Liferay search bar -> Search block (no index yet: Content AI search plugs in later)
       if (unit.matches('.search-bar')) return WebImporter.Blocks.createBlock(document, { name: 'Search', cells: [['']] });
       return null;
@@ -138,7 +181,7 @@ export default {
           unitsIn(col).forEach((u) => {
             const block = component(u);
             if (block) main.append(block);
-            else articleContent(document, u, base).forEach((n) => main.append(n));
+            else withH2(document, articleContent(document, u, base, articleImages)).forEach((n) => main.append(n));
           });
         });
         const side = cols.find((c) => /col-(lg|md)-4\b/.test(c.className));
@@ -162,6 +205,15 @@ export default {
         });
         main.append(h2, ul);
         closeStyled('quick-links');
+        return;
+      }
+      if (unit.matches(STYLED)) {
+        if (main.children.length) main.append(document.createElement('hr'));
+        unit.querySelectorAll('.journal-content-article').forEach((a) => {
+          withH2(document, articleContent(document, a, base)).forEach((n) => main.append(n));
+        });
+        closeStyled(STYLED_SECTIONS[unit.id]);
+        afterH1 = false;
         return;
       }
       const block = component(unit);
@@ -191,13 +243,7 @@ export default {
       }
       afterH1 = false;
       startSection();
-      content.forEach((n) => {
-        if (/^H[3-6]$/.test(n.tagName) && n === content.find((c) => /^H[2-6]$/.test(c.tagName))) {
-          const h2 = document.createElement('h2');
-          h2.append(...n.childNodes);
-          main.append(h2);
-        } else main.append(n);
-      });
+      withH2(document, content).forEach((n) => main.append(n));
     });
 
     if (eventList && EVENT_SECTIONS[site]) retitleEventSection(eventList.table, EVENT_SECTIONS[site]);
