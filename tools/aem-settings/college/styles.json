@@ -1,10 +1,10 @@
 {
   "title": "Site styles",
-  "version": "1.2",
+  "version": "1.3",
   "columns": ["Key", "Value", "Notes"],
   "rows": [
     ["heading-font", "Roboto Condensed", "Font for headings: Source Sans Pro (the site's font), Roboto or Roboto Condensed; or the name of a font uploaded to AEM Assets, with its files below. Example: change this to Merriweather to use the Merriweather files below. Empty: the site's font."],
-    ["heading-font-file", "/content/dam/pensionsbc-base/fonts/merriweather.woff2", "Only for a font from AEM Assets: path of its regular .woff2 file (used when heading-font is that font's name, e.g. Merriweather). Fonts from Assets need your AEM admin to allow them once; until then headings stay in the site's font."],
+    ["heading-font-file", "/content/dam/pensionsbc-base/fonts/merriweather.woff2", "Only for a font from AEM Assets: path of its regular .woff2 file (used when heading-font is that font's name, e.g. Merriweather). The file must be published; if it isn't, headings stay in the site's font."],
     ["heading-font-file-bold", "/content/dam/pensionsbc-base/fonts/merriweather.woff2", "Only for a font from AEM Assets: path of its bold .woff2 file. Merriweather is one file for all weights, so it's the same path."],
     ["body-font", "Roboto", "Font for body text: Source Sans Pro (the site's font) or Roboto; or the name of a font uploaded to AEM Assets, with body-font-file below. Empty: the site's font."],
     ["body-font-file", "", "Only for a font from AEM Assets: path of its regular .woff2 file."],

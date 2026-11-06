@@ -61,9 +61,9 @@ One file: download it from GitHub (**Download raw file**).
 
 `fonts` is a new folder: open `pensionsbc-base`, then **Create → Folder** with Title and Name `fonts`, upload
 the file, and **publish** it. The sites load fonts from AEM publish. It is the example in the College Site
-styles sheet: setting `heading-font` to `Merriweather` uses it. Browsers only use it once AEM publish
-allows fonts from another origin (`tools/aem-cdn`, deployed once by an AEM admin); until then headings stay
-in the site's font.
+styles sheet: setting `heading-font` to `Merriweather` uses it. AEM publish already lets the sites load
+font files (it sends `Access-Control-Allow-Origin: *` for .woff2), so no AEM setup is needed. If the file
+isn't published, headings stay in the site's font.
 
 ## Steps
 
