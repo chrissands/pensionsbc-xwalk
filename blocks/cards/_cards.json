@@ -76,6 +76,28 @@
               "value": "resources"
             }
           ]
+        },
+        {
+          "component": "select",
+          "name": "classes_buttons",
+          "label": "Button style",
+          "description": "Buttons in these cards: the site's style (set on the site's theme page), filled, or outlined.",
+          "valueType": "string",
+          "value": "",
+          "options": [
+            {
+              "name": "Default",
+              "value": ""
+            },
+            {
+              "name": "Filled",
+              "value": "buttons-filled"
+            },
+            {
+              "name": "Outline",
+              "value": "buttons-outline"
+            }
+          ]
         }
       ]
     },

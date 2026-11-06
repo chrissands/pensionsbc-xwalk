@@ -1,0 +1,38 @@
+# AEM as a Cloud Service CDN configuration (Cloud Manager config pipeline), program p129103.
+# Deployed once by an AEM admin; see tools/aem-cdn/README.md. There is one cdn.yaml per
+# environment: if the program already has one, add these rules to it.
+kind: "CDN"
+version: "1"
+metadata:
+  envTypes: ["dev"]
+data:
+  responseTransformations:
+    rules:
+      # Fonts in AEM Assets, used by the Site styles sheet on the Edge Delivery sites (another origin):
+      # browsers only use a font from another origin if the response allows it. Fonts are public, so
+      # any origin; set at the CDN so every cached copy carries it.
+      - name: dam-fonts-cors
+        when:
+          allOf:
+            - reqProperty: tier
+              equals: publish
+            - reqProperty: path
+              like: /content/dam/pensionsbc-base/fonts/*
+        actions:
+          - type: set
+            respHeader: Access-Control-Allow-Origin
+            value: "*"
+      # Event fragments (persisted GraphQL query): AEM's CORS answer depends on the Origin header,
+      # so cached copies must vary by it (a copy cached for a request without Origin, e.g. curl,
+      # otherwise blocks browsers for its cache lifetime).
+      - name: graphql-vary-origin
+        when:
+          allOf:
+            - reqProperty: tier
+              equals: publish
+            - reqProperty: path
+              like: /graphql/execute.json/*
+        actions:
+          - type: set
+            respHeader: Vary
+            value: Origin

@@ -26,6 +26,32 @@
   object-fit: cover;
 }
 
+/* Button style (classes_buttons): filled or outlined, in the site theme's button colour when it
+   has one (scripts/site-theme.js), else the link colour */
+main .cards.buttons-filled a.button:any-link {
+  border-color: var(--button-color, var(--link-color));
+  background-color: var(--button-color, var(--link-color));
+  color: var(--button-text-color, var(--color-white));
+}
+
+main .cards.buttons-filled a.button:is(:hover, :focus) {
+  border-color: var(--button-hover-color, var(--link-hover-color));
+  background-color: var(--button-hover-color, var(--link-hover-color));
+  color: var(--button-text-color, var(--color-white));
+}
+
+main .cards.buttons-outline a.button:any-link {
+  border-color: var(--button-outline-color, var(--link-color));
+  background-color: transparent;
+  color: var(--button-outline-color, var(--link-color));
+}
+
+main .cards.buttons-outline a.button:is(:hover, :focus) {
+  border-color: var(--button-color, var(--link-color));
+  background-color: var(--button-color, var(--link-color));
+  color: var(--button-text-color, var(--color-white));
+}
+
 /* logos style: bordered logo cards with stacked text links (values from www.pensionsbc.ca) */
 .cards.logos > ul {
   display: block;

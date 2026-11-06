@@ -38,3 +38,38 @@
   font-display: swap;
   src: local('Source Sans Pro Bold'), local('SourceSansPro-Bold'), url('../fonts/source-sans-pro-v9-latin-700.woff2') format('woff2');
 }
+
+/* Roboto and Roboto Condensed (Apache 2.0): shipped fonts authors can pick in the Site styles
+   sheet (scripts/site-theme.js); only downloaded on a site that uses them */
+@font-face {
+  font-family: Roboto;
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('../fonts/roboto-regular.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: Roboto;
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('../fonts/roboto-medium.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: Roboto;
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('../fonts/roboto-bold.woff2') format('woff2');
+}
+
+/* bold only: for headings */
+@font-face {
+  font-family: 'Roboto Condensed';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('../fonts/roboto-condensed-bold.woff2') format('woff2');
+}

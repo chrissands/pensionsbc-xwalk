@@ -1,0 +1,57 @@
+/* Site theme: the settings as a list, each colour with a swatch and its contrast check */
+.site-theme {
+  display: grid;
+  gap: var(--space-xs);
+  max-width: 640px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: var(--space-m) var(--space-l);
+}
+
+.site-theme > .site-theme-setting {
+  display: grid;
+  grid-template-columns: minmax(0, 12em) minmax(0, 1fr);
+  align-items: center;
+  gap: var(--space-m);
+}
+
+.site-theme .site-theme-key {
+  font-family: monospace;
+  font-size: 14px;
+}
+
+.site-theme .site-theme-value {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-s);
+}
+
+.site-theme :is(.site-theme-key, .site-theme-value) p {
+  margin: 0;
+}
+
+.site-theme .site-theme-swatch {
+  flex: none;
+  width: 28px;
+  height: 28px;
+  border: 1px solid #767676;
+  border-radius: 4px;
+}
+
+.site-theme .site-theme-check {
+  border-radius: 4px;
+  padding: 2px 8px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.site-theme .site-theme-check.pass {
+  background-color: #e6f4ea;
+  color: #1e6b34;
+}
+
+.site-theme .site-theme-check.fail {
+  background-color: #fdecea;
+  color: #a12622;
+}

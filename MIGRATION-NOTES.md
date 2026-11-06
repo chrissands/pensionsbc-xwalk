@@ -70,7 +70,37 @@ represent. These notes are written so a partner can repeat the work in their own
 - **Site themes:** `scripts.js` sets `body.site-<site>` from the aem.page host or the AEM path (Universal
   Editor), and `body.theme-plan` on the five plan sites, which share one source theme (1280px layout, 18px
   text, teal links, grey footer). Each plan only sets its accent colours (`--site-accent-color`,
-  `--site-accent-dark-color`) in `styles/styles.css`. Authors set nothing.
+  `--site-accent-dark-color`) in `styles/styles.css`.
+- **Author-set styles (no code deployment):**
+  - **Site theme page** `<site>/en/theme` (a local page per site, created by authors in Universal
+    Editor) with a **Site theme** block (`blocks/site-theme`, key-value): button colour, button text
+    colour, button shape (square / rounded / pill), link colour, accent colour. `scripts/site-theme.js`
+    reads it on every page and sets CSS custom properties on `<body>` (`--button-color`,
+    `--button-text-color`, `--button-hover-color`, `--button-outline-color`, `--button-radius`,
+    `--link-color`, `--site-accent-color`; `body.theme-buttons` when buttons are themed). Empty fields
+    keep the site's styles. Colour fields only accept colour codes (Universal Editor validation).
+    Guardrail: a pair below WCAG AA (4.5:1 for buttons and links, 3:1 for the accent) isn't applied.
+    The theme page itself shows each colour's swatch and contrast ratio, and applies the theme live
+    while it's edited.
+  - **Loading:** the first page of a visit waits up to 400 ms for the theme page and the Site styles; later pages apply
+    the visit's copy (sessionStorage) at once and refresh it, so a published change shows on the next
+    page load. Only sites in `THEMED_SITES` (`scripts/site-theme.js`, now `college`) request a theme
+    page, so other sites make no failing request; theming a site is that one-line switch plus its
+    theme page.
+  - **Site styles spreadsheet** `<site>/en/styles` (AEM **Spreadsheet** template, columns **Key** and
+    **Value**; delivered as `/en/styles.json` once the site's `public.json` has the paths mapping
+    `/content/pensionsbc-base/<site>/en/styles:/en/styles.json`, like the placeholders): fonts.
+    Keys: `heading-font`, `body-font` (a shipped font: Source Sans Pro, Roboto, Roboto Condensed
+    (bold only, for headings); or any name with its file), `heading-font-file`,
+    `heading-font-file-bold`, `body-font-file`, `body-font-file-bold` (AEM Assets paths of .woff2 /
+    .woff files under `/content/dam/pensionsbc-base/fonts/`). Unknown keys, names with symbols and
+    files outside `/content/dam/` are ignored. Fonts from Assets load from AEM publish (another origin)
+    and need the one-time CDN rule in `tools/aem-cdn` (AEM publish sends no CORS header for Assets
+    files today); until then they fall back to the site's font. In Universal Editor (author) the
+    sheet isn't read: `styles.json` there is AEM's own page JSON, so fonts show on the sites only.
+  - **Cards: Button style** (`classes_buttons`: Default / Filled / Outline), filled or outlined in the
+    theme's button colour (else the link colour).
+  - Optional placeholders `theme-contrast-pass` / `theme-contrast-fail`: the contrast badges' tooltips.
 - **Linked images** (logos) are authored as an Image followed by a Link; `joinLinkedImages()` in
   `scripts.js` joins them (header brand, footer).
 - **Header:** a nav with section links (plan sites) gets two rows on desktop: logo + tools, then links.
@@ -323,3 +353,4 @@ Not started. Scope: 15 pages per site (homepage included) plus nav and footer.
 | 2026-10-22 | Audience swaps are per Event List item (default fragment + audience + fragment for that audience); the visitor's audience comes from `?audience=` on the arrival link and lasts for the visit. No experimentation plugin or Target. |
 | 2026-10-23 | A/B tests with AEM Contextual Experimentation (engine v2.0.0, Universal Editor A/B extension), loaded only on experiment pages; first experiment: College homepage hero task links. Section "Show to" stored as `show-to` (not `audience`, which the engine reserves). |
 | 2026-10-23 | Audience by location: IP lookup (GeoJS) then device time zone; BC = local, else online. Sections get a "Show to" audience; Learning resources shows "Upcoming in-person sessions" to local visitors and "Upcoming webinars" to others. |
+| 2026-11-06 | Low-code styling: a Site theme page per site (button colours and shape, link and accent colours, with a contrast guardrail), a Site styles spreadsheet for fonts (shipped fonts, or font files in AEM Assets behind a one-time CDN CORS rule), and a Cards Button style option, instead of hard-coded colours (PR #39, College card buttons in #513f77, closed). College first. |

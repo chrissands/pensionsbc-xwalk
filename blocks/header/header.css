@@ -360,6 +360,7 @@ header nav .nav-tools a.button:focus {
 }
 
 header nav .nav-tools a.button.primary {
+  border-radius: var(--button-radius, 2px);
   padding: 15px 20px;
   background-color: var(--link-color);
   color: var(--color-white);
@@ -371,6 +372,18 @@ header nav .nav-tools a.button.primary:hover,
 header nav .nav-tools a.button.primary:focus {
   background-color: var(--site-accent-dark-color);
   color: var(--color-white);
+}
+
+/* site theme (scripts/site-theme.js): the primary tool in the theme's button colours */
+body.theme-buttons header nav .nav-tools a.button.primary {
+  background-color: var(--button-color);
+  color: var(--button-text-color);
+}
+
+body.theme-buttons header nav .nav-tools a.button.primary:hover,
+body.theme-buttons header nav .nav-tools a.button.primary:focus {
+  background-color: var(--button-hover-color);
+  color: var(--button-text-color);
 }
 
 /*
